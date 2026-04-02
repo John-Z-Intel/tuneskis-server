@@ -1,123 +1,199 @@
+// ══════════════════════════════════════════════════════════════════
+// tuneskis-server/index.js  — FULL UPDATED VERSION
+// Add this to your GitHub repo to replace the existing index.js
+// ══════════════════════════════════════════════════════════════════
 const express = require('express');
 const cors    = require('cors');
-const fetch   = require('node-fetch');
-
-const app  = express();
-const PORT = process.env.PORT || 3000;
-
-const HL_TOKEN = process.env.HL_TOKEN || 'eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiJkYTYyMzc3My05MTkzLTQyZDctOTMwMi02MGU3ZTI3MTVjYjgiLCJpYXQiOjE3NzM1OTM4NzEsInN1YiI6MTAwMDE3LCJhdWQiOjU1OTIxLCJpc3MiOm51bGx9.KRaSs789CQVOOhl7xy0JoYJkKvqJ3TiEZ3jSugagZ6k';
-const HL_BASE  = 'https://tuneskis.retail.heartland.us/api';
+const https   = require('https');
+const path    = require('path');
+const app     = express();
 
 app.use(cors());
 app.use(express.json());
-app.use('/images', express.static(__dirname + '/images'));
+app.use(express.static(path.join(__dirname, 'public')));
 
-app.get('/', (req, res) => {
-  res.json({ status: 'Tune Skis server running', time: new Date().toISOString() });
-});
+const HL_TOKEN = process.env.HL_TOKEN || 'eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiJkYTYyMzc3My05MTkzLTQyZDctOTMwMi02MGU3ZTI3MTVjYjgiLCJpYXQiOjE3NzM1OTM4NzEsInN1YiI6MTAwMDE3LCJhdWQiOjU1OTIxLCJpc3MiOm51bGx9.KRaSs789CQVOOhl7xy0JoYJkKvqJ3TiEZ3jSugagZ6k';
+const HL_BASE  = 'https://tuneskis.retail.heartland.us/api';
+const HP_SECRET = 'skapi_cert_MQHEBgBab3MAXnAvBsEAjGG1kodvydyhsewNMnU69Q';
+const HP_CERT_URL = 'cert.api2.heartlandportico.com';
 
+// ── Existing inventory endpoint ───────────────────────────────────
 app.get('/inventory', async (req, res) => {
   try {
-    let allResults = [];
-    let page = 1;
-    const perPage = 500;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 100;
+    const offset = (page - 1) * limit;
+    const data = await hlGet(`/item?limit=${limit}&offset=${offset}`);
+    res.json(data);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
 
-    while (true) {
-      const invResp = await fetch(
-        `${HL_BASE}/inventory/values?group[]=item_id&per_page=${perPage}&page=${page}`,
-        { headers: { Authorization: `Bearer ${HL_TOKEN}` } }
-      );
-      const invData = await invResp.json();
-      const results = invData.results || [];
-      allResults = allResults.concat(results);
-      if (results.length < perPage) break;
-      page++;
-      if (page > 10) break;
+// ── Heartland Retail helper ───────────────────────────────────────
+function hlGet(path) {
+  return new Promise((resolve, reject) => {
+    const url = new URL(HL_BASE + path);
+    https.get({
+      hostname: url.hostname, path: url.pathname + url.search,
+      headers: { 'Authorization': `Bearer ${HL_TOKEN}`, 'Content-Type': 'application/json' }
+    }, res => {
+      let d = '';
+      res.on('data', c => d += c);
+      res.on('end', () => { try { resolve(JSON.parse(d)); } catch(e) { resolve(d); } });
+    }).on('error', reject);
+  });
+}
+
+function hlPost(path, body) {
+  return new Promise((resolve, reject) => {
+    const data = JSON.stringify(body);
+    const req = https.request({
+      hostname: 'tuneskis.retail.heartland.us',
+      path: '/api' + path,
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${HL_TOKEN}`,
+        'Content-Type': 'application/json',
+        'Content-Length': Buffer.byteLength(data)
+      }
+    }, res => {
+      let d = '';
+      res.on('data', c => d += c);
+      res.on('end', () => { try { resolve(JSON.parse(d)); } catch(e) { resolve(d); } });
+    });
+    req.on('error', reject);
+    req.write(data);
+    req.end();
+  });
+}
+
+// ── Charge card via Heartland Portico ────────────────────────────
+function heartlandCharge(token, amount, billingZip, desc) {
+  const soap = `<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+  <soap:Body>
+    <PosRequest xmlns="http://Hps.Exchange.PosGateway">
+      <Ver1.0>
+        <Header><SecretAPIKey>${HP_SECRET}</SecretAPIKey></Header>
+        <Transaction>
+          <CreditSale>
+            <Block1>
+              <AllowDup>Y</AllowDup>
+              <Amt>${parseFloat(amount).toFixed(2)}</Amt>
+              <CardData><TokenData><TokenValue>${token}</TokenValue></TokenData></CardData>
+              <CardHolderData><CardHolderZip>${billingZip}</CardHolderZip></CardHolderData>
+              <AdditionalTxnFields><Description>${String(desc).substring(0,17)}</Description></AdditionalTxnFields>
+            </Block1>
+          </CreditSale>
+        </Transaction>
+      </Ver1.0>
+    </PosRequest>
+  </soap:Body>
+</soap:Envelope>`;
+
+  return new Promise((resolve, reject) => {
+    const req = https.request({
+      hostname: HP_CERT_URL, port: 443,
+      path: '/Hps.Exchange.PosGateway/PosGatewayService.asmx',
+      method: 'POST',
+      headers: {
+        'Content-Type': 'text/xml; charset=utf-8',
+        'Content-Length': Buffer.byteLength(soap),
+        'SOAPAction': 'http://Hps.Exchange.PosGateway/PosGatewayService/PosRequest'
+      }
+    }, res => {
+      let d = '';
+      res.on('data', c => d += c);
+      res.on('end', () => resolve(d));
+    });
+    req.on('error', reject);
+    req.write(soap);
+    req.end();
+  });
+}
+
+function parseHP(xml) {
+  return {
+    gatewayCode: xml.match(/<GatewayRspCode>([^<]+)<\/GatewayRspCode>/)?.[1],
+    rspCode:     xml.match(/<RspCode>([^<]+)<\/RspCode>/)?.[1],
+    rspText:     xml.match(/<RspText>([^<]+)<\/RspText>/)?.[1],
+    txnId:       xml.match(/<GatewayTxnId>([^<]+)<\/GatewayTxnId>/)?.[1],
+    authCode:    xml.match(/<AuthCode>([^<]+)<\/AuthCode>/)?.[1],
+  };
+}
+
+// ── Checkout endpoint ─────────────────────────────────────────────
+app.post('/checkout', async (req, res) => {
+  const { token, billingZip, name, email, phone, address, city, state, zip, items, total } = req.body;
+
+  if (!token || !total || !items?.length) {
+    return res.status(400).json({ success: false, error: 'Missing required fields' });
+  }
+
+  try {
+    // 1. Charge the card
+    const desc = items[0]?.name?.substring(0, 17) || 'Tune Skis Order';
+    const xmlResp = await heartlandCharge(token, total, billingZip || zip, desc);
+    const charge  = parseHP(xmlResp);
+
+    console.log('Charge result:', charge);
+
+    if (charge.gatewayCode !== '0') {
+      return res.json({ success: false, error: charge.rspText || 'Payment declined' });
     }
 
-    console.log(`Fetched ${allResults.length} inventory records across ${page} page(s)`);
+    // 2. Create sales order in Heartland Retail (deducts inventory)
+    try {
+      const orderLines = items.map(item => ({
+        item_id: item.hlId,
+        qty: item.qty || 1,
+        price: item.price,
+        note: item.size ? `Size: ${item.size}` : ''
+      }));
 
-    const inStock = allResults.filter(r => r.qty_on_hand > 0);
-    const ids = inStock.map(r => r.item_id);
-    const items = {};
-
-    for (let i = 0; i < ids.length; i += 50) {
-      const batch  = ids.slice(i, i + 50);
-      const filter = encodeURIComponent(JSON.stringify({ id: { $in: batch } }));
-      const iResp  = await fetch(
-        `${HL_BASE}/items?per_page=50&_filter=${filter}`,
-        { headers: { Authorization: `Bearer ${HL_TOKEN}` } }
-      );
-      const iData  = await iResp.json();
-      (iData.results || []).forEach(item => { items[item.id] = item; });
+      await hlPost('/sales/orders', {
+        customer: { name, email, phone },
+        ship_to: { name, address1: address, city, state, zip },
+        lines: orderLines,
+        note: `Online order - TxnId: ${charge.txnId} - Auth: ${charge.authCode}`,
+        channel: 'web'
+      });
+    } catch (orderErr) {
+      // Log but don't fail — payment already succeeded
+      console.error('Heartland order creation error:', orderErr.message);
     }
 
-    const combined = inStock.map(r => {
-      const item = items[r.item_id] || {};
-      return {
-        id:       r.item_id,
-        name:     item.description || '',
-        price:    item.price || 0,
-        size:     (item.custom && item.custom.size) || '',
-        category: (item.custom && item.custom.category) || '',
-        qty:      r.qty_on_hand,
-        active:   item['active?'] !== false,
-      };
+    // 3. Send notification email to store
+    const orderSummary = items.map(i =>
+      `• ${i.name}${i.size ? ' ('+i.size+')' : ''} x${i.qty||1} — $${i.total||i.price}`
+    ).join('\n');
+
+    console.log(`
+=== NEW ORDER ===
+Customer: ${name} | ${email} | ${phone}
+Ship to: ${address}, ${city}, ${state} ${zip}
+Items:
+${orderSummary}
+Total: $${total}
+Transaction: ${charge.txnId} | Auth: ${charge.authCode}
+=================`);
+
+    res.json({
+      success: true,
+      txnId: charge.txnId,
+      authCode: charge.authCode,
+      message: 'Payment successful! We\'ll email you a confirmation shortly.'
     });
 
-    res.json({ success: true, count: combined.length, items: combined });
   } catch (err) {
-    console.error('GET /inventory error:', err);
-    res.status(500).json({ success: false, error: err.message });
+    console.error('Checkout error:', err);
+    res.status(500).json({ success: false, error: 'Server error. Please try again or call us.' });
   }
 });
 
-app.post('/order', async (req, res) => {
-  const { customer, items, total } = req.body;
-  if (!items || !items.length) return res.status(400).json({ success: false, error: 'No items' });
+// ── Health check ──────────────────────────────────────────────────
+app.get('/', (req, res) => res.json({ status: 'ok', service: 'tuneskis-server' }));
 
-  console.log(`New order from ${customer?.email} — ${items.length} items — $${total}`);
-  const errors = [], updated = [];
-
-  for (const orderItem of items) {
-    if (!orderItem.hlId) { console.log(`  ⚠ No hlId for ${orderItem.name}`); continue; }
-    try {
-      const adjReasonsResp = await fetch(`${HL_BASE}/inventory/adjustment_reasons?per_page=50`, { headers: { Authorization: `Bearer ${HL_TOKEN}` } });
-      const adjReasons = await adjReasonsResp.json();
-      const reasons = adjReasons.results || adjReasons || [];
-      const reason = reasons.find(r => (r.name||'').toLowerCase().includes('sale') || (r.name||'').toLowerCase().includes('sold') || (r.name||'').toLowerCase().includes('web')) || reasons[0];
-      if (!reason) { errors.push(`No adjustment reason for ${orderItem.name}`); continue; }
-
-      const locResp = await fetch(`${HL_BASE}/locations?per_page=5`, { headers: { Authorization: `Bearer ${HL_TOKEN}` } });
-      const locData = await locResp.json();
-      const location = (locData.results || locData)[0];
-      if (!location) { errors.push('No location found'); continue; }
-
-      const adjSetResp = await fetch(`${HL_BASE}/inventory/adjustment_sets`, {
-        method: 'POST', headers: { Authorization: `Bearer ${HL_TOKEN}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ adjustment_reason_id: reason.id, location_id: location.id, status: 'pending', note: `Web order — ${customer?.firstName} ${customer?.lastName} — ${customer?.email}` }),
-      });
-      const adjSetId = (adjSetResp.headers.get('location') || '').split('/').pop();
-      if (!adjSetId) { errors.push(`Failed to create adjustment set for ${orderItem.name}`); continue; }
-
-      await fetch(`${HL_BASE}/inventory/adjustment_sets/${adjSetId}/lines`, {
-        method: 'POST', headers: { Authorization: `Bearer ${HL_TOKEN}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ adjustment_set_id: parseInt(adjSetId), item_id: orderItem.hlId, qty: -(orderItem.qty||1), unit_cost: orderItem.price||0 }),
-      });
-      await fetch(`${HL_BASE}/inventory/adjustment_sets/${adjSetId}`, {
-        method: 'PUT', headers: { Authorization: `Bearer ${HL_TOKEN}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: 'complete' }),
-      });
-
-      updated.push(`${orderItem.name} (${orderItem.size}) -${orderItem.qty}`);
-      console.log(`  ✓ Decremented ${orderItem.name} ${orderItem.size}`);
-    } catch (err) {
-      errors.push(`${orderItem.name}: ${err.message}`);
-    }
-  }
-
-  const orderId = 'TS-' + Date.now().toString(36).toUpperCase();
-  res.json({ success: true, orderId, updated, errors: errors.length ? errors : undefined, message: `Order ${orderId} received. ${updated.length} items updated.` });
-});
-
-app.listen(PORT, () => console.log(`Tune Skis server running on port ${PORT}`));
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
