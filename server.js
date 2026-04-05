@@ -1,8 +1,8 @@
-const express = require('express');
-const cors    = require('cors');
-const https   = require('https');
-const path    = require('path');
-const app     = express();
+const express  = require('express');
+const cors     = require('cors');
+const https    = require('https');
+const path     = require('path');
+const app      = express();
 
 app.use(cors());
 app.use(express.json());
@@ -17,16 +17,14 @@ const HP_HOST   = 'cert.api2.heartlandportico.com';
 function hlGet(endpoint) {
   return new Promise((resolve, reject) => {
     const url = new URL(HL_BASE + endpoint);
-    const options = {
+    https.get({
       hostname: url.hostname,
       path: url.pathname + url.search,
-      method: 'GET',
       headers: {
         'Authorization': `Bearer ${HL_TOKEN}`,
         'Content-Type': 'application/json'
       }
-    };
-    https.get(options, (res) => {
+    }, (res) => {
       let data = '';
       res.on('data', c => data += c);
       res.on('end', () => {
@@ -64,43 +62,56 @@ function hlPost(endpoint, body) {
   });
 }
 
+// ── Fetch ALL inventory pages ─────────────────────────────────────
+async function fetchAllItems() {
+  let allItems = [];
+  let page = 1;
+  while (true) {
+    const data = await hlGet(`/items?per_page=250&page=${page}`);
+    const results = data.results || data.items || [];
+    if (!results.length) break;
+    allItems = allItems.concat(results);
+    const totalPages = data.pages || 1;
+    if (page >= totalPages || results.length < 250) break;
+    page++;
+  }
+  return allItems;
+}
+
 // ── Inventory endpoint ────────────────────────────────────────────
 app.get('/inventory', async (req, res) => {
   try {
-    const page   = parseInt(req.query.page)  || 1;
-    const limit  = parseInt(req.query.limit) || 200;
-    const offset = (page - 1) * limit;
+    const raw = await fetchAllItems();
 
-    // Correct endpoint is /items (plural)
-    const data = await hlGet(`/items?per_page=${limit}&page=${page}`);
-
-    if (!data || (!data.results && !data.items)) {
-      return res.json({ success: false, error: 'No data', raw: data });
+    if (!raw.length) {
+      // Try debug to see what came back
+      const debug = await hlGet('/items?per_page=1&page=1');
+      return res.json({ success: false, error: 'No items returned', debug });
     }
 
-    const results = data.results || data.items || [];
-
-    const items = results.map(item => ({
+    // Map to storefront-friendly format
+    // Heartland Retail fields: id, description (item name), custom@size (size), quantity
+    const items = raw.map(item => ({
       id:    item.id,
       name:  item.description || item.name || '',
-      size:  item.custom_size || item['custom@size'] || item.size || '',
-      qty:   item.quantity !== undefined ? item.quantity :
-             (item.qty !== undefined ? item.qty : 0),
+      size:  item['custom@size'] || item.custom_size || item.size || '',
+      qty:   typeof item.quantity === 'number' ? item.quantity :
+             typeof item.qty      === 'number' ? item.qty : 0,
       price: item.price_1 || item.price || 0,
       sku:   item.public_id || item.sku || ''
     }));
 
-    res.json({ success: true, items, total: data.total || items.length });
+    res.json({ success: true, items, total: items.length });
   } catch (e) {
     console.error('Inventory error:', e.message);
     res.status(500).json({ success: false, error: e.message });
   }
 });
 
-// ── Debug endpoint to see raw Heartland data ──────────────────────
+// ── Debug: show raw first 5 items ─────────────────────────────────
 app.get('/debug-inventory', async (req, res) => {
   try {
-    const data = await hlGet('/items?per_page=10&page=1');
+    const data = await hlGet('/items?per_page=5&page=1');
     res.json(data);
   } catch (e) {
     res.status(500).json({ error: e.message });
@@ -183,7 +194,6 @@ app.post('/checkout', async (req, res) => {
       return res.json({ success: false, error: charge.rspText || 'Payment declined' });
     }
 
-    // Log full order
     const itemLines = items.map(i =>
       `• ${i.name}${i.size ? ' ('+i.size+')' : ''} x${i.qty||1} — $${i.total||i.price}`
     ).join('\n');
