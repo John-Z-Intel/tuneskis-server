@@ -13,6 +13,8 @@ const HL_BASE   = 'https://tuneskis.retail.heartland.us/api';
 const HP_SECRET = 'skapi_cert_MQHEBgBab3MAXnAvBsEAjGG1kodvydyhsewNMnU69Q';
 const HP_HOST   = 'cert.api2.heartlandportico.com';
 
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
 function hlGet(endpoint) {
   return new Promise((resolve, reject) => {
     const url = new URL(HL_BASE + endpoint);
@@ -29,8 +31,7 @@ function hlGet(endpoint) {
 }
 
 async function fetchAll(endpoint, perPage = 250) {
-  let all = [];
-  let page = 1;
+  let all = [], page = 1;
   while (true) {
     const sep = endpoint.includes('?') ? '&' : '?';
     const data = await hlGet(`${endpoint}${sep}per_page=${perPage}&page=${page}`);
@@ -39,29 +40,30 @@ async function fetchAll(endpoint, perPage = 250) {
     all = all.concat(results);
     if (page >= (data.pages || 1) || results.length < perPage) break;
     page++;
+    await sleep(200); // avoid rate limit
   }
   return all;
 }
 
-// ── Debug: try per-item inventory value endpoints ─────────────────
+// ── Debug: find correct qty endpoint ─────────────────────────────
 app.get('/debug-inventory', async (req, res) => {
   try {
     const results = {};
-    // The docs say "Retrieve inventory values by item" 
-    // Try the per-item endpoint patterns
+    // Try one at a time with delays to avoid rate limiting
     const eps = [
-      '/inventory/values/items/101483',
-      '/inventory/values/item/101483', 
-      '/items/101483/inventory_value',
-      '/items/101483/value',
-      '/inventory/values?per_page=3&page=1',
-      // Try with location
-      '/locations',
+      '/inventory/values/item/101483',
+      '/inventory/values?item_ids[]=101483',
+      '/inventory/values?search[item_id]=101483',
     ];
     for (const ep of eps) {
+      await sleep(500);
       const d = await hlGet(ep);
-      results[ep] = JSON.stringify(d).substring(0, 300);
+      results[ep] = JSON.stringify(d).substring(0, 200);
     }
+    // Get locations (needed for location-based qty)
+    await sleep(500);
+    const locs = await hlGet('/locations?per_page=5');
+    results['locations'] = locs;
     res.json(results);
   } catch(e) {
     res.status(500).json({ error: e.message });
@@ -69,31 +71,23 @@ app.get('/debug-inventory', async (req, res) => {
 });
 
 // ── Inventory endpoint ────────────────────────────────────────────
-// Strategy: fetch items, then fetch inventory value for each item individually
 app.get('/inventory', async (req, res) => {
   try {
     const items = await fetchAll('/items');
     console.log(`Fetched ${items.length} items`);
 
-    // Fetch qty for each item using per-item endpoint
-    // Do in batches of 10 to avoid rate limits
+    // Fetch inventory values per item sequentially with delay
     const qtyMap = {};
-    const batchSize = 20;
-    for (let i = 0; i < items.length; i += batchSize) {
-      const batch = items.slice(i, i + batchSize);
-      await Promise.all(batch.map(async (item) => {
-        try {
-          const inv = await hlGet(`/inventory/values/items/${item.id}`);
-          // Try multiple qty field names
-          const qty = inv.qty_on_hand ?? inv.qty ?? inv.quantity ?? 0;
-          qtyMap[item.id] = qty;
-        } catch(e) {
-          qtyMap[item.id] = 0;
-        }
-      }));
+    for (const item of items) {
+      try {
+        await sleep(100);
+        const inv = await hlGet(`/inventory/values/item/${item.id}`);
+        const qty = inv.qty_on_hand ?? inv.qty ?? inv.quantity ?? 0;
+        qtyMap[item.id] = Math.max(0, qty);
+      } catch(e) {
+        qtyMap[item.id] = 0;
+      }
     }
-
-    console.log('Sample qtys:', Object.entries(qtyMap).slice(0,5));
 
     const mapped = items.map(item => ({
       id:    item.id,
@@ -103,6 +97,10 @@ app.get('/inventory', async (req, res) => {
       price: item.price || 0,
       sku:   item.public_id || ''
     }));
+
+    // Log Jones as sanity check
+    const jones = mapped.find(i => i.id === 101483);
+    console.log('Jones 146cm qty:', jones?.qty);
 
     res.json({ success: true, items: mapped, total: mapped.length });
   } catch (e) {
