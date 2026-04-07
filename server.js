@@ -13,29 +13,21 @@ const HL_BASE   = 'https://tuneskis.retail.heartland.us/api';
 const HP_SECRET = 'skapi_cert_MQHEBgBab3MAXnAvBsEAjGG1kodvydyhsewNMnU69Q';
 const HP_HOST   = 'cert.api2.heartlandportico.com';
 
-// ── Heartland Retail GET ──────────────────────────────────────────
 function hlGet(endpoint) {
   return new Promise((resolve, reject) => {
     const url = new URL(HL_BASE + endpoint);
     https.get({
       hostname: url.hostname,
       path: url.pathname + url.search,
-      headers: {
-        'Authorization': `Bearer ${HL_TOKEN}`,
-        'Content-Type': 'application/json'
-      }
+      headers: { 'Authorization': `Bearer ${HL_TOKEN}`, 'Content-Type': 'application/json' }
     }, (res) => {
       let data = '';
       res.on('data', c => data += c);
-      res.on('end', () => {
-        try { resolve(JSON.parse(data)); }
-        catch(e) { resolve({ raw: data }); }
-      });
+      res.on('end', () => { try { resolve(JSON.parse(data)); } catch(e) { resolve({ raw: data }); } });
     }).on('error', reject);
   });
 }
 
-// ── Fetch all pages of an endpoint ───────────────────────────────
 async function fetchAll(endpoint, perPage = 250) {
   let all = [];
   let page = 1;
@@ -51,54 +43,66 @@ async function fetchAll(endpoint, perPage = 250) {
   return all;
 }
 
+// ── Debug: probe qty endpoints for item 101483 ────────────────────
+app.get('/debug-inventory', async (req, res) => {
+  const endpoints = [
+    '/items/101483/quantities',
+    '/items/101483/inventory_levels',
+    '/inventory/levels?item_id=101483',
+    '/inventory/items?item_id=101483',
+    '/items?per_page=1&page=1&include[]=quantity',
+    '/items/101483?include[]=quantity',
+    '/items?ids[]=101483',
+  ];
+  const results = {};
+  for (const ep of endpoints) {
+    try {
+      const d = await hlGet(ep);
+      results[ep] = JSON.stringify(d).substring(0, 200);
+    } catch(e) {
+      results[ep] = 'ERROR: ' + e.message;
+    }
+  }
+  // Also get the raw item to see all fields
+  const item = await hlGet('/items/101483').catch(e => ({ error: e.message }));
+  res.json({ item, endpoints: results });
+});
+
 // ── Inventory endpoint ────────────────────────────────────────────
 app.get('/inventory', async (req, res) => {
   try {
-    // Fetch items and inventory quantities in parallel
-    const [items, inventories] = await Promise.all([
-      fetchAll('/items'),
-      fetchAll('/inventory/quantities')
-    ]);
+    const items = await fetchAll('/items');
+    if (!items.length) {
+      return res.json({ success: false, error: 'No items returned' });
+    }
 
-    // Build qty lookup by item_id
-    const qtyMap = {};
-    inventories.forEach(inv => {
-      const id = inv.item_id;
-      if (!qtyMap[id]) qtyMap[id] = 0;
-      qtyMap[id] += (inv.quantity || inv.qty || 0);
-    });
+    // Map items — size in custom.size, qty will be 0 until we find the right endpoint
+    const mapped = items.map(item => ({
+      id:    item.id,
+      name:  item.description || '',
+      size:  (item.custom && item.custom.size) ? String(item.custom.size) : '',
+      qty:   item.quantity || item.qty || item['quantity_on_hand'] || item['qty_on_hand'] || 0,
+      price: item.price || 0,
+      sku:   item.public_id || ''
+    }));
 
-    // Map items to storefront format
-    // Size is in item.custom.size, name is item.description
-    const mapped = items
-      .filter(item => item['active?'] !== false || qtyMap[item.id] > 0)
-      .map(item => ({
-        id:    item.id,
-        name:  item.description || '',
-        size:  (item.custom && item.custom.size) ? item.custom.size : '',
-        qty:   qtyMap[item.id] || 0,
-        price: item.price || 0,
-        sku:   item.public_id || ''
-      }));
+    // Log a sample to see what qty fields are available
+    if (mapped.length > 0) {
+      const sample = items.find(i => i.id === 101483) || items[0];
+      console.log('Sample item keys:', Object.keys(sample));
+      console.log('Sample qty fields:', {
+        quantity: sample.quantity,
+        qty: sample.qty,
+        quantity_on_hand: sample['quantity_on_hand'],
+        qty_on_hand: sample['qty_on_hand'],
+        stock: sample.stock
+      });
+    }
 
-    console.log(`Inventory: ${mapped.length} items, qty map has ${Object.keys(qtyMap).length} entries`);
     res.json({ success: true, items: mapped, total: mapped.length });
   } catch (e) {
     console.error('Inventory error:', e.message);
     res.status(500).json({ success: false, error: e.message });
-  }
-});
-
-// ── Debug: raw item + qty for item 101483 ─────────────────────────
-app.get('/debug-inventory', async (req, res) => {
-  try {
-    const [item, qtys] = await Promise.all([
-      hlGet('/items/101483'),
-      hlGet('/inventory/quantities?per_page=5&page=1')
-    ]);
-    res.json({ item, qtys });
-  } catch (e) {
-    res.status(500).json({ error: e.message });
   }
 });
 
@@ -125,7 +129,6 @@ function heartlandCharge(token, amount, billingZip, desc) {
     </PosRequest>
   </soap:Body>
 </soap:Envelope>`;
-
   return new Promise((resolve, reject) => {
     const req = https.request({
       hostname: HP_HOST, port: 443,
@@ -137,13 +140,9 @@ function heartlandCharge(token, amount, billingZip, desc) {
         'SOAPAction': 'http://Hps.Exchange.PosGateway/PosGatewayService/PosRequest'
       }
     }, (res) => {
-      let d = '';
-      res.on('data', c => d += c);
-      res.on('end', () => resolve(d));
+      let d = ''; res.on('data', c => d += c); res.on('end', () => resolve(d));
     });
-    req.on('error', reject);
-    req.write(soap);
-    req.end();
+    req.on('error', reject); req.write(soap); req.end();
   });
 }
 
@@ -157,56 +156,24 @@ function parseHP(xml) {
   };
 }
 
-// ── Checkout endpoint ─────────────────────────────────────────────
 app.post('/checkout', async (req, res) => {
-  const { token, billingZip, name, email, phone,
-          address, city, state, zip,
-          items, total, shipping, shippingLabel } = req.body;
-
-  if (!token || !total || !items?.length) {
-    return res.status(400).json({ success: false, error: 'Missing required fields' });
-  }
-
+  const { token, billingZip, name, email, phone, address, city, state, zip, items, total, shipping, shippingLabel } = req.body;
+  if (!token || !total || !items?.length) return res.status(400).json({ success: false, error: 'Missing required fields' });
   try {
-    const desc    = items[0]?.name?.substring(0,17) || 'Tune Skis Order';
+    const desc = items[0]?.name?.substring(0,17) || 'Tune Skis Order';
     const xmlResp = await heartlandCharge(token, total, billingZip || zip, desc);
     const charge  = parseHP(xmlResp);
-
     console.log('Charge result:', JSON.stringify(charge));
-
-    if (charge.gatewayCode !== '0') {
-      return res.json({ success: false, error: charge.rspText || 'Payment declined' });
-    }
-
-    const itemLines = items.map(i =>
-      `• ${i.name}${i.size ? ' ('+i.size+')' : ''} x${i.qty||1} — $${i.total||i.price}`
-    ).join('\n');
-
-    console.log(`
-=== NEW ORDER ===
-Customer: ${name} | ${email} | ${phone}
-Ship to: ${address}, ${city}, ${state} ${zip}
-Items:\n${itemLines}
-Shipping: ${shippingLabel || 'N/A'} ($${shipping || 0})
-Total: $${total}
-Transaction: ${charge.txnId} | Auth: ${charge.authCode}
-=================`);
-
-    res.json({
-      success:  true,
-      txnId:    charge.txnId,
-      authCode: charge.authCode,
-      message:  "Payment successful! We'll be in touch shortly with shipping details."
-    });
-
+    if (charge.gatewayCode !== '0') return res.json({ success: false, error: charge.rspText || 'Payment declined' });
+    const itemLines = items.map(i => `• ${i.name}${i.size?' ('+i.size+')':''} x${i.qty||1} — $${i.total||i.price}`).join('\n');
+    console.log(`\n=== NEW ORDER ===\nCustomer: ${name} | ${email} | ${phone}\nShip to: ${address}, ${city}, ${state} ${zip}\nItems:\n${itemLines}\nShipping: ${shippingLabel||'N/A'} ($${shipping||0})\nTotal: $${total}\nTransaction: ${charge.txnId} | Auth: ${charge.authCode}\n=================`);
+    res.json({ success: true, txnId: charge.txnId, authCode: charge.authCode, message: "Payment successful! We'll be in touch shortly with shipping details." });
   } catch (err) {
     console.error('Checkout error:', err);
     res.status(500).json({ success: false, error: 'Server error. Please try again or call us.' });
   }
 });
 
-// ── Health ────────────────────────────────────────────────────────
 app.get('/', (req, res) => res.json({ status: 'ok', service: 'tuneskis-server' }));
-
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
