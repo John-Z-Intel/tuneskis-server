@@ -35,84 +35,68 @@ function hlGet(endpoint) {
   });
 }
 
-// ── Heartland Retail POST ─────────────────────────────────────────
-function hlPost(endpoint, body) {
-  return new Promise((resolve, reject) => {
-    const data = JSON.stringify(body);
-    const req = https.request({
-      hostname: 'tuneskis.retail.heartland.us',
-      path: '/api' + endpoint,
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${HL_TOKEN}`,
-        'Content-Type': 'application/json',
-        'Content-Length': Buffer.byteLength(data)
-      }
-    }, (res) => {
-      let d = '';
-      res.on('data', c => d += c);
-      res.on('end', () => {
-        try { resolve(JSON.parse(d)); }
-        catch(e) { resolve({ raw: d }); }
-      });
-    });
-    req.on('error', reject);
-    req.write(data);
-    req.end();
-  });
-}
-
-// ── Fetch ALL inventory pages ─────────────────────────────────────
-async function fetchAllItems() {
-  let allItems = [];
+// ── Fetch all pages of an endpoint ───────────────────────────────
+async function fetchAll(endpoint, perPage = 250) {
+  let all = [];
   let page = 1;
   while (true) {
-    const data = await hlGet(`/items?per_page=250&page=${page}`);
-    const results = data.results || data.items || [];
+    const sep = endpoint.includes('?') ? '&' : '?';
+    const data = await hlGet(`${endpoint}${sep}per_page=${perPage}&page=${page}`);
+    const results = data.results || [];
     if (!results.length) break;
-    allItems = allItems.concat(results);
-    const totalPages = data.pages || 1;
-    if (page >= totalPages || results.length < 250) break;
+    all = all.concat(results);
+    if (page >= (data.pages || 1) || results.length < perPage) break;
     page++;
   }
-  return allItems;
+  return all;
 }
 
 // ── Inventory endpoint ────────────────────────────────────────────
 app.get('/inventory', async (req, res) => {
   try {
-    const raw = await fetchAllItems();
+    // Fetch items and inventory quantities in parallel
+    const [items, inventories] = await Promise.all([
+      fetchAll('/items'),
+      fetchAll('/inventory/quantities')
+    ]);
 
-    if (!raw.length) {
-      // Try debug to see what came back
-      const debug = await hlGet('/items?per_page=1&page=1');
-      return res.json({ success: false, error: 'No items returned', debug });
-    }
+    // Build qty lookup by item_id
+    const qtyMap = {};
+    inventories.forEach(inv => {
+      const id = inv.item_id;
+      if (!qtyMap[id]) qtyMap[id] = 0;
+      qtyMap[id] += (inv.quantity || inv.qty || 0);
+    });
 
-    // Map to storefront-friendly format
-    // Heartland Retail fields: id, description (item name), custom@size (size), quantity
-    const items = raw.map(item => ({
-      id:    item.id,
-      name:  item.description || item.name || '',
-      size:  item['custom@size'] || item.custom_size || item.size || '',
-      qty:   typeof item.quantity === 'number' ? item.quantity :
-             typeof item.qty      === 'number' ? item.qty : 0,
-      price: item.price_1 || item.price || 0,
-      sku:   item.public_id || item.sku || ''
-    }));
+    // Map items to storefront format
+    // Size is in item.custom.size, name is item.description
+    const mapped = items
+      .filter(item => item['active?'] !== false || qtyMap[item.id] > 0)
+      .map(item => ({
+        id:    item.id,
+        name:  item.description || '',
+        size:  (item.custom && item.custom.size) ? item.custom.size : '',
+        qty:   qtyMap[item.id] || 0,
+        price: item.price || 0,
+        sku:   item.public_id || ''
+      }));
 
-    res.json({ success: true, items, total: items.length });
+    console.log(`Inventory: ${mapped.length} items, qty map has ${Object.keys(qtyMap).length} entries`);
+    res.json({ success: true, items: mapped, total: mapped.length });
   } catch (e) {
     console.error('Inventory error:', e.message);
     res.status(500).json({ success: false, error: e.message });
   }
 });
 
-// ── Debug: show raw first 5 items ─────────────────────────────────
+// ── Debug: raw item + qty for item 101483 ─────────────────────────
 app.get('/debug-inventory', async (req, res) => {
   try {
-    const data = await hlGet('/items?per_page=5&page=1');
-    res.json(data);
+    const [item, qtys] = await Promise.all([
+      hlGet('/items/101483'),
+      hlGet('/inventory/quantities?per_page=5&page=1')
+    ]);
+    res.json({ item, qtys });
   } catch (e) {
     res.status(500).json({ error: e.message });
   }
