@@ -8,10 +8,11 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-const HL_TOKEN  = 'eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiJkYTYyMzc3My05MTkzLTQyZDctOTMwMi02MGU3ZTI3MTVjYjgiLCJpYXQiOjE3NzM1OTM4NzEsInN1YiI6MTAwMDE3LCJhdWQiOjU1OTIxLCJpc3MiOm51bGx9.KRaSs789CQVOOhl7xy0JoYJkKvqJ3TiEZ3jSugagZ6k';
-const HL_BASE   = 'https://tuneskis.retail.heartland.us/api';
-const HP_SECRET = 'skapi_cert_MQHEBgBab3MAXnAvBsEAjGG1kodvydyhsewNMnU69Q';
-const HP_HOST   = 'cert.api2.heartlandportico.com';
+const HL_TOKEN   = 'eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiJkYTYyMzc3My05MTkzLTQyZDctOTMwMi02MGU3ZTI3MTVjYjgiLCJpYXQiOjE3NzM1OTM4NzEsInN1YiI6MTAwMDE3LCJhdWQiOjU1OTIxLCJpc3MiOm51bGx9.KRaSs789CQVOOhl7xy0JoYJkKvqJ3TiEZ3jSugagZ6k';
+const HL_BASE    = 'https://tuneskis.retail.heartland.us/api';
+const HL_LOC_ID  = 100005; // Tune Skis location ID
+const HP_SECRET  = 'skapi_cert_MQHEBgBab3MAXnAvBsEAjGG1kodvydyhsewNMnU69Q';
+const HP_HOST    = 'cert.api2.heartlandportico.com';
 
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
@@ -40,30 +41,26 @@ async function fetchAll(endpoint, perPage = 250) {
     all = all.concat(results);
     if (page >= (data.pages || 1) || results.length < perPage) break;
     page++;
-    await sleep(200); // avoid rate limit
+    await sleep(300);
   }
   return all;
 }
 
-// ── Debug: find correct qty endpoint ─────────────────────────────
+// ── Debug ─────────────────────────────────────────────────────────
 app.get('/debug-inventory', async (req, res) => {
   try {
     const results = {};
-    // Try one at a time with delays to avoid rate limiting
     const eps = [
-      '/inventory/values/item/101483',
-      '/inventory/values?item_ids[]=101483',
-      '/inventory/values?search[item_id]=101483',
+      `/inventory/values?location_id=${HL_LOC_ID}&per_page=3`,
+      `/locations/${HL_LOC_ID}/inventory/values?per_page=3`,
+      `/inventory/values?location_ids[]=${HL_LOC_ID}&per_page=3`,
+      `/locations/${HL_LOC_ID}/items?per_page=1`,
     ];
     for (const ep of eps) {
-      await sleep(500);
+      await sleep(400);
       const d = await hlGet(ep);
-      results[ep] = JSON.stringify(d).substring(0, 200);
+      results[ep] = JSON.stringify(d).substring(0, 300);
     }
-    // Get locations (needed for location-based qty)
-    await sleep(500);
-    const locs = await hlGet('/locations?per_page=5');
-    results['locations'] = locs;
     res.json(results);
   } catch(e) {
     res.status(500).json({ error: e.message });
@@ -73,21 +70,29 @@ app.get('/debug-inventory', async (req, res) => {
 // ── Inventory endpoint ────────────────────────────────────────────
 app.get('/inventory', async (req, res) => {
   try {
-    const items = await fetchAll('/items');
-    console.log(`Fetched ${items.length} items`);
+    // Fetch items and inventory values (with location filter) in parallel
+    const [items, invValues] = await Promise.all([
+      fetchAll('/items'),
+      fetchAll(`/inventory/values?location_id=${HL_LOC_ID}`)
+    ]);
 
-    // Fetch inventory values per item sequentially with delay
-    const qtyMap = {};
-    for (const item of items) {
-      try {
-        await sleep(100);
-        const inv = await hlGet(`/inventory/values/item/${item.id}`);
-        const qty = inv.qty_on_hand ?? inv.qty ?? inv.quantity ?? 0;
-        qtyMap[item.id] = Math.max(0, qty);
-      } catch(e) {
-        qtyMap[item.id] = 0;
-      }
+    console.log(`Items: ${items.length}, Inv values: ${invValues.length}`);
+    if (invValues.length > 0) {
+      console.log('Inv value sample:', JSON.stringify(invValues[0]));
     }
+
+    // Build qty map
+    const qtyMap = {};
+    invValues.forEach(inv => {
+      const id = inv.item_id || inv.id;
+      if (id) {
+        const qty = Math.max(0, inv.qty_on_hand ?? inv.qty ?? inv.quantity ?? 0);
+        qtyMap[id] = (qtyMap[id] || 0) + qty;
+      }
+    });
+
+    console.log(`Qty map: ${Object.keys(qtyMap).length} entries`);
+    console.log('Jones 146 (101483):', qtyMap[101483]);
 
     const mapped = items.map(item => ({
       id:    item.id,
@@ -97,10 +102,6 @@ app.get('/inventory', async (req, res) => {
       price: item.price || 0,
       sku:   item.public_id || ''
     }));
-
-    // Log Jones as sanity check
-    const jones = mapped.find(i => i.id === 101483);
-    console.log('Jones 146cm qty:', jones?.qty);
 
     res.json({ success: true, items: mapped, total: mapped.length });
   } catch (e) {
