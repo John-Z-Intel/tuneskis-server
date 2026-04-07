@@ -43,27 +43,25 @@ async function fetchAll(endpoint, perPage = 250) {
   return all;
 }
 
-// ── Debug: find how inventory/values links to items ───────────────
+// ── Debug: try per-item inventory value endpoints ─────────────────
 app.get('/debug-inventory', async (req, res) => {
   try {
     const results = {};
-
-    // Test item-filtered endpoints
+    // The docs say "Retrieve inventory values by item" 
+    // Try the per-item endpoint patterns
     const eps = [
-      '/inventory/values?item_id=101483',
-      '/inventory/values?filter[item_id]=101483',
-      '/items/101483/inventory/values',
-      '/inventory/values/101483',
+      '/inventory/values/items/101483',
+      '/inventory/values/item/101483', 
+      '/items/101483/inventory_value',
+      '/items/101483/value',
+      '/inventory/values?per_page=3&page=1',
+      // Try with location
+      '/locations',
     ];
     for (const ep of eps) {
       const d = await hlGet(ep);
       results[ep] = JSON.stringify(d).substring(0, 300);
     }
-
-    // Get first 3 inventory/values records unfiltered to see structure
-    const sample = await hlGet('/inventory/values?per_page=3&page=1');
-    results['_sample_3'] = sample;
-
     res.json(results);
   } catch(e) {
     res.status(500).json({ error: e.message });
@@ -71,32 +69,31 @@ app.get('/debug-inventory', async (req, res) => {
 });
 
 // ── Inventory endpoint ────────────────────────────────────────────
+// Strategy: fetch items, then fetch inventory value for each item individually
 app.get('/inventory', async (req, res) => {
   try {
-    const [items, invValues] = await Promise.all([
-      fetchAll('/items'),
-      fetchAll('/inventory/values')
-    ]);
+    const items = await fetchAll('/items');
+    console.log(`Fetched ${items.length} items`);
 
-    console.log(`Items: ${items.length}, Inv values: ${invValues.length}`);
-    if (invValues.length > 0) {
-      console.log('Inv value keys:', Object.keys(invValues[0]));
-      console.log('Sample inv value:', JSON.stringify(invValues[0]));
+    // Fetch qty for each item using per-item endpoint
+    // Do in batches of 10 to avoid rate limits
+    const qtyMap = {};
+    const batchSize = 20;
+    for (let i = 0; i < items.length; i += batchSize) {
+      const batch = items.slice(i, i + batchSize);
+      await Promise.all(batch.map(async (item) => {
+        try {
+          const inv = await hlGet(`/inventory/values/items/${item.id}`);
+          // Try multiple qty field names
+          const qty = inv.qty_on_hand ?? inv.qty ?? inv.quantity ?? 0;
+          qtyMap[item.id] = qty;
+        } catch(e) {
+          qtyMap[item.id] = 0;
+        }
+      }));
     }
 
-    // Build qty lookup — try all possible id fields
-    const qtyMap = {};
-    invValues.forEach(inv => {
-      const id = inv.item_id || inv.id;
-      if (id) {
-        const qty = inv.qty_on_hand || inv.qty || inv.quantity || 0;
-        qtyMap[id] = (qtyMap[id] || 0) + qty;
-      }
-    });
-
-    console.log(`Qty map entries: ${Object.keys(qtyMap).length}`);
-    // Log qty for Jones 146cm as sanity check
-    console.log('Jones 146cm qty (id 101483):', qtyMap[101483]);
+    console.log('Sample qtys:', Object.entries(qtyMap).slice(0,5));
 
     const mapped = items.map(item => ({
       id:    item.id,
