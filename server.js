@@ -43,66 +43,53 @@ async function fetchAll(endpoint, perPage = 250) {
   return all;
 }
 
-// ── Debug: probe qty endpoints for item 101483 ────────────────────
-app.get('/debug-inventory', async (req, res) => {
-  const endpoints = [
-    '/items/101483/quantities',
-    '/items/101483/inventory_levels',
-    '/inventory/levels?item_id=101483',
-    '/inventory/items?item_id=101483',
-    '/items?per_page=1&page=1&include[]=quantity',
-    '/items/101483?include[]=quantity',
-    '/items?ids[]=101483',
-  ];
-  const results = {};
-  for (const ep of endpoints) {
-    try {
-      const d = await hlGet(ep);
-      results[ep] = JSON.stringify(d).substring(0, 200);
-    } catch(e) {
-      results[ep] = 'ERROR: ' + e.message;
-    }
-  }
-  // Also get the raw item to see all fields
-  const item = await hlGet('/items/101483').catch(e => ({ error: e.message }));
-  res.json({ item, endpoints: results });
-});
-
 // ── Inventory endpoint ────────────────────────────────────────────
 app.get('/inventory', async (req, res) => {
   try {
-    const items = await fetchAll('/items');
-    if (!items.length) {
-      return res.json({ success: false, error: 'No items returned' });
-    }
+    // Fetch items and inventory values in parallel
+    const [items, invValues] = await Promise.all([
+      fetchAll('/items'),
+      fetchAll('/inventory/values')
+    ]);
 
-    // Map items — size in custom.size, qty will be 0 until we find the right endpoint
+    console.log(`Items: ${items.length}, Inv values: ${invValues.length}`);
+    if (invValues.length > 0) console.log('Sample inv value:', JSON.stringify(invValues[0]));
+
+    // Build qty lookup by item_id
+    const qtyMap = {};
+    invValues.forEach(inv => {
+      const id = inv.item_id;
+      if (id) {
+        // qty fields to try
+        const qty = inv.quantity || inv.qty || inv.on_hand || inv.count || 0;
+        qtyMap[id] = (qtyMap[id] || 0) + qty;
+      }
+    });
+
     const mapped = items.map(item => ({
       id:    item.id,
       name:  item.description || '',
       size:  (item.custom && item.custom.size) ? String(item.custom.size) : '',
-      qty:   item.quantity || item.qty || item['quantity_on_hand'] || item['qty_on_hand'] || 0,
+      qty:   qtyMap[item.id] || 0,
       price: item.price || 0,
       sku:   item.public_id || ''
     }));
-
-    // Log a sample to see what qty fields are available
-    if (mapped.length > 0) {
-      const sample = items.find(i => i.id === 101483) || items[0];
-      console.log('Sample item keys:', Object.keys(sample));
-      console.log('Sample qty fields:', {
-        quantity: sample.quantity,
-        qty: sample.qty,
-        quantity_on_hand: sample['quantity_on_hand'],
-        qty_on_hand: sample['qty_on_hand'],
-        stock: sample.stock
-      });
-    }
 
     res.json({ success: true, items: mapped, total: mapped.length });
   } catch (e) {
     console.error('Inventory error:', e.message);
     res.status(500).json({ success: false, error: e.message });
+  }
+});
+
+// ── Debug: test inventory/values endpoint ─────────────────────────
+app.get('/debug-inventory', async (req, res) => {
+  try {
+    const invValues = await hlGet('/inventory/values?per_page=3&page=1');
+    const item = await hlGet('/items/101483');
+    res.json({ invValues, item_sample: item });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
   }
 });
 
