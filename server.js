@@ -78,6 +78,7 @@ app.get('/inventory', async (req, res) => {
       size:  (item.custom && item.custom.size) ? String(item.custom.size) : '',
       qty:   qtyMap[item.id] || 0,
       price: item.price || 0,
+      msrp:  item.original_price || null,
       sku:   item.public_id || ''
     }));
 
