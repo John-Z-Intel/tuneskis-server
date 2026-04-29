@@ -1,172 +1,169 @@
-const express  = require('express');
-const cors     = require('cors');
-const https    = require('https');
-const path     = require('path');
-const app      = express();
+// tuneskis-server — with Gmail email notifications
+// Deploy to Render.com as server.js
 
+const express      = require('express');
+const cors         = require('cors');
+const nodemailer   = require('nodemailer');
+
+const app = express();
 app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
 
-const HL_TOKEN  = 'eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiJkYTYyMzc3My05MTkzLTQyZDctOTMwMi02MGU3ZTI3MTVjYjgiLCJpYXQiOjE3NzM1OTM4NzEsInN1YiI6MTAwMDE3LCJhdWQiOjU1OTIxLCJpc3MiOm51bGx9.KRaSs789CQVOOhl7xy0JoYJkKvqJ3TiEZ3jSugagZ6k';
-const HL_BASE   = 'https://tuneskis.retail.heartland.us/api';
-const HP_SECRET = 'skapi_cert_MQHEBgBab3MAXnAvBsEAjGG1kodvydyhsewNMnU69Q';
-const HP_HOST   = 'cert.api2.heartlandportico.com';
+// ── Gmail transporter ─────────────────────────────────────────
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.GMAIL_USER,
+    pass: process.env.GMAIL_PASS,
+  },
+});
 
-function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+// ── Heartland config ──────────────────────────────────────────
+const HL_TOKEN    = process.env.HL_TOKEN    || 'eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiJkYTYyMzc3My05MTkzLTQyZDctOTMwMi02MGU3ZTI3MTVjYjgiLCJpYXQiOjE3NzM1OTM4NzEsInN1YiI6MTAwMDE3LCJhdWQiOjU1OTIxLCJpc3MiOm51bGx9.KRaSs789CQVOOhl7xy0JoYJkKvqJ3TiEZ3jSugagZ6k';
+const HL_BASE_URL = process.env.HL_BASE_URL || 'https://tuneskis.retail.heartland.us';
 
-function hlGet(endpoint) {
-  return new Promise((resolve, reject) => {
-    const url = new URL(HL_BASE + endpoint);
-    https.get({
-      hostname: url.hostname,
-      path: url.pathname + url.search,
-      headers: { 'Authorization': `Bearer ${HL_TOKEN}`, 'Content-Type': 'application/json' }
-    }, (res) => {
-      let data = '';
-      res.on('data', c => data += c);
-      res.on('end', () => { try { resolve(JSON.parse(data)); } catch(e) { resolve({ raw: data }); } });
-    }).on('error', reject);
-  });
-}
-
-async function fetchAll(endpoint, perPage = 250) {
-  let all = [], page = 1;
-  while (true) {
-    const sep = endpoint.includes('?') ? '&' : '?';
-    const data = await hlGet(`${endpoint}${sep}per_page=${perPage}&page=${page}`);
-    const results = data.results || [];
-    if (!results.length) break;
-    all = all.concat(results);
-    if (page >= (data.pages || 1) || results.length < perPage) break;
-    page++;
-    await sleep(200);
-  }
-  return all;
-}
-
-// ── Inventory endpoint ────────────────────────────────────────────
+// ── GET /inventory ────────────────────────────────────────────
 app.get('/inventory', async (req, res) => {
   try {
-    // Fetch items and per-item inventory values in parallel
-    // Key: group[]=item_id returns one record per item with item_id field
-    const [items, invValues] = await Promise.all([
-      fetchAll('/items'),
-      fetchAll('/inventory/values?group[]=item_id')
-    ]);
-
-    console.log(`Items: ${items.length}, Inv values: ${invValues.length}`);
-    if (invValues.length > 0) {
-      console.log('Sample inv value:', JSON.stringify(invValues[0]));
+    let allItems = [], page = 1;
+    while (true) {
+      const r = await fetch(`${HL_BASE_URL}/api/items?page=${page}&per_page=250`, {
+        headers: { 'Authorization': `Bearer ${HL_TOKEN}`, 'Accept': 'application/json' },
+      });
+      const data = await r.json();
+      if (!data.results) break;
+      allItems = allItems.concat(data.results);
+      if (page >= data.pages) break;
+      page++;
     }
-
-    // Build qty lookup by item_id
-    const qtyMap = {};
-    invValues.forEach(inv => {
-      if (inv.item_id) {
-        qtyMap[inv.item_id] = Math.max(0, inv.qty_on_hand || inv.qty || 0);
-      }
-    });
-
-    console.log(`Qty map entries: ${Object.keys(qtyMap).length}`);
-    console.log('Jones 146 (101483):', qtyMap[101483]);
-    console.log('Rome Mechanic 147 (100856):', qtyMap[100856]);
-
-    const mapped = items.map(item => ({
-      id:    item.id,
-      name:  item.description || '',
-      size:  (item.custom && item.custom.size) ? String(item.custom.size) : '',
-      qty:   qtyMap[item.id] || 0,
-      price: item.price || 0,
-      msrp:  item.original_price || null,
-      sku:   item.public_id || ''
-    }));
-
-    res.json({ success: true, items: mapped, total: mapped.length });
-  } catch (e) {
-    console.error('Inventory error:', e.message);
-    res.status(500).json({ success: false, error: e.message });
-  }
-});
-
-// ── Debug ─────────────────────────────────────────────────────────
-app.get('/debug-inventory', async (req, res) => {
-  try {
-    const data = await hlGet('/inventory/values?group[]=item_id&per_page=3&page=1');
-    res.json(data);
-  } catch(e) {
-    res.status(500).json({ error: e.message });
-  }
-});
-
-// ── Heartland Portico charge ──────────────────────────────────────
-function heartlandCharge(token, amount, billingZip, desc) {
-  const soap = `<?xml version="1.0" encoding="utf-8"?>
-<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
-  <soap:Body>
-    <PosRequest xmlns="http://Hps.Exchange.PosGateway">
-      <Ver1.0>
-        <Header><SecretAPIKey>${HP_SECRET}</SecretAPIKey></Header>
-        <Transaction>
-          <CreditSale>
-            <Block1>
-              <AllowDup>Y</AllowDup>
-              <Amt>${parseFloat(amount).toFixed(2)}</Amt>
-              <CardData><TokenData><TokenValue>${token}</TokenValue></TokenData></CardData>
-              <CardHolderData><CardHolderZip>${billingZip || '00000'}</CardHolderZip></CardHolderData>
-              <AdditionalTxnFields><Description>${String(desc).substring(0,17)}</Description></AdditionalTxnFields>
-            </Block1>
-          </CreditSale>
-        </Transaction>
-      </Ver1.0>
-    </PosRequest>
-  </soap:Body>
-</soap:Envelope>`;
-  return new Promise((resolve, reject) => {
-    const req = https.request({
-      hostname: HP_HOST, port: 443,
-      path: '/Hps.Exchange.PosGateway/PosGatewayService.asmx',
-      method: 'POST',
-      headers: {
-        'Content-Type': 'text/xml; charset=utf-8',
-        'Content-Length': Buffer.byteLength(soap),
-        'SOAPAction': 'http://Hps.Exchange.PosGateway/PosGatewayService/PosRequest'
-      }
-    }, (res) => {
-      let d = ''; res.on('data', c => d += c); res.on('end', () => resolve(d));
-    });
-    req.on('error', reject); req.write(soap); req.end();
-  });
-}
-
-function parseHP(xml) {
-  return {
-    gatewayCode: xml.match(/<GatewayRspCode>([^<]+)<\/GatewayRspCode>/)?.[1],
-    rspCode:     xml.match(/<RspCode>([^<]+)<\/RspCode>/)?.[1],
-    rspText:     xml.match(/<RspText>([^<]+)<\/RspText>/)?.[1],
-    txnId:       xml.match(/<GatewayTxnId>([^<]+)<\/GatewayTxnId>/)?.[1],
-    authCode:    xml.match(/<AuthCode>([^<]+)<\/AuthCode>/)?.[1],
-  };
-}
-
-app.post('/checkout', async (req, res) => {
-  const { token, billingZip, name, email, phone, address, city, state, zip, items, total, shipping, shippingLabel } = req.body;
-  if (!token || !total || !items?.length) return res.status(400).json({ success: false, error: 'Missing required fields' });
-  try {
-    const desc = items[0]?.name?.substring(0,17) || 'Tune Skis Order';
-    const xmlResp = await heartlandCharge(token, total, billingZip || zip, desc);
-    const charge  = parseHP(xmlResp);
-    console.log('Charge result:', JSON.stringify(charge));
-    if (charge.gatewayCode !== '0') return res.json({ success: false, error: charge.rspText || 'Payment declined' });
-    const itemLines = items.map(i => `• ${i.name}${i.size?' ('+i.size+')':''} x${i.qty||1} — $${i.total||i.price}`).join('\n');
-    console.log(`\n=== NEW ORDER ===\nCustomer: ${name} | ${email} | ${phone}\nShip to: ${address}, ${city}, ${state} ${zip}\nItems:\n${itemLines}\nShipping: ${shippingLabel||'N/A'} ($${shipping||0})\nTotal: $${total}\nTransaction: ${charge.txnId} | Auth: ${charge.authCode}\n=================`);
-    res.json({ success: true, txnId: charge.txnId, authCode: charge.authCode, message: "Payment successful! We'll be in touch shortly with shipping details." });
+    const items = allItems
+      .filter(i => i['track_inventory?'])
+      .map(i => ({ id: i.id, qty: i.qty_on_hand || 0, price: i.price || 0 }));
+    res.json({ success: true, items });
   } catch (err) {
-    console.error('Checkout error:', err);
-    res.status(500).json({ success: false, error: 'Server error. Please try again or call us.' });
+    console.error('[inventory]', err);
+    res.status(500).json({ success: false, error: err.message });
   }
 });
 
-app.get('/', (req, res) => res.json({ status: 'ok', service: 'tuneskis-server' }));
+// ── POST /send-order-email ────────────────────────────────────
+app.post('/send-order-email', async (req, res) => {
+  const { customer, order } = req.body;
+  if (!customer || !order) {
+    return res.status(400).json({ success: false, error: 'Missing customer or order data' });
+  }
+
+  const now     = new Date();
+  const dateStr = now.toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric', timeZone:'America/New_York' });
+  const timeStr = now.toLocaleTimeString('en-US', { hour:'2-digit', minute:'2-digit', timeZoneName:'short', timeZone:'America/New_York' });
+
+  const itemRows = (order.items || []).map(item => `
+    <tr>
+      <td style="padding:8px 12px;border-bottom:1px solid #eee;">${item.name}</td>
+      <td style="padding:8px 12px;border-bottom:1px solid #eee;text-align:center;">${item.size || '—'}</td>
+      <td style="padding:8px 12px;border-bottom:1px solid #eee;text-align:center;">${item.qty}</td>
+      <td style="padding:8px 12px;border-bottom:1px solid #eee;text-align:right;">$${Number(item.price).toFixed(2)}</td>
+    </tr>`).join('');
+
+  const html = `
+  <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;color:#222;">
+    <div style="background:#1a1a2e;padding:24px 32px;border-radius:8px 8px 0 0;">
+      <h1 style="color:#fff;margin:0;font-size:22px;">🎿 New Order — Tune Skis LLC</h1>
+    </div>
+    <div style="background:#f9f9f9;padding:24px 32px;border-radius:0 0 8px 8px;border:1px solid #e0e0e0;">
+
+      <p style="margin:0 0 4px;color:#666;font-size:13px;">ORDER PLACED</p>
+      <p style="margin:0 0 4px;font-size:16px;font-weight:bold;">${dateStr} at ${timeStr}</p>
+      ${order.orderId ? `<p style="margin:0 0 24px;color:#888;font-size:13px;">Order ID: ${order.orderId}</p>` : '<br>'}
+
+      <hr style="border:none;border-top:1px solid #ddd;margin:0 0 20px;">
+
+      <h3 style="margin:0 0 10px;font-size:14px;color:#666;letter-spacing:1px;">CUSTOMER</h3>
+      <table style="width:100%;font-size:14px;margin-bottom:20px;">
+        <tr><td style="padding:3px 0;color:#888;width:80px;">Name</td><td><strong>${customer.name}</strong></td></tr>
+        <tr><td style="padding:3px 0;color:#888;">Email</td><td><a href="mailto:${customer.email}" style="color:#1a1a2e;">${customer.email}</a></td></tr>
+        <tr><td style="padding:3px 0;color:#888;">Phone</td><td>${customer.phone || '—'}</td></tr>
+      </table>
+
+      <h3 style="margin:0 0 10px;font-size:14px;color:#666;letter-spacing:1px;">SHIPPING ADDRESS</h3>
+      <p style="font-size:14px;margin:0 0 20px;line-height:1.7;">
+        ${customer.address?.line1 || ''}<br>
+        ${customer.address?.line2 ? customer.address.line2 + '<br>' : ''}
+        ${customer.address?.city || ''}, ${customer.address?.state || ''} ${customer.address?.zip || ''}
+      </p>
+
+      <h3 style="margin:0 0 10px;font-size:14px;color:#666;letter-spacing:1px;">ORDER ITEMS</h3>
+      <table style="width:100%;border-collapse:collapse;font-size:14px;margin-bottom:20px;">
+        <thead>
+          <tr style="background:#e8e8e8;">
+            <th style="padding:8px 12px;text-align:left;">Item</th>
+            <th style="padding:8px 12px;text-align:center;">Size</th>
+            <th style="padding:8px 12px;text-align:center;">Qty</th>
+            <th style="padding:8px 12px;text-align:right;">Price</th>
+          </tr>
+        </thead>
+        <tbody>${itemRows}</tbody>
+      </table>
+
+      <table style="width:100%;font-size:14px;">
+        <tr><td style="padding:3px 0;color:#888;">Subtotal</td><td style="text-align:right;">$${Number(order.subtotal||0).toFixed(2)}</td></tr>
+        <tr><td style="padding:3px 0;color:#888;">Tax</td><td style="text-align:right;">$${Number(order.tax||0).toFixed(2)}</td></tr>
+        <tr style="font-size:17px;font-weight:bold;border-top:2px solid #ddd;">
+          <td style="padding:10px 0 0;">TOTAL</td>
+          <td style="text-align:right;padding-top:10px;">$${Number(order.total||0).toFixed(2)}</td>
+        </tr>
+      </table>
+
+    </div>
+    <p style="text-align:center;color:#aaa;font-size:12px;margin-top:16px;">
+      Tune Skis LLC &nbsp;·&nbsp; 272 Saratoga Rd, Schenectady NY 12302 &nbsp;·&nbsp; (888) 863-7547
+    </p>
+  </div>`;
+
+  const text = `
+NEW ORDER — TUNE SKIS LLC
+${dateStr} at ${timeStr}
+${order.orderId ? 'Order ID: ' + order.orderId : ''}
+
+CUSTOMER
+Name:  ${customer.name}
+Email: ${customer.email}
+Phone: ${customer.phone || '—'}
+
+SHIPPING ADDRESS
+${customer.address?.line1 || ''}${customer.address?.line2 ? '\n' + customer.address.line2 : ''}
+${customer.address?.city || ''}, ${customer.address?.state || ''} ${customer.address?.zip || ''}
+
+ORDER ITEMS
+${(order.items||[]).map(i => `  ${i.name} | Size: ${i.size||'—'} | Qty: ${i.qty} | $${Number(i.price).toFixed(2)}`).join('\n')}
+
+Subtotal: $${Number(order.subtotal||0).toFixed(2)}
+Tax:      $${Number(order.tax||0).toFixed(2)}
+TOTAL:    $${Number(order.total||0).toFixed(2)}
+  `.trim();
+
+  try {
+    await transporter.sendMail({
+      from:    `"Tune Skis Store" <${process.env.GMAIL_USER}>`,
+      to:      'info@tuneskis.com',
+      subject: `New Order — ${customer.name} — $${Number(order.total||0).toFixed(2)}`,
+      html,
+      text,
+    });
+    console.log(`[email] Sent — ${customer.name} $${order.total}`);
+    res.json({ success: true });
+  } catch (err) {
+    console.error('[email] Failed:', err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// ── POST /checkout ────────────────────────────────────────────
+// Add your existing Portico SOAP checkout logic here
+app.post('/checkout', async (req, res) => {
+  res.json({ success: false, error: 'Add your Portico checkout logic here' });
+});
+
+// ── Start ─────────────────────────────────────────────────────
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => console.log(`Tune Skis server running on port ${PORT}`));
