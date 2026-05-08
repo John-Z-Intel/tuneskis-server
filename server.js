@@ -54,7 +54,7 @@ app.get('/inventory', async (req, res) => {
     // Build items array from inventory values
     const items = allValues.map(v => ({
       id:    v.item_id,
-      qty:   v.qty_on_hand || 0,
+      qty:   Math.max(0, v.qty_on_hand || 0),
       price: priceMap[v.item_id] || 0,
     }));
 
