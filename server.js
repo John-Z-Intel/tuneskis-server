@@ -20,6 +20,36 @@ const transporter = nodemailer.createTransport({
   auth: { user: process.env.GMAIL_USER, pass: process.env.GMAIL_PASS },
 });
 
+// ── Heartland inventory decrement ────────────────────────────
+async function hlDecrementInventory(items) {
+  for (const item of items) {
+    if (!item.hlId) continue;
+    try {
+      const r = await fetch(
+        `${HL_BASE_URL}/api/inventory/adjustments`,
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${HL_TOKEN}`,
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            item_id: item.hlId,
+            location_id: 100005,
+            adjustment_reason_id: 100003,
+            qty: -(item.qty || 1),
+            unit_cost: 0
+          })
+        }
+      );
+      console.log(`[inventory] decremented hlId:${item.hlId} qty:${item.qty||1} status:${r.status}`);
+    } catch (err) {
+      console.error(`[inventory] failed to decrement hlId:${item.hlId}:`, err.message);
+    }
+  }
+}
+
 // ── GET /inventory ────────────────────────────────────────────
 app.get('/inventory', async (req, res) => {
   try {
@@ -154,6 +184,10 @@ app.post('/send-order-email', async (req, res) => {
       html,
     });
     console.log(`[email] Sent — ${customer.name} $${order.total}`);
+    // Decrement inventory in Heartland
+    if (order.items && order.items.length) {
+      hlDecrementInventory(order.items).catch(err => console.error('[inventory decrement]', err));
+    }
     res.json({ success: true });
   } catch (err) {
     console.error('[email] Failed:', err);
