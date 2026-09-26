@@ -50,6 +50,18 @@ async function hlDecrementInventory(items) {
   }
 }
 
+// ── GET /storefront.js ───────────────────────────────────
+const fs = require('fs');
+const path = require('path');
+
+app.get('/storefront.js', (req, res) => {
+  const filePath = path.join(__dirname, 'storefront.js');
+  res.setHeader('Content-Type', 'application/javascript');
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.sendFile(filePath);
+});
+
 // ── GET /inventory ────────────────────────────────────────────
 app.get('/inventory', async (req, res) => {
   try {
