@@ -10,6 +10,20 @@ const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 app.use(cors());
 app.use(express.json());
 
+// ── Storefront script (served to Squarespace) ─────────────────
+// The entire storefront JS lives in storefront.js next to this file.
+// Squarespace's footer just loads it with:
+//   <script src="https://tuneskis-server.onrender.com/storefront.js?v=1"></script>
+// Bump the ?v= number whenever storefront.js changes so browsers refetch it.
+const path = require('path');
+app.get('/storefront.js', (req, res) => {
+  res.set('Content-Type', 'application/javascript; charset=utf-8');
+  res.set('Cache-Control', 'public, max-age=300'); // 5 min; ?v= handles hard refreshes
+  res.sendFile(path.join(__dirname, 'storefront.js'));
+});
+// Lets Squarespace show the hero instantly while the big script downloads
+app.get('/ping', (req, res) => res.json({ ok: true }));
+
 // ── Heartland config ──────────────────────────────────────────
 const HL_TOKEN    = process.env.HL_TOKEN    || 'eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiJkYTYyMzc3My05MTkzLTQyZDctOTMwMi02MGU3ZTI3MTVjYjgiLCJpYXQiOjE3NzM1OTM4NzEsInN1YiI6MTAwMDE3LCJhdWQiOjU1OTIxLCJpc3MiOm51bGx9.KRaSs789CQVOOhl7xy0JoYJkKvqJ3TiEZ3jSugagZ6k';
 const HL_BASE_URL = process.env.HL_BASE_URL || 'https://tuneskis.retail.heartland.us';
@@ -49,18 +63,6 @@ async function hlDecrementInventory(items) {
     }
   }
 }
-
-// ── GET /storefront.js ───────────────────────────────────
-const fs = require('fs');
-const path = require('path');
-
-app.get('/storefront.js', (req, res) => {
-  const filePath = path.join(__dirname, 'storefront.js');
-  res.setHeader('Content-Type', 'application/javascript');
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Cache-Control', 'no-cache');
-  res.sendFile(filePath);
-});
 
 // ── GET /inventory ────────────────────────────────────────────
 app.get('/inventory', async (req, res) => {
