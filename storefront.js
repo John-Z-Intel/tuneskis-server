@@ -3655,14 +3655,27 @@ function dealPreviousDeal(nowNY) {
 function dealState() {
   var now = dealNowNY();
 
-  // ⚠️ TEMPORARY TEST WINDOW — forces the deal live for a few minutes on a
-  // specific date/time so you can see it work without Heartland connected.
-  // Safe to delete this whole block once you've confirmed it's working.
-  var testStart = new Date(now); testStart.setFullYear(2026, 9, 7); testStart.setHours(18, 45, 0, 0);
-  var testEnd   = new Date(now); testEnd.setFullYear(2026, 9, 7);   testEnd.setHours(18, 50, 0, 0);
-  if (now >= testStart && now <= testEnd) {
-    return { state:"live", deal: DEAL_OF_DAY.deals.thu, qty: 1, key:"thu", isTest:true };
-  }
+  // ⚠️ PREVIEW MODE — add ?dealtest=live to the store URL to see the deal page
+  // as it will look, without waiting for a time window and without Heartland.
+  //   tuneskis.com/store?dealtest=live     → deal showing, buyable
+  //   tuneskis.com/store?dealtest=pending  → pre-reveal teaser + countdown
+  //   tuneskis.com/store?dealtest=soldout  → sold out state
+  // Only the person with that URL sees it — normal visitors are unaffected,
+  // so there is no way for a real customer to stumble onto a test deal.
+  // Which day's deal it previews: ?dealday=thu (defaults to thu).
+  try {
+    var _qs = new URLSearchParams(window.location.search);
+    var _mode = _qs.get("dealtest");
+    if (_mode) {
+      var _dayKey = _qs.get("dealday") || "thu";
+      var _d = DEAL_OF_DAY.deals[_dayKey];
+      if (_d) {
+        if (_mode === "live")    return { state:"live",    deal:_d, qty:1, key:_dayKey, isTest:true };
+        if (_mode === "soldout") return { state:"soldout", deal:_d, countdownTo: dealGenericCountdown(now), key:_dayKey, isTest:true };
+        if (_mode === "pending") return { state:"pending", deal:_d, countdownTo: dealGenericCountdown(now), key:_dayKey, isTest:true };
+      }
+    }
+  } catch(e) {}
 
   var todays = dealFor(now);
   var revealToday = dealRevealOn(now);
@@ -4321,10 +4334,24 @@ function tsCoSubmit() {
   fetch('https://tuneskis-server.onrender.com/create-payment-intent', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ amount: Math.round(grandTotal * 100), currency: 'usd' })
+    body: JSON.stringify({
+      amount: Math.round(grandTotal * 100),
+      currency: 'usd',
+      // Sent so the server can re-verify stock before charging the card —
+      // this is what prevents two people buying the same last item.
+      items: cart.map(function(i){ return { hlId: i.hlId || null, qty: i.qty || 1, name: i.name, size: i.size }; })
+    })
   })
   .then(function(r) { return r.json(); })
   .then(function(data) {
+    if (data && data.soldOut) {
+      // Someone beat them to it. Drop it from the cart and refresh the deal UI.
+      cart = cart.filter(function(i){ return i.hlId !== data.hlId; });
+      tsSave(); tsUpdateUI(); tsRenderDrawer();
+      if (typeof dealPollStock === 'function') dealPollStock();
+      if (typeof dealRender === 'function') dealRender();
+      throw new Error(data.error || 'That item just sold out.');
+    }
     if (!data.clientSecret) throw new Error(data.error || 'Server error');
     return tsStripe.confirmCardPayment(data.clientSecret, {
       payment_method: {
