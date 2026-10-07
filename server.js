@@ -18,7 +18,7 @@ app.use(express.json());
 const path = require('path');
 app.get('/storefront.js', (req, res) => {
   res.set('Content-Type', 'application/javascript; charset=utf-8');
-  res.set('Cache-Control', 'public, max-age=300'); // 5 min; ?v= handles hard refreshes
+  res.set('Cache-Control', 'public, max-age=60'); // 60s; ?v= bump forces an immediate refetch
   res.sendFile(path.join(__dirname, 'storefront.js'));
 });
 // Lets Squarespace show the hero instantly while the big script downloads
@@ -62,6 +62,53 @@ async function hlDecrementInventory(items) {
       console.error(`[inventory] failed to decrement hlId:${item.hlId}:`, err.message);
     }
   }
+}
+
+// ── Shared: fetch Heartland qty-on-hand for every item ────────
+async function hlFetchQtyMap() {
+  let allValues = [], page = 1;
+  while (true) {
+    const r = await fetch(
+      `${HL_BASE_URL}/api/inventory/values?group[]=item_id&per_page=250&page=${page}`,
+      { headers: { 'Authorization': `Bearer ${HL_TOKEN}`, 'Accept': 'application/json' } }
+    );
+    const data = await r.json();
+    if (!data.results || !data.results.length) break;
+    allValues = allValues.concat(data.results);
+    if (page >= data.pages) break;
+    page++;
+  }
+  const map = {};
+  allValues.forEach(v => { map[v.item_id] = Math.max(0, v.qty_on_hand || 0); });
+  return map;
+}
+
+// ── Short-lived reservations ──────────────────────────────────
+// Heartland isn't decremented until AFTER the card is charged (that happens
+// in /send-order-email). That leaves a window where two shoppers could both
+// pass a stock check and both get charged for the same single item. When we
+// create a payment intent we reserve the units here, so a second buyer is
+// refused immediately even though Heartland still shows them in stock.
+// Reservations expire on their own in case a customer abandons checkout.
+const RESERVATION_MS = 12 * 60 * 1000; // 12 minutes
+const reservations = new Map(); // hlId -> [{ qty, expires }]
+
+function reservedQty(hlId) {
+  const now = Date.now();
+  const list = (reservations.get(hlId) || []).filter(r => r.expires > now);
+  if (list.length) reservations.set(hlId, list); else reservations.delete(hlId);
+  return list.reduce((sum, r) => sum + r.qty, 0);
+}
+function reserve(hlId, qty) {
+  const list = (reservations.get(hlId) || []).filter(r => r.expires > Date.now());
+  list.push({ qty, expires: Date.now() + RESERVATION_MS });
+  reservations.set(hlId, list);
+}
+function releaseOne(hlId, qty) {
+  const list = (reservations.get(hlId) || []).filter(r => r.expires > Date.now());
+  const i = list.findIndex(r => r.qty === qty);
+  if (i !== -1) list.splice(i, 1);
+  if (list.length) reservations.set(hlId, list); else reservations.delete(hlId);
 }
 
 // ── GET /inventory ────────────────────────────────────────────
@@ -108,10 +155,42 @@ app.get('/inventory', async (req, res) => {
 
 // ── POST /create-payment-intent ───────────────────────────────
 app.post('/create-payment-intent', async (req, res) => {
-  const { amount, currency } = req.body;
+  const { amount, currency, items } = req.body;
   if (!amount || amount < 50) {
     return res.status(400).json({ error: 'Invalid amount' });
   }
+
+  // ── Stock guard: verify every tracked item is still available BEFORE
+  // charging anyone. This is what makes a 1-of-1 deal truly 1-of-1 — even
+  // if two people hit Buy in the same second, the second is refused here
+  // and no card is charged.
+  const tracked = (items || []).filter(i => i && i.hlId);
+  const claimed = [];
+  if (tracked.length) {
+    let qtyMap;
+    try {
+      qtyMap = await hlFetchQtyMap();
+    } catch (err) {
+      console.error('[stock check] Heartland lookup failed:', err.message);
+      return res.status(503).json({ error: 'Could not verify stock right now. Please try again in a moment.' });
+    }
+    for (const item of tracked) {
+      const want = Math.max(1, item.qty || 1);
+      const onHand = qtyMap[item.hlId] || 0;
+      const available = onHand - reservedQty(item.hlId);
+      if (available < want) {
+        claimed.forEach(c => releaseOne(c.hlId, c.qty)); // roll back this request's holds
+        console.log(`[stock check] REFUSED hlId:${item.hlId} want:${want} onHand:${onHand} reserved:${reservedQty(item.hlId)}`);
+        return res.status(409).json({
+          error: `Sorry — "${item.name || 'that item'}" just sold out. Your card has not been charged.`,
+          soldOut: true, hlId: item.hlId
+        });
+      }
+      reserve(item.hlId, want);
+      claimed.push({ hlId: item.hlId, qty: want });
+    }
+  }
+
   try {
     const paymentIntent = await stripe.paymentIntents.create({
       amount,          // in cents
@@ -120,6 +199,7 @@ app.post('/create-payment-intent', async (req, res) => {
     });
     res.json({ clientSecret: paymentIntent.client_secret });
   } catch (err) {
+    claimed.forEach(c => releaseOne(c.hlId, c.qty)); // Stripe failed — free the holds
     console.error('[stripe]', err);
     res.status(500).json({ error: err.message });
   }
