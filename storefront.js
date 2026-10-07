@@ -1,5 +1,61 @@
-<script>
 (function(){
+// ═══════════════════════════════════════════════════════════════════
+//  🔥 DEAL OF THE DAY — EDIT THIS BLOCK AT THE START OF EACH WEEK
+// ═══════════════════════════════════════════════════════════════════
+//  • Every deal unlocks at the same time each day (revealHour/revealMinute,
+//    Eastern time, 24-hour clock — 9 = 9am, 15 = 3pm).
+//  • One deal per day of the week. Set active:false to skip a day.
+//  • hlId = the Heartland item ID for the deal. IMPORTANT: for anything
+//    where the customer picks a size (skis, boots), use a dedicated
+//    Heartland item created JUST for this deal — not one of the regular
+//    catalog sizes — set its qty to exactly how many you want to sell
+//    (1 or 3). Since it's a single item regardless of size chosen, the
+//    cap is enforced across ALL sizes combined, not per-size. The chosen
+//    size is just recorded on the order for you to pull the right one
+//    from stock. When that Heartland item's qty hits 0, the site shows
+//    SOLD OUT automatically.
+//  • sizes = optional list of sizes to offer as a dropdown on the deal
+//    page (e.g. ["150cm","156cm","162cm"]). Leave out entirely (or [])
+//    for single-size items like bindings — no dropdown will show.
+//  • limit = the number you want shown as "Only X available".
+//  • price = the deal price; msrp = the regular price shown crossed out.
+//  • teaser = what shows before the reveal (product stays hidden until then).
+// ═══════════════════════════════════════════════════════════════════
+const DEAL_OF_DAY = {
+  revealHour: 12,
+  revealMinute: 0,
+  deals: {
+    mon: { active:false, name:"", teaser:"", price:0, msrp:0, limit:3, hlId:0, sizes:[], image:"", desc:"", specs:{} },
+    tue: { active:false, name:"", teaser:"", price:0, msrp:0, limit:3, hlId:0, sizes:[], image:"", desc:"", specs:{} },
+    wed: { active:false, name:"", teaser:"", price:0, msrp:0, limit:3, hlId:0, sizes:[], image:"", desc:"", specs:{} },
+    // 🔥 FIRST REAL DEAL — Kästle RX9, $399.99, drops tomorrow (Thursday) at 12pm ET.
+    // ⚠️ hlId is still 0 — put the new dedicated Heartland item's ID here once
+    // you've created it (see note above: one new item, qty 1, NOT one of the
+    // regular RX9 size SKUs). The deal will not go live until this is a real ID.
+    thu: { active:true, name:"Kästle RX9", teaser:"A World Cup-inspired carver at a price you won't believe…",
+           price:299.99, msrp:950.00, limit:1, hlId:0,
+           sizes:["150cm","156cm","162cm","168cm","174cm"], bindings:true,
+           image:"https://kaestle.com/cdn/shop/files/rx9_01.jpg?v=1752671657",
+           images:["https://kaestle.com/cdn/shop/files/rx9_01.jpg?v=1752671657",
+                    "https://skicatalogue.com/cdn/shop/files/SR923P_KASTLE_RX9_2.jpg?v=1747795545&width=1000",
+                    "https://skicatalogue.com/cdn/shop/files/SR923P_KASTLE_RX9_3.jpg?v=1747795545&width=1000",
+                    "https://skicatalogue.com/cdn/shop/files/SR923P_KASTLE_RX9_4.jpg?v=1747795545&width=1000",
+                    "https://skicatalogue.com/cdn/shop/files/SR923P_KASTLE_RX9_5.jpg?v=1747795514&width=1000",
+                    "https://skicatalogue.com/cdn/shop/files/SR923P_KASTLE_RX9_6.jpg?v=1747795514&width=1000",
+                    "https://skicatalogue.com/cdn/shop/files/SR923P_KASTLE_RX9_7.jpg?v=1747795514&width=1000"],
+           desc:"World Cup-inspired all-mountain carver. Symbio Core with Titanal keeps it light, damp, and precise. Choose your length below.",
+           specs:{"Waist Width":"76mm","Dimensions":"118 / 76 / 106 mm","Profile":"Camber","Core":"Symbio Core — Titanal + Poplar Wood","Technology":"Hollowtech Race","Available Lengths":"150 · 156 · 162 · 168 · 174 cm","Bindings":"Included","Skill Level":"Intermediate – Advanced","Terrain":"On-Piste / Frontside","Country":"Austria"} },
+    fri: { active:false, name:"", teaser:"", price:0, msrp:0, limit:3, hlId:0, sizes:[], image:"", desc:"", specs:{} },
+    sat: { active:false, name:"", teaser:"", price:0, msrp:0, limit:3, hlId:0, sizes:[], image:"", desc:"", specs:{} },
+    sun: { active:false, name:"", teaser:"", price:0, msrp:0, limit:3, hlId:0, sizes:[], image:"", desc:"", specs:{} },
+  }
+};
+// Example of a filled-in day (no size picker — single-SKU item like a binding):
+// mon: { active:true, name:"Rossignol Rookie Binding", teaser:"A great beginner binding at a deal price…",
+//        price:89.99, msrp:119.99, limit:3, hlId:100234,
+//        image:"https://.../rookie.jpg", desc:"Soft flex, simple strap entry." },
+// ═══════════════════════════════════════════════════════════════════
+
 // ---- Page switching ----
 function tshShowShop() {
   document.body.classList.add('ts-shop-view');
@@ -80,6 +136,7 @@ function tshGoTo(cat) {
       else if (cat === 'skis' && label === 'skis')             { targetBtn = b; }
       else if (cat === 'snowboards' && label === 'snowboards') { targetBtn = b; }
       else if (cat === 'bindings' && label === 'bindings')     { targetBtn = b; }
+      else if (cat === 'xc' && label === 'xc')                 { targetBtn = b; }
       else if (cat === 'all' && label === 'all')               { targetBtn = b; }
     });
     if (targetBtn && typeof tsCat === 'function') {
@@ -209,12 +266,13 @@ document.querySelectorAll('.tsh-brand-img').forEach(img => {
 const SUBCATS = {
   all:              [],
   skis:             [{v:"all",l:"All Skis"},{v:"icelantic",l:"Icelantic"},{v:"kastle",l:"Kästle"},{v:"rossignol",l:"Rossignol"},{v:"salomon",l:"Salomon"}],
-  snowboards:       [{v:"all",l:"All Boards"},{v:"jones",l:"Jones"},{v:"rossignol",l:"Rossignol"},{v:"salomon",l:"Salomon"},{v:"nidecker",l:"Nidecker"},{v:"rome",l:"Rome"}],
+  snowboards:       [{v:"all",l:"All Boards"},{v:"jones",l:"Jones"},{v:"rossignol",l:"Rossignol"},{v:"salomon",l:"Salomon"},{v:"nidecker",l:"Nidecker"},{v:"rome",l:"Rome"},{v:"neversummer",l:"Never Summer"}],
   bindings:         [{v:"all",l:"All Bindings"},{v:"ski-binding",l:"Ski Bindings"},{v:"snowboard-binding",l:"Snowboard Bindings"}],
-  "boots":          [{v:"all",l:"All Boots"},{v:"ski",l:"Ski Boots"},{v:"snowboard",l:"Snowboard Boots"}],
+  "boots":          [{v:"all",l:"All Boots"},{v:"ski",l:"Ski Boots"},{v:"snowboard",l:"Snowboard Boots"},{v:"winter",l:"Winter Boots"},{v:"---",l:"---"},{v:"roxa",l:"Roxa"},{v:"salomon",l:"Salomon"},{v:"nidecker",l:"Nidecker"},{v:"baffin",l:"Baffin"}],
   "ski-boots":      [{v:"all",l:"All Ski Boots"},{v:"alpineboots",l:"Alpine Boots"},{v:"xcboots",l:"XC Boots"},{v:"roxa",l:"Roxa"}],
   "snowboard-boots":[{v:"all",l:"All Snowboard Boots"}],
-  accessories:      [{v:"all",l:"All Accessories"},{v:"helmets",l:"Helmets"},{v:"goggles",l:"Goggles"}],
+  accessories:      [{v:"all",l:"All Accessories"},{v:"helmets",l:"Helmets"},{v:"goggles",l:"Goggles"},{v:"footwear",l:"Footwear"}],
+  xc:               [{v:"all",l:"All XC"},{v:"skis",l:"XC Skis"},{v:"boots",l:"XC Boots"},{v:"poles",l:"Poles"},{v:"bindings",l:"XC Bindings"}],
 };
 
 // ══ PRODUCTS ═════════════════════════════════════════════
@@ -240,6 +298,14 @@ function tsPriceDisplay(price, msrp) {
   }
   // Full price — show in black
   return `<div class="ts-card-price-wrap"><span class="ts-card-price-full">${fmt(salePrice)}</span></div>`;
+}
+
+// Discount percent for a product — 0 if not on sale or msrp missing
+function tsDiscountPct(p) {
+  const msrp = parseFloat(p.msrp);
+  const price = parseFloat(p.price);
+  if (!msrp || !price || msrp <= price) return 0;
+  return (msrp - price) / msrp;
 }
 
 
@@ -277,10 +343,10 @@ const PRODUCTS = [
     longDesc:"The Riveter 85 is built for frontside-focused skiers who want a ski that's nimble, reliable, and fun across the whole mountain. With a tapered shape and 5mm of camber underfoot, it delivers strong edge hold and lively rebound, while its narrower waist makes it lightning-fast edge to edge. From groomers to bumps, it's easy to drive and hard not to love. Balanced and intuitive, it gives you the confidence to explore every corner of the resort. Handmade in Denver, CO. Backed by Icelantic's 3-Year Bombproof Warranty.",
     specs:{"Waist Width":"85mm","Dimensions":"120 / 85 / 107 mm","Profile":"Rocker / Camber / Rocker","Core":"Poplar Power Core","Available Lengths":"150 · 155 cm (in stock)","Skill Level":"Beginner – Advanced","Terrain":"All-Mountain / Frontside","Made In":"USA 🇺🇸","Warranty":"3-Year Bombproof"},
     breakdown:[{label:"Skis (Icelantic Riveter 85)",amount:499},,{label:"Total",amount:499}]
-  },,
+  },
 
 
-  // ── ICELANTIC (additional) ──────────────────────────────────,,,
+  // ── ICELANTIC (additional) ──────────────────────────────────
   {
     name:"Icelantic Shaman 99", brand:"Icelantic", price:849.99, badge:"New", badgeType:"new", icon:"🎿",
     cat:"skis", sub:"icelantic", gender:"men", age:"adult", cond:"new", bindings:false, flatmount:true, popular:191,
@@ -289,7 +355,7 @@ const PRODUCTS = [
     sizes:[{label:"169cm",qty:0,hlId:101073},{label:"176cm",qty:0,hlId:101074}],
     images:["https://ridgeandriver.com/cdn/shop/files/2425_Shaman99_wAwards_300x900_46ce9f41-cf9e-47d2-8b9c-e5bae5542b60_300x.webp?v=1758307597"],
     longDesc:"The Shaman 99 is a modern evolution of one of Icelantic\'s most iconic shapes. Its tight turning radius, wide shovel, and powerful edge hold make it a carver\'s dream — built for skiers who want to lay deep trenches and drive through every turn. Icelantic updated the original Shaman with new materials, a tapered shape, and 8mm of camber underfoot for lively rebound. The rockered tip and tail keep the shovel from diving in deep snow, giving you a frontside-focused ride with genuine off-piste capability. Whether you\'re snapping turns on hardpack or floating through soft snow, this ski stays powerful, responsive, and ridiculously fun. Handmade in Denver, CO. Backed by Icelantic\'s 3-Year Bombproof Warranty."
-  },,,,
+  },
 
   // ── JONES SNOWBOARDS ────────────────────────────────────────
 
@@ -489,6 +555,275 @@ const BINDINGS = [
     specs:{"Brand":"Roxa","Flex Index":"100","Last Width":"102mm (High Volume)","Architecture":"2-Piece Overlap","Walk Mode":"Yes","Gender":"Men's","Skill Level":"Intermediate–Advanced","Country":"Italy"},
     breakdown:[{label:"Boots",amount:449.99},{label:"Total",amount:449.99}]
   },
+  {
+    name:"Roxa R/Fit MV 110", brand:"Roxa", price:649.99, badge:"New", badgeType:"new", icon:"👟",
+    cat:"ski-boots", sub:"alpineboots", gender:"men", age:"adult", cond:"new", popular:152,
+    desc:"High-performance men's boot with a medium volume fit. 110 flex delivers maximum power transmission for advanced and expert skiers.",
+    action:"Add to Cart", link:null,
+    sizes:[
+      {label:"26.5", qty:0, hlId:100252},
+      {label:"27.5", qty:0, hlId:100253},
+      {label:"28.5", qty:0, hlId:100254},
+      {label:"29.5", qty:0, hlId:100255},
+    ],
+    images:[
+      "https://cdn11.bigcommerce.com/s-8p220y2h7i/images/stencil/608x608/products/72621/95945/3__05143.1727116205.JPG?c=2",
+      "https://cdn11.bigcommerce.com/s-8p220y2h7i/images/stencil/608x608/products/72621/95946/4__05844.1727116197.jpg?c=2",
+      "https://cdn11.bigcommerce.com/s-8p220y2h7i/images/stencil/608x608/products/72621/95947/5__30050.1727116189.JPG?c=2"
+    ],
+    longDesc:"",
+    specs:{"Brand":"Roxa","Model":"R/Fit MV 110","Flex Index":"110","Last Width":"Medium Volume","Gender":"Men's","Skill Level":"Advanced–Expert"},
+    breakdown:[{label:"Boots",amount:649.99},{label:"Total",amount:649.99}]
+  },
+  {
+    name:"Roxa Trinity 95", brand:"Roxa", price:299.99, customMsrp:299.99, customPrice:299.99, badge:"New", badgeType:"new", icon:"👟",
+    cat:"ski-boots", sub:"alpineboots", gender:"women", age:"adult", cond:"new", popular:153,
+    desc:"Women's high-energy all-mountain boot built on Roxa's 3-piece Next Gen Cabrio architecture. Lightweight, versatile, and built for aggressive all-mountain skiing.",
+    action:"Add to Cart", link:null,
+    sizes:[
+      {label:"23.5", qty:0, hlId:101175},
+      {label:"24.5", qty:0, hlId:101176},
+      {label:"25.5", qty:0, hlId:101177},
+      {label:"26.5", qty:0, hlId:101178},
+      {label:"27.5", qty:0, hlId:101179},
+    ],
+    images:[
+      "https://www.christysports.com/dw/image/v2/BGBB_PRD/on/demandware.static/-/Sites-master-winter/default/dwf9f6680e/8101098_050_1.jpg?sw=1600&sh=1600"
+    ],
+    longDesc:"",
+    specs:{"Brand":"Roxa","Model":"Trinity 95","Flex Index":"95","Architecture":"3-Piece Next Gen Cabrio","Gender":"Women's","Skill Level":"Advanced"},
+    breakdown:[{label:"Boots",amount:299.99},{label:"Total",amount:299.99}]
+  },
+  {
+    name:"Roxa R/Fit HV 75", brand:"Roxa", price:349.99, badge:"New", badgeType:"new", icon:"👟",
+    cat:"ski-boots", sub:"alpineboots", gender:"women", age:"adult", cond:"new", popular:154,
+    desc:"Women's high-volume boot with a soft, approachable 75 flex. Comfortable fit built for intermediate skiers with wider feet.",
+    action:"Add to Cart", link:null,
+    sizes:[
+      {label:"22.5", qty:0, hlId:101327},
+      {label:"23.5", qty:0, hlId:101328},
+      {label:"24.5", qty:0, hlId:101329},
+      {label:"25.5", qty:0, hlId:101330},
+      {label:"26.5", qty:0, hlId:101331},
+      {label:"27.5", qty:0, hlId:102071},
+    ],
+    images:[
+      "https://cdn11.bigcommerce.com/s-gvjzgt2kex/images/stencil/1280x1280/products/9347/179574/145223_BLACK-AQUA_LG__20758.1752095426.jpg?c=1"
+    ],
+    longDesc:"",
+    specs:{"Brand":"Roxa","Model":"R/Fit HV 75","Flex Index":"75","Last Width":"High Volume","Gender":"Women's","Skill Level":"Intermediate"},
+    breakdown:[{label:"Boots",amount:349.99},{label:"Total",amount:349.99}]
+  },
+  {
+    name:"Roxa R/Fit HV 80", brand:"Roxa", price:349.99, badge:"New", badgeType:"new", icon:"👟",
+    cat:"ski-boots", sub:"alpineboots", gender:"men", age:"adult", cond:"new", popular:155,
+    desc:"Men's high-volume boot with easy-entry design and a balanced 80 flex. Comfortable all-mountain fit for intermediate skiers with wider feet.",
+    action:"Add to Cart", link:null,
+    sizes:[
+      {label:"25.5", qty:0, hlId:101335},
+      {label:"26.5", qty:0, hlId:101336},
+      {label:"27.5", qty:0, hlId:101337},
+      {label:"28.5", qty:0, hlId:101852},
+      {label:"29.5", qty:0, hlId:101853},
+      {label:"30.5", qty:0, hlId:102072},
+    ],
+    images:[
+      "https://www.roxa.com/wp-content/uploads/2025/06/RFIT-HV-80-763x1024.webp",
+      "https://www.roxa.com/wp-content/uploads/2025/06/RFIT-HV-80_Easy-entry-240x300.webp"
+    ],
+    longDesc:"",
+    specs:{"Brand":"Roxa","Model":"R/Fit HV 80","Flex Index":"80","Last Width":"High Volume","Entry":"Easy Entry","Gender":"Men's","Skill Level":"Intermediate"},
+    breakdown:[{label:"Boots",amount:349.99},{label:"Total",amount:349.99}]
+  },
+  {
+    name:"Roxa Element 120", brand:"Roxa", price:724.99, badge:"New", badgeType:"new", icon:"👟",
+    cat:"ski-boots", sub:"alpineboots", gender:"men", age:"adult", cond:"new", popular:156,
+    desc:"High-performance race-inspired men's boot. 120 flex delivers maximum precision and power for expert skiers.",
+    action:"Add to Cart", link:null,
+    sizes:[
+      {label:"26.5", qty:0, hlId:101863},
+      {label:"27.5", qty:0, hlId:101864},
+      {label:"28.5", qty:0, hlId:101865},
+      {label:"29.5", qty:0, hlId:101866},
+    ],
+    images:[
+      "https://bootfitters.com/files/styles/mug/public/images/boots/element_120_u75.png"
+    ],
+    longDesc:"",
+    specs:{"Brand":"Roxa","Model":"Element 120","Flex Index":"120","Gender":"Men's","Skill Level":"Expert"},
+    breakdown:[{label:"Boots",amount:724.99},{label:"Total",amount:724.99}]
+  },
+  {
+    name:"Roxa R/Fit Pro 110", brand:"Roxa", price:649.99, badge:"New", badgeType:"new", icon:"👟",
+    cat:"ski-boots", sub:"alpineboots", gender:"men", age:"adult", cond:"new", popular:157,
+    desc:"High-performance men's boot with a 110 flex. Precise, race-inspired fit for advanced and expert skiers who want maximum power.",
+    action:"Add to Cart", link:null,
+    sizes:[
+      {label:"25.5", qty:0, hlId:101855},
+      {label:"26.5", qty:0, hlId:101856},
+      {label:"27.5", qty:0, hlId:101857},
+      {label:"28.5", qty:0, hlId:101858},
+    ],
+    images:[
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRUwTtCr-goC9TfuDsWQnyQDos9zq2dmPSGpKd0DALDhgPcNsjvRG5VgmI&s=10"
+    ],
+    longDesc:"",
+    specs:{"Brand":"Roxa","Model":"R/Fit Pro 110","Flex Index":"110","Gender":"Men's","Skill Level":"Advanced–Expert"},
+    breakdown:[{label:"Boots",amount:649.99},{label:"Total",amount:649.99}]
+  },
+  {
+    name:"Roxa R/Fit Pro 120", brand:"Roxa", price:699.99, badge:"New", badgeType:"new", icon:"👟",
+    cat:"ski-boots", sub:"alpineboots", gender:"men", age:"adult", cond:"new", popular:158,
+    desc:"Race-level men's boot with a 120 flex. Built for expert skiers who demand maximum precision and power transmission.",
+    action:"Add to Cart", link:null,
+    sizes:[
+      {label:"26.5", qty:0, hlId:101362},
+      {label:"30.5", qty:0, hlId:101361},
+    ],
+    images:[
+      "https://content.backcountry.com/images/items/900/RXA/RXAC04A/DKGREORA.jpg",
+      "https://content.backcountry.com/images/items/1200/RXA/RXAC04A/DKGREORA_D2.jpg",
+      "https://content.backcountry.com/images/items/1200/RXA/RXAC04A/DKGREORA_D1.jpg"
+    ],
+    longDesc:"",
+    specs:{"Brand":"Roxa","Model":"R/Fit Pro 120","Flex Index":"120","Gender":"Men's","Skill Level":"Expert"},
+    breakdown:[{label:"Boots",amount:699.99},{label:"Total",amount:699.99}]
+  },
+  {
+    name:"Roxa R/Fit Pro 85 W", brand:"Roxa", price:449.99, badge:"New", badgeType:"new", icon:"👟",
+    cat:"ski-boots", sub:"alpineboots", gender:"women", age:"adult", cond:"new", popular:159,
+    desc:"Women's performance boot with an 85 flex. Precise, race-inspired fit for intermediate to advanced skiers.",
+    action:"Add to Cart", link:null,
+    sizes:[
+      {label:"24.5", qty:0, hlId:101854},
+    ],
+    images:[
+      "https://cdn11.bigcommerce.com/s-eoq23gh9op/images/stencil/1280x1280/products/241/662/RFIT-PRO-85-W__63210.1698828184.jpg?c=1?imbypass=on"
+    ],
+    longDesc:"",
+    specs:{"Brand":"Roxa","Model":"R/Fit Pro 85 W","Flex Index":"85","Gender":"Women's","Skill Level":"Intermediate–Advanced"},
+    breakdown:[{label:"Boots",amount:449.99},{label:"Total",amount:449.99}]
+  },
+
+  // ── XC CROSS-COUNTRY ──────────────────────────────────
+  {
+    name:"Rossignol X-5 OT", brand:"Rossignol", price:199.99, customMsrp:199.99, customPrice:199.99, badge:"New", badgeType:"new", icon:"🥾",
+    cat:"xc", sub:"boots", gender:"men", age:"adult", cond:"new", popular:200,
+    desc:"Men's Rossignol X-5 OT (Off Track) cross-country boot. Bridges the gap between on-trail and backcountry touring with comfort and warmth for recreational XC skiers.",
+    longDesc:"The Rossignol X-5 OT bridges the gap between on-trail cruising and off-track adventure. Built for recreational XC skiers who want to explore beyond groomed trails, it delivers reliable warmth and comfort mile after mile, whatever the terrain throws at you.",
+    action:"Add to Cart", link:null,
+    sizes:[
+      {label:"40", qty:0, hlId:101730},
+      {label:"41", qty:0, hlId:101731},
+      {label:"47", qty:0, hlId:101732},
+      {label:"48", qty:0, hlId:101733},
+    ],
+    images:[
+      "https://www.rei.com/media/c006763d-a8f0-4c32-98b8-ff75b3fc74fe?size=2000",
+      "https://www.rei.com/media/65b92ad3-713e-444c-9ee0-4314af282543?size=2000",
+      "https://www.rei.com/media/50e79415-c17b-40c9-867d-e622ca05bbf9?size=2000",
+      "https://www.rei.com/media/c7875418-0a98-4546-9ccc-fb801b67aa37?size=2000",
+      "https://www.rei.com/media/c29ea9e6-b166-4c0f-8802-1fc5e38c4265?size=2000",
+      "https://www.rei.com/media/7f7b49ec-6411-4cb7-a583-2e2a73421b1d?size=2000"
+    ],
+    specs:{"Brand":"Rossignol","Model":"X-5 OT","Compatibility":"NNN / TURNAMIC / Prolink","Terrain":"On-Trail / Off-Track","Gender":"Men's"}
+  },
+  {
+    name:"Rossignol BC X10", brand:"Rossignol", price:249.99, customMsrp:249.99, customPrice:249.99, badge:"New", badgeType:"new", icon:"🥾",
+    cat:"xc", sub:"boots", gender:"unisex", age:"adult", cond:"new", popular:202,
+    desc:"Backcountry cross-country boot built for off-track touring and downhill control. Insulated, thermo-moldable construction with a hinged external cuff for stability in untracked snow.",
+    longDesc:"Set your own tracks in the Rossignol BC X10 backcountry ski boot. The lightweight design blends touring mobility with downhill control in an insulated, thermo-moldable build. A pre-molded, hinged external cuff provides stability and control in untracked snow, while a wide Rottefella Nordic BC sole delivers reliable grip across varied snow conditions. A tall gaiter and lace cover keep snow out and feet dry, and 3M Thinsulate insulation locks in warmth for cold, damp days on the trail.",
+    action:"Add to Cart", link:null,
+    sizes:[
+      {label:"37.0", qty:0, hlId:101739},
+      {label:"38.0", qty:0, hlId:100140},
+      {label:"39.0", qty:0, hlId:100141},
+      {label:"41.0", qty:0, hlId:100142},
+      {label:"42.0", qty:0, hlId:100143},
+      {label:"43.0", qty:0, hlId:100144},
+      {label:"44.0", qty:0, hlId:100145},
+      {label:"46.0", qty:0, hlId:101740},
+      {label:"47.0", qty:0, hlId:101741},
+      {label:"48.0", qty:0, hlId:100146},
+    ],
+    images:[
+      "https://bouldernordic.com/cdn/shop/products/pkm8j2rc6chqjbhmbwsm.jpg?v=1697661775&width=580",
+      "https://bouldernordic.com/cdn/shop/products/qadwcttzrmerng0xhcha.jpg?v=1697661775&width=580",
+      "https://bouldernordic.com/cdn/shop/products/m9y7bn3adviwgnwss9ul.jpg?v=1697661775&width=580",
+      "https://bouldernordic.com/cdn/shop/products/tnuouts9ketuvauptuvt.jpg?v=1697661775&width=580"
+    ],
+    specs:{"Brand":"Rossignol","Model":"BC X10","Compatibility":"NNN BC","Insulation":"3M Thinsulate","Terrain":"Off-Track Touring","Gender":"Unisex"}
+  },
+  {
+    name:"Rossignol BC X6", brand:"Rossignol", price:224.99, customMsrp:224.99, customPrice:224.99, badge:"New", badgeType:"new", icon:"🥾",
+    cat:"xc", sub:"boots", gender:"unisex", age:"adult", cond:"new", popular:203,
+    desc:"Lightweight backcountry touring boot blending off-track mobility with downhill control. Insulated, thermo-moldable build with a hinged external cuff for stability in untracked snow.",
+    longDesc:"Set your own tracks in the Rossignol BC X6 backcountry ski boot. The lightweight design blends touring mobility with downhill control in an insulated, thermo-moldable build. The pre-molded and hinged external cuff provides stability and control in untracked snow, while a wide Rottefella Nordic BC sole delivers the stability needed for wider skis and varied snow conditions. A tall external gaiter and lace cover seal out snow for dry feet, with a Thinsulate lining to keep you warm.",
+    action:"Add to Cart", link:null,
+    sizes:[
+      {label:"38.0", qty:0, hlId:101724},
+      {label:"41.0", qty:0, hlId:100147},
+      {label:"42.0", qty:0, hlId:101706},
+      {label:"43.0", qty:0, hlId:100148},
+      {label:"44.0", qty:0, hlId:100149},
+      {label:"45.0", qty:0, hlId:100150},
+      {label:"46.0", qty:0, hlId:100151},
+      {label:"47.0", qty:0, hlId:100152},
+    ],
+    images:[
+      "https://cdn.shoplightspeed.com/shops/634612/files/28296120/bc-x-6.jpg",
+      "https://cdn.shoplightspeed.com/shops/634612/files/28296119/bc-x-6.jpg",
+      "https://cdn.shoplightspeed.com/shops/634612/files/28296115/bc-x-6.jpg",
+      "https://cdn.shoplightspeed.com/shops/634612/files/28296114/bc-x-6.jpg"
+    ],
+    specs:{"Brand":"Rossignol","Model":"BC X6","Compatibility":"NNN BC","Insulation":"3M Thinsulate","Terrain":"Off-Track Touring","Gender":"Unisex"}
+  },
+  {
+    name:"Rossignol Evo OT 65", brand:"Rossignol", price:399.99, customMsrp:399.99, customPrice:399.99, badge:"New", badgeType:"new", icon:"🎿",
+    cat:"xc", sub:"skis", gender:"unisex", age:"adult", cond:"new", popular:204,
+    desc:"Positrack cross-country ski with TURNAMIC bindings. A shorter, wider build for enhanced stability and maneuverability on groomed and ungroomed trails alike.",
+    longDesc:"The Rossignol Evo OT 65 Positrack cross-country ski makes kick-and-glide easy, with a shorter length and wider dimensions that boost stability and maneuverability on and off the beaten trail. A wood air core keeps things light and durable, and the waxless Positrack base delivers a reliable blend of grip and glide in any condition — no kick wax required. Includes TURNAMIC bindings, compatible with NNN and Prolink boot soles.",
+    action:"Add to Cart", link:null,
+    sizes:[
+      {label:"165cm", qty:0, hlId:100330},
+      {label:"185cm", qty:0, hlId:100331},
+      {label:"195cm", qty:0, hlId:100332},
+    ],
+    images:[
+      "https://cdn.shopify.com/s/files/1/0670/5135/6456/files/2025-rossignol-evo-ot-65-skis-w-control-step-in-b-rtmzd03-rtmzd03.jpg?v=1769186339&width=1200&height=1200&crop=center",
+      "https://cdn.mos.cms.futurecdn.net/esmjuPuwNLzqjYBPdZXDQ3.jpeg"
+    ],
+    specs:{"Brand":"Rossignol","Model":"Evo OT 65","Base":"Positrack (Waxless)","Core":"Wood Air Core","Bindings":"TURNAMIC (Included)","Compatibility":"NNN / TURNAMIC / Prolink","Terrain":"XC Groomed and Ungroomed"}
+  },
+  {
+    name:"Rossignol Evo Action XC55", brand:"Rossignol", price:299.99, customMsrp:299.99, customPrice:299.99, badge:"New", badgeType:"new", icon:"🎿",
+    cat:"xc", sub:"skis", gender:"unisex", age:"adult", cond:"new", popular:205,
+    desc:"R-Skin cross-country ski with Control Step-In bindings. Built-in mohair skins mean reliable kick and glide with no waxing required.",
+    longDesc:"The Rossignol Evo Action XC55 R-Skin pairs an easy, reliable kick with smooth glide thanks to built-in mohair skin inserts — no kick wax prep needed before you hit the trail. The Control Step-In binding system makes getting in and out of your skis fast and simple, so you can spend less time fiddling and more time on snow.",
+    action:"Add to Cart", link:null,
+    sizes:[
+      {label:"165cm", qty:0, hlId:101709},
+    ],
+    images:[
+      "https://cdn.shopify.com/s/files/1/0510/1705/6454/files/ROSSIGNOL-EVO-XC-55-R-SKIN-CONTROL-STEP-IN-CROSS-COUNTRY-SKI-2023-1-min.jpg?v=1749738729"
+    ],
+    specs:{"Brand":"Rossignol","Model":"Evo Action XC55","Base":"R-Skin (Mohair)","Bindings":"Control Step-In (Included)","Terrain":"XC Groomed and Ungroomed"}
+  },
+  {
+    name:"Rossignol Evo XT 65", brand:"Rossignol", price:289.99, customMsrp:289.99, customPrice:289.99, badge:"New", badgeType:"new", icon:"🎿",
+    cat:"xc", sub:"skis", gender:"unisex", age:"adult", cond:"new", popular:206,
+    desc:"Positrack cross-country ski with Control Step-In bindings. Shorter length and wide dimensions enhance stability and maneuverability for beginners exploring off-piste trails.",
+    longDesc:"Kick and glide is made easy with the Rossignol Evo XT 65 Positrack cross-country ski. A shorter length and wide dimensions boost stability and maneuverability, making it a great choice for riders looking to cruise snow-covered trails with confidence. Includes Control Step-In bindings for fast, easy step-in convenience.",
+    action:"Add to Cart", link:null,
+    sizes:[
+      {label:"175cm", qty:0, hlId:101707},
+      {label:"185cm", qty:0, hlId:101708},
+    ],
+    images:[
+      "https://cdn.shopify.com/s/files/1/0670/5135/6456/files/2026-rossignol-evo-xt-65-skis-w-control-step-in-bindings-rtozd01-1-rtozd01.jpg?v=1772551314"
+    ],
+    specs:{"Brand":"Rossignol","Model":"Evo XT 65","Base":"Positrack (Waxless)","Bindings":"Control Step-In (Included)","Terrain":"XC Groomed and Ungroomed"}
+  },
 
   // ── SNOWBOARD BINDINGS ───────────────────────────────
   {
@@ -503,7 +838,7 @@ const BINDINGS = [
     breakdown:[{label:"Binding",amount:179.99},{label:"Professional Mount",amount:0,note:"Free"},{label:"Total",amount:179.99}]
   },
   {
-    name:"Nidecker Fuse Binding", brand:"Nidecker", price:299.99, customMsrp:199.99, customPrice:199.99, badge:"", badgeType:"default", icon:"🏂",
+    name:"Nidecker Fuse Binding", brand:"Nidecker", price:299.99, customMsrp:299.99, customPrice:299.99, badge:"", badgeType:"default", icon:"🏂",
     cat:"bindings", sub:"snowboard-binding", gender:"unisex", age:"adult", cond:"new", popular:73,
     desc:"High-performance all-mountain binding from Nidecker. Stiff, responsive chassis built for powerful, aggressive riding in any condition.",
     action:"Add to Cart", link:null,
@@ -514,15 +849,21 @@ const BINDINGS = [
     breakdown:[{label:"Binding",amount:299.99},{label:"Professional Mount",amount:0,note:"Free"},{label:"Total",amount:299.99}]
   },
   {
-    name:"Salomon Rhythm Binding", brand:"Salomon", price:179.99, badge:"", badgeType:"default", icon:"🏂",
+    name:"Salomon Rhythm Binding", brand:"Salomon", price:179.99, customMsrp:179.99, customPrice:179.99, badge:"", badgeType:"default", icon:"🏂",
     cat:"bindings", sub:"snowboard-binding", gender:"unisex", age:"adult", cond:"new", popular:71,
-    desc:"Medium-flex all-mountain binding from Salomon. Smooth, forgiving feel with easy strap entry — great for park and groomer laps.",
+    desc:"Medium-flex all-mountain binding from Salomon. Smooth, forgiving feel with easy strap entry — great for park and groomer laps. Available in Lichen Green, Black, White, and Huckleberry.",
     action:"Add to Cart", link:null,
+    colorways:[
+      {label:"Lichen Green", image:"https://images.evo.com/imgp/700/221536/1112417/salomon-rhythm-snowboard-bindings-.jpg"},
+      {label:"Black",        image:"https://cdn.dam.salomon.com/8f67d080-59ec-40f3-9162-b2f4013b6431/L41777400/PNG-2000px-max-72dpi.png?width=1200&fit=cover&optimize=medium&bg-color=f5f5f5&format=pjpg&auto=avif&canvas=116p%2C144p"},
+      {label:"White",        image:"https://cdn.dam.salomon.com/7ac8de2f-62ee-4944-92cb-b2f4013ba772/L41777500/PNG-2000px-max-72dpi.png?width=1200&fit=cover&optimize=medium&bg-color=f5f5f5&format=pjpg&auto=avif&canvas=116p%2C144p"},
+      {label:"Huckleberry",  image:"https://cdn.dam.salomon.com/73992a23-2fba-428c-a6bd-b36001082e70/L45450400/PNG-2000px-max-72dpi.png?width=1200&fit=cover&optimize=medium&bg-color=f5f5f5&format=pjpg&auto=avif&canvas=116p%2C144p"},
+    ],
     sizes:[{label:"S",qty:0,hlId:100712},{label:"M",qty:0,hlId:100710},{label:"L",qty:0,hlId:100711}],
-    images:["https://images.evo.com/imgp/700/221536/1112417/salomon-rhythm-snowboard-bindings-.jpg","https://images.evo.com/imgp/700/221536/1112418/salomon-rhythm-snowboard-bindings-.jpg"],
+    images:["https://images.evo.com/imgp/700/221536/1112417/salomon-rhythm-snowboard-bindings-.jpg","https://images.evo.com/imgp/700/221536/1112418/salomon-rhythm-snowboard-bindings-.jpg","https://cdn.dam.salomon.com/8f67d080-59ec-40f3-9162-b2f4013b6431/L41777400/PNG-2000px-max-72dpi.png?width=1200&fit=cover&optimize=medium&bg-color=f5f5f5&format=pjpg&auto=avif&canvas=116p%2C144p","https://cdn.dam.salomon.com/abce3b2b-a6c9-4a96-927d-b2f4013b8ce7/L41777400/PNG-2000px-max-72dpi.png?width=2000&fit=cover&optimize=low&bg-color=transparent&format=pjpg&canvas=116p%2C144p","https://cdn.dam.salomon.com/cc7c3358-0b21-4f4d-a926-b2f800ae0781/L41777400/PNG-2000px-max-72dpi.png?width=2000&fit=cover&optimize=low&bg-color=transparent&format=pjpg&canvas=116p%2C144p","https://cdn.dam.salomon.com/7ac8de2f-62ee-4944-92cb-b2f4013ba772/L41777500/PNG-2000px-max-72dpi.png?width=1200&fit=cover&optimize=medium&bg-color=f5f5f5&format=pjpg&auto=avif&canvas=116p%2C144p","https://cdn.dam.salomon.com/76af561d-1e6b-41e0-93e6-b2f4013bc8e3/L41777500/PNG-2000px-max-72dpi.png?width=640&fit=cover&optimize=medium&bg-color=f5f5f5&format=pjpg&auto=avif&canvas=116p%2C144p","https://cdn.dam.salomon.com/e61c6cca-bab2-43d8-bac4-b2f800adacff/L41777500/PNG-2000px-max-72dpi.png?width=640&fit=cover&optimize=medium&bg-color=f5f5f5&format=pjpg&auto=avif&canvas=116p%2C144p","https://cdn.dam.salomon.com/73992a23-2fba-428c-a6bd-b36001082e70/L45450400/PNG-2000px-max-72dpi.png?width=1200&fit=cover&optimize=medium&bg-color=f5f5f5&format=pjpg&auto=avif&canvas=116p%2C144p","https://cdn.dam.salomon.com/162e84d5-e47d-4138-8274-b40300dca272/L45450400/PNG-2000px-max-72dpi.png?width=640&fit=cover&optimize=medium&bg-color=f5f5f5&format=pjpg&auto=avif&canvas=116p%2C144p","https://cdn.dam.salomon.com/d05b6e5e-6492-4250-9820-b40300dca7a2/L45450400/PNG-2000px-max-72dpi.png?width=640&fit=cover&optimize=medium&bg-color=f5f5f5&format=pjpg&auto=avif&canvas=116p%2C144p"],
     longDesc:"",
-    specs:{"Brand":"Rome SDS","Model":"Rhythm","Flex":"Medium"},
-    breakdown:[{label:"Binding",amount:169.99},{label:"Professional Mount",amount:0,note:"Free"},{label:"Total",amount:169.99}]
+    specs:{"Brand":"Salomon","Model":"Rhythm","Flex":"Medium","Colors":"Lichen Green, Black, White, Huckleberry"},
+    breakdown:[{label:"Binding",amount:179.99},{label:"Professional Mount",amount:0,note:"Free"},{label:"Total",amount:179.99}]
   },
 
   // ── GORDINI GLOVES ───────────────────────────────────
@@ -535,26 +876,26 @@ const BINDINGS = [
     desc:"Rossignol Works all-mountain snowboard binding. Medium-stiff flex, reliable performance, and comfortable all-day fit.",
     action:"Add to Cart", link:null,
     sizes:[{label:"M",qty:0,hlId:101778}],
-    images:["https://www.rossignol.com/dw/image/v2/BJJZ_PRD/on/demandware.static/-/Sites-rossignol-catalog/default/dwb2c92e3d/images/large/RGPC210000_72DPI_01_v00.jpg?sw=1200&sh=1200","https://www.rossignol.com/dw/image/v2/BJJZ_PRD/on/demandware.static/-/Sites-rossignol-catalog/default/dwe95b1443/images/large/RGPC210000_72DPI_02_v00.jpg?sw=1200&sh=1200","https://www.rossignol.com/dw/image/v2/BJJZ_PRD/on/demandware.static/-/Sites-rossignol-catalog/default/dwa3b588c1/images/large/RGPC210000_72DPI_03_v00.jpg?sw=1200&sh=1200","https://www.rossignol.com/dw/image/v2/BJJZ_PRD/on/demandware.static/-/Sites-rossignol-catalog/default/dw90386b80/images/large/RGPC210000_72DPI_04_v00.jpg?sw=1200&sh=1200"],
-    specs:{"Brand":"Rossignol","Flex":"Medium-Stiff","Color":"Black and Grey","Terrain":"All-Mountain"}
+    images:["https://www.rossignol.com/dw/image/v2/BJJZ_PRD/on/demandware.static/-/Sites-rossignol-catalog/default/dwb2c92e3d/images/large/RGPC210000_72DPI_01_v00.jpg?sw=1200&sh=1200","https://www.rossignol.com/dw/image/v2/BJJZ_PRD/on/demandware.static/-/Sites-rossignol-catalog/default/dwe95b1443/images/large/RGPC210000_72DPI_02_v00.jpg?sw=1200&sh=1200"],
+    specs:{"Brand":"Rossignol","Flex":"Medium-Stiff","Color":"Black and Grey"}
   },
   {
     name:"Rossignol Ultraviolet Binding", brand:"Rossignol", price:179.99, customMsrp:179.99, customPrice:179.99, badge:"", badgeType:"default", icon:"🔩",
     cat:"bindings", sub:"snowboard-binding", gender:"unisex", age:"adult", cond:"new", popular:161,
-    desc:"Rossignol Ultraviolet all-mountain snowboard binding. Medium flex, lightweight, and easy to ride all day.",
+    desc:"Rossignol Ultraviolet all-mountain snowboard binding. Medium flex, lightweight, easy all-day ride.",
     action:"Add to Cart", link:null,
     sizes:[{label:"S/M",qty:0,hlId:101775}],
     images:["https://www.philbricks.com/cdn/shop/files/jpwzk6eacykcfzrvimjq_535x.jpg?v=1776807735","https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/BCJK_STG/on/demandware.static/-/Sites-global-master-catalog/default/dwcbd37baa/images/large/1149370_2.jpg?sw=800&sh=800"],
-    specs:{"Brand":"Rossignol","Flex":"Medium","Color":"Black","Terrain":"All-Mountain"}
+    specs:{"Brand":"Rossignol","Flex":"Medium","Color":"Black"}
   },
   {
     name:"Rossignol Myth Binding", brand:"Rossignol", price:179.99, customMsrp:179.99, customPrice:179.99, badge:"", badgeType:"default", icon:"🔩",
     cat:"bindings", sub:"snowboard-binding", gender:"unisex", age:"adult", cond:"new", popular:160,
-    desc:"Rossignol Myth all-mountain snowboard binding. Soft-medium flex, beginner-friendly, and comfortable all day.",
+    desc:"Rossignol Myth all-mountain snowboard binding. Soft-medium flex, beginner-friendly.",
     action:"Add to Cart", link:null,
     sizes:[{label:"S/M",qty:0,hlId:100138}],
-    images:["https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQsNn_RTeBU6Fq2IduH14g-UDZ139V4NTZbNAemY404RZfOs75rtrOXpco&s=10","https://www.rossignol.com/dw/image/v2/BJJZ_PRD/on/demandware.static/-/Sites-rossignol-catalog/default/dw806b621e/images/large/RGMC104_MYTH_RGB72DPI_03.jpg?sw=1200&sh=1200","https://www.rossignol.com/dw/image/v2/BJJZ_PRD/on/demandware.static/-/Sites-rossignol-catalog/default/dwd3fcc8c0/images/large/RGMC104_MYTH_RGB72DPI_02.jpg?sw=1200&sh=1200"],
-    specs:{"Brand":"Rossignol","Flex":"Soft-Medium","Color":"Black","Terrain":"All-Mountain"}
+    images:["https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQsNn_RTeBU6Fq2IduH14g-UDZ139V4NTZbNAemY404RZfOs75rtrOXpco&s=10","https://www.rossignol.com/dw/image/v2/BJJZ_PRD/on/demandware.static/-/Sites-rossignol-catalog/default/dw806b621e/images/large/RGMC104_MYTH_RGB72DPI_03.jpg?sw=1200&sh=1200"],
+    specs:{"Brand":"Rossignol","Flex":"Soft-Medium","Color":"Black"}
   },
   {
     name:"Rossignol Rookie Binding", brand:"Rossignol", price:119.99, customMsrp:119.99, customPrice:119.99, badge:"Entry", badgeType:"new", icon:"🏂",
@@ -565,16 +906,6 @@ const BINDINGS = [
     images:["https://cdn.media.amplience.net/i/scheelspoc/40600024760?w=500&h=500&fmt=auto&v=1"],
     longDesc:"The Rossignol Rookie is the perfect entry-level binding for new snowboarders just getting started. A soft, forgiving flex makes it easy to control and learn on, while a simple strap entry system means less time fiddling and more time riding. Lightweight and comfortable all day, the Rookie is built to take the struggle out of learning so you can focus on having fun on the mountain.",
     specs:{"Brand":"Rossignol","Flex":"Soft","Terrain":"All-Mountain","Skill Level":"Beginner"}
-  },
-  {
-    name:"Rossignol Ultraviolet Binding", brand:"Rossignol", price:179.99, badge:"", badgeType:"default", icon:"🏂",
-    cat:"bindings", sub:"snowboard-binding", gender:"unisex", age:"adult", cond:"new", popular:78,
-    desc:"Mid-range all-mountain binding from Rossignol. Medium flex with a comfortable fit system and solid response for intermediate riders.",
-    action:"Add to Cart", link:null,
-    sizes:[{label:"S/M",qty:0,hlId:101775}],
-    images:["https://cdn.shopify.com/s/files/1/0670/5135/6456/files/2026-rossignol-ultraviolet-snowboard-bindings-rgnc102-1-rgnc102.jpg?v=1775757047&width=1000&height=1000&crop=center"],
-    longDesc:"The Rossignol Ultraviolet is a mid-range all-mountain binding built for intermediate riders ready to step up their game. A medium flex delivers a responsive, controlled feel across groomed runs and variable terrain, while Rossignol\'s comfortable fit system keeps you locked in without fatigue. A solid, reliable all-mountain package that rewards progression.",
-    specs:{"Brand":"Rossignol","Flex":"Medium","Terrain":"All-Mountain","Skill Level":"Intermediate"}
   },
   {
     name:"Rossignol Soulside Binding", brand:"Rossignol", price:179.99, badge:"", badgeType:"default", icon:"🏂",
@@ -598,13 +929,13 @@ const BINDINGS = [
     specs:{"Brand":"Rome","Flex":"Stiff","Terrain":"All-Mountain / Freeride","Skill Level":"Intermediate–Expert"}
   },
   {
-    name:"Rome Katana HW Pro Binding", brand:"Rome", price:469.99, badge:"Pro", badgeType:"pop", icon:"🏂",
+    name:"Rome Katana AW Pro Binding", brand:"Rome", price:469.99, badge:"Pro", badgeType:"pop", icon:"🏂",
     cat:"bindings", sub:"snowboard-binding", gender:"unisex", age:"adult", cond:"new", popular:83,
     desc:"Rome's top-of-the-line all-weather binding. Carbon chassis, aluminum highback, and maximum power transfer for expert riders who demand the best.",
     action:"Add to Cart", link:null,
     sizes:[{label:"M/L",qty:0,hlId:101396}],
-    images:["https://content.backcountry.com/images/items/1200/ROM/ROMZ3FF/BLASLA.jpg","https://content.steepandcheap.com/images/items/1200/ROM/ROMZ3EV/BLASLA_D3.jpg","https://content.steepandcheap.com/images/items/1200/ROM/ROMZ3EV/BLASLA_D2.jpg","https://content.steepandcheap.com/images/items/1200/ROM/ROMZ3EV/BLASLA_D1.jpg"],
-    longDesc:"The Rome Katana HW Pro is Rome\'s top-of-the-line performance binding — a carbon-chassis, aluminum highback powerhouse built for expert riders who demand maximum response and precision. Every input transfers directly to the board with zero lag, making it the choice of riders who charge hard and expect their gear to keep up. Lightweight, stiff, and built to last — the ultimate all-mountain and freeride binding.",
+    images:["https://romesnowboards.com/cdn/shop/files/2526_Rome-Web_BN_Katana-AW-Pro_C1-Hero.jpg?v=1757347186&width=3840","https://romesnowboards.com/cdn/shop/files/2526_Rome-Web_BN_Katana-AW-Pro_C1-Front.jpg?v=1757347186&width=3840","https://romesnowboards.com/cdn/shop/files/2526_Rome-Web_BN_Katana-AW-Pro_C1-Back.jpg?v=1757347186&width=3840","https://romesnowboards.com/cdn/shop/files/2526_Rome-Web_BN_Katana-AW-Pro_C1-Side.jpg?v=1757347186&width=3840"],
+    longDesc:"The Rome Katana AW Pro is Rome\'s top-of-the-line performance binding — a carbon-chassis, aluminum highback powerhouse built for expert riders who demand maximum response and precision. Every input transfers directly to the board with zero lag, making it the choice of riders who charge hard and expect their gear to keep up. Lightweight, stiff, and built to last — the ultimate all-mountain and freeride binding.",
     specs:{"Brand":"Rome","Flex":"Stiff","Chassis":"Carbon","Terrain":"All-Mountain / Expert","Skill Level":"Expert"}
   },
   {
@@ -702,7 +1033,7 @@ const BINDINGS = [
     specs:{"Brand":"Salomon","Flex":"Medium","Terrain":"All-Mountain","Skill Level":"Beginner–Intermediate"}
   },
   {
-    name:"Salomon District Binding", brand:"Salomon", price:289.99, badge:"", badgeType:"default", icon:"🏂",
+    name:"Salomon District Binding", brand:"Salomon", price:289.99, customMsrp:289.99, customPrice:289.99, badge:"", badgeType:"default", icon:"🏂",
     cat:"bindings", sub:"snowboard-binding", gender:"unisex", age:"adult", cond:"new", popular:74,
     desc:"Salomon District all-mountain freestyle binding. Medium-stiff flex, lightweight chassis, and a clean look suited for riders who spend time in the park and on groomers.",
     action:"Add to Cart", link:null,
@@ -1025,7 +1356,7 @@ const BINDINGS = [
     breakdown:[{label:"Binding",amount:409.99},{label:"Total",amount:409.99}]
   },
   {
-    name:"Carbon Supermatic Binding", brand:"Nidecker", price:499.99, customMsrp:499.99, customPrice:499.99, badge:"Carbon", badgeType:"pop", icon:"🏂",
+    name:"Carbon Supermatic Binding", brand:"Nidecker", price:524.99, customMsrp:524.99, customPrice:524.99, badge:"Carbon", badgeType:"pop", icon:"🏂",
     cat:"bindings", sub:"snowboard-binding", gender:"unisex", age:"adult", cond:"new", popular:161,
     desc:"Top-of-the-line Nidecker OG Supermatic step-in binding with a carbon chassis. The lightest, most responsive auto-entry binding available.",
     action:"Add to Cart", link:null,
@@ -1033,7 +1364,7 @@ const BINDINGS = [
     images:["https://images.evo.com/imgp/700/253920/1102643/nidecker-supermatic-carbon-snowboard-bindings-2026-.jpg","https://images.evo.com/imgp/700/253920/1102641/nidecker-supermatic-carbon-snowboard-bindings-2026-.jpg","https://images.evo.com/imgp/700/253920/1102640/nidecker-supermatic-carbon-snowboard-bindings-2026-.jpg","https://images.evo.com/imgp/700/253920/1102650/nidecker-supermatic-carbon-snowboard-bindings-2026-.jpg","https://images.evo.com/imgp/700/253920/1102639/nidecker-supermatic-carbon-snowboard-bindings-2026-.jpg"],
     longDesc:"",
     specs:{"Brand":"Rome","Frame":"Carbon Fiber Chassis (Ultra-Lightweight)","Entry System":"Automatic Step-In (No Strap Riding)","Highback":"Aluminum with 45-Degree Lean","Baseplate":"Carbon Injected","Compatibility":"Requires Rome Supermatic-Compatible Boots","Flex":"Stiff (8/10)","Terrain":"All-Mountain / Expert"},
-    breakdown:[{label:"Binding",amount:529.99},{label:"Total",amount:529.99}]
+    breakdown:[{label:"Binding",amount:524.99},{label:"Total",amount:524.99}]
   },
 
   // SNOWBOARDS
@@ -1055,11 +1386,66 @@ const BINDINGS = [
     cat:"snowboards", sub:"rome", gender:"unisex", age:"adult", cond:"new", flatmount:true, popular:163,
     desc:"Rome's accessible all-mountain board. Forgiving directional twin shape is great for learning or cruising the whole mountain, with a poplar core for a lively feel.",
     action:"Add to Cart", link:null,
-    sizes:[{label:"147cm",qty:0,hlId:100856},{label:"150cm",qty:0,hlId:100857},{label:"153cm",qty:0,hlId:100858},{label:"156cm",qty:0,hlId:100859}],
-    images:["https://shop.skicompany.com/cdn/shop/products/rome-mechanic-snowboard-2023_700x700.jpg?v=1655497714"],
+    sizes:[{label:"147cm",qty:0,hlId:100856},{label:"150cm",qty:0,hlId:100857},{label:"153cm",qty:0,hlId:100858},{label:"156cm",qty:0,hlId:100859},{label:"157W",qty:0,hlId:100860},{label:"159cm",qty:0,hlId:100861}],
+    images:["https://gotyourgear.com/cdn/shop/products/XiRRlqZjulHp70JHemJLlGhxj5vrXtXG-25.jpg?v=1663706289"],
     longDesc:"",
-    specs:{"Brand":"Rome Snowboards","Shape":"Directional Twin","Profile":"Camber with Rockered Nose","Core":"Aspen / Poplar Blended Core","Fiberglass":"Biaxial","Base":"Extruded Polyethylene","Flex":"Medium (5/10)","Terrain":"All-Mountain","Skill Level":"Beginner–Intermediate","Country":"USA Design"},
+    specs:{"Brand":"Rome Snowboards","Color":"Black & Yellow/Green","Shape":"Directional Twin","Profile":"Camber with Rockered Nose","Core":"Aspen / Poplar Blended Core","Fiberglass":"Biaxial","Base":"Extruded Polyethylene","Flex":"Medium (5/10)","Terrain":"All-Mountain","Skill Level":"Beginner–Intermediate","Country":"USA Design"},
     breakdown:[{label:"Snowboard",amount:399.99},{label:"Total",amount:399.99}]
+  },
+  {
+    name:"Never Summer Proto T3 FR", brand:"Never Summer", price:719.99, customMsrp:719.99, customPrice:719.99, badge:"New", badgeType:"new", icon:"🏂",
+    cat:"snowboards", sub:"neversummer", gender:"men", age:"adult", cond:"new", popular:188,
+    desc:"Never Summer Proto T3 FR — a freeride-focused directional twin with Never Summer\'s legendary tube construction and a powerful, surfy feel for charging the mountain.",
+    longDesc:"The Never Summer Proto T3 FR is a high-performance freeride snowboard built for riders who want to charge the mountain with power and precision. Never Summer\'s proprietary tube construction delivers a damp, lively feel with explosive edge hold, while the directional twin shape gives you float in powder and confidence on hardpack. Available in standard and extended (X/W) sizes for different riding styles. Handcrafted in Denver, CO.",
+    action:"Add to Cart", link:null,
+    sizes:[
+      {label:"156",   qty:0, hlId:101921},
+      {label:"157W",  qty:0, hlId:101923},
+      {label:"160",   qty:0, hlId:101922},
+      {label:"161W",  qty:0, hlId:101924}
+    ],
+    images:[
+      "https://content.backcountry.com/images/items/1200/NVS/NVSR199/ONECOL.jpg",
+      "https://content.backcountry.com/images/items/1200/NVS/NVSR199/ONECOL_D7.jpg",
+      "https://content.backcountry.com/images/items/1200/NVS/NVSR199/ONECOL_D6.jpg",
+      "https://content.backcountry.com/images/items/1200/NVS/NVSR199/ONECOL_D5.jpg"
+    ],
+    specs:{"Brand":"Never Summer","Profile":"Rocker/Camber","Construction":"Tube Technology","Shape":"Directional Twin","Terrain":"Freeride / All-Mountain","Made In":"Denver, CO"}
+  },
+  {
+    name:"Never Summer Nokhu", brand:"Never Summer", price:689.99, customMsrp:689.99, customPrice:689.99, badge:"New", badgeType:"new", icon:"🏂",
+    cat:"snowboards", sub:"neversummer", gender:"men", age:"adult", cond:"new", popular:186,
+    desc:"Never Summer Nokhu — a versatile all-mountain board with Never Summer\'s tube construction and a directional shape built for exploring the whole mountain.",
+    longDesc:"The Never Summer Nokhu is a directional all-mountain snowboard built for riders who want to explore every corner of the resort and beyond. Never Summer\'s tube construction delivers a smooth, damp ride with powerful edge hold, while the directional shape floats through powder and carves groomers with equal confidence. Available in standard and directional flex (DF) sizes. Handcrafted in Denver, CO.",
+    action:"Add to Cart", link:null,
+    sizes:[
+      {label:"155",    qty:0, hlId:101925},
+      {label:"158",    qty:0, hlId:101926},
+      {label:"161",    qty:0, hlId:101927},
+      {label:"161DF",  qty:0, hlId:101928}
+    ],
+    images:[
+      "https://neversummer.com/cdn/shop/files/26.27_Nokhu_Web.png?v=1765163139",
+      "https://neversummer.com/cdn/shop/files/Nokhu_TOP_1800x1800.webp?v=1785442036",
+      "https://neversummer.com/cdn/shop/files/Nokhu_BASE_1800x1800.webp?v=1785442036"
+    ],
+    specs:{"Brand":"Never Summer","Profile":"Rocker/Camber","Construction":"Tube Technology","Shape":"Directional","Terrain":"All-Mountain / Freeride","Made In":"Denver, CO"}
+  },
+  {
+    name:"Never Summer V-Twin", brand:"Never Summer", price:669.99, customMsrp:669.99, customPrice:669.99, badge:"New", badgeType:"new", icon:"🏂",
+    cat:"snowboards", sub:"neversummer", gender:"men", age:"adult", cond:"new", popular:185,
+    desc:"Never Summer V-Twin — a versatile all-mountain freestyle twin with Never Summer\'s legendary tube construction and a surfy, playful feel.",
+    longDesc:"The Never Summer V-Twin is a true twin all-mountain freestyle board built for riders who want to charge the whole mountain and session the park. Never Summer\'s proprietary tube construction delivers a damp, lively feel that\'s unlike anything else on the market. Rockered tip and tail keep it catch-free and playful while the camber underfoot provides the pop and edge hold needed for aggressive riding. Available in standard and extended (X) sizes for a more directional, powder-friendly feel. Handcrafted in Denver, CO.",
+    action:"Add to Cart", link:null,
+    sizes:[
+      {label:"156W", qty:0, hlId:101931},
+      {label:"157",  qty:0, hlId:101929},
+      {label:"159W", qty:0, hlId:101932},
+      {label:"160",  qty:0, hlId:101930},
+      {label:"162W", qty:0, hlId:101933}
+    ],
+    images:["https://neversummer.com/cdn/shop/files/26.27_V-Twin_Web.png?v=1776919392"],
+    specs:{"Brand":"Never Summer","Profile":"Rocker/Camber","Construction":"Tube Technology","Shape":"Twin","Terrain":"All-Mountain Freestyle","Made In":"Denver, CO"}
   },
   {
     name:"Rossignol Super Revenant", hlName:"Super Revenant", brand:"Rossignol", price:699.99, badge:"Freeride", badgeType:"pop", icon:"🏂",
@@ -1356,11 +1742,11 @@ const BINDINGS = [
   {
     name:"Rossignol Ampage Vol. 2 Wide", brand:"Rossignol", price:349.99, customMsrp:349.99, customPrice:349.99, badge:"2026 Model", badgeType:"pop", icon:"🏂",
     cat:"snowboards", sub:"rossignol", gender:"unisex", age:"adult", cond:"new", popular:142,
-    desc:"2026 model at a great price. Wide all-mountain freestyle board for larger feet or extra float. Poplar core, forgiving flex.",
+    desc:"2026 model at a great price. Wide all-mountain freestyle board for larger feet or extra float.",
     action:"Add to Cart", link:null,
     sizes:[{label:"156W",qty:0,hlId:100841}],
     images:["https://www.evo.com/cdn/shop/files/product-image-1262117.jpg?v=1767739622&width=1200"],
-    specs:{"Brand":"Rossignol","Size":"156W","Model Year":"2026","Flex":"Soft","Terrain":"All-Mountain Freestyle"}
+    specs:{"Brand":"Rossignol","Size":"156W","Model Year":"2026","Flex":"Soft"}
   },
   {
     name:"Rossignol Ampage Vol. 1", brand:"Rossignol", price:379.99, badge:"All-Mountain", badgeType:"new", icon:"🏂",
@@ -1378,8 +1764,8 @@ const BINDINGS = [
     cat:"snowboards", sub:"rome", gender:"unisex", age:"adult", cond:"new", flatmount:true, popular:148,
     desc:"Directional all-mountain charger. Poplar core and tip/tail rocker handle everything from groomed runs to side-country pow.",
     action:"Add to Cart", link:null,
-    sizes:[{label:"155cm",qty:0,hlId:101488},{label:"158cm",qty:0,hlId:101489},{label:"159W",qty:0,hlId:101490}],
-    images:["https://images.evo.com/imgp/700/268198/1202722/rome-ravine-snowboard-2026-.jpg"],
+    sizes:[{label:"155cm",qty:0,hlId:102332},{label:"158cm",qty:0,hlId:102333},{label:"159W",qty:0,hlId:102334},{label:"162W",qty:0,hlId:102335}],
+    images:["https://romesnowboards.com/cdn/shop/files/2627_rome_web_bd_ravine_1.jpg?v=1787636964&width=3840","https://romesnowboards.com/cdn/shop/files/2627_rome_web_bd_ravine_2.jpg?v=1787636964&width=3840","https://romesnowboards.com/cdn/shop/files/2627_rome_web_bd_ravine_3.jpg?v=1787636964&width=3840","https://romesnowboards.com/cdn/shop/files/2627_rome_web_bd_ravine_4.jpg?v=1787636964&width=3840","https://romesnowboards.com/cdn/shop/files/2627_rome_web_bd_ravine_5.jpg?v=1787636964&width=3840","https://romesnowboards.com/cdn/shop/files/2627_rome_web_bd_ravine_6.jpg?v=1787636964&width=3840","https://romesnowboards.com/cdn/shop/files/2627_rome_web_bd_ravine_7.jpg?v=1787636964&width=3840"],
     longDesc:"The Rome Ravine is a versatile all-mountain director — designed for riders who want float in the deep and reliable edge hold on hardpack. Directional Diamond 3D in the nose helps hover through powder and crank long, smooth turns, while the Free-The-Ride Camber profile — rockered in the nose, flat under the front foot, and positively cambered in the tail — delivers the perfect blend of torsional response and playfulness. Super responsive and powerfully snappy, it handles everything from early-season hardpack to pow days with the crew and slushy spring laps with equal ease. From Vermont snowboarders who\'ve built boards since 1996.",
     specs:{"Profile":"Directional Rocker","Core":"Aspen / Poplar","Shape":"Directional","Terrain":"All-Mountain","Skill Level":"Intermediate–Advanced","Country":"USA Design"}
   },
@@ -1389,7 +1775,7 @@ const BINDINGS = [
     desc:"Women's directional all-mountain board. Lighter construction and women's-specific flex for confident riding all over the mountain.",
     action:"Add to Cart", link:null,
     sizes:[{label:"144cm",qty:0,hlId:101499},{label:"147cm",qty:0,hlId:101500},{label:"150cm",qty:0,hlId:101501}],
-    images:["https://images.evo.com/imgp/700/268199/1202725/clone.jpg"],
+    images:["https://blauerboardshop.com/cdn/shop/files/2026Women_sRomeRavineSnowboard.png?v=1748125953&width=800"],
     longDesc:"The Rome Women\'s Ravine is a versatile all-mountain boss built for riders who want a dependable board that handles business no matter the conditions. Directional Diamond 3D float, the reliable edge hold of Free-The-Ride Camber, and a medium flex profile inspire confidence in any snow scenario. Rockered in the nose, flat under the front foot, and positively cambered in the tail — this torsionally playful board hovers through powder and locks into the hardest hardpack with ease. As quick and nimble as a shortboard in the tightest trees, yet able to open up and haul down the gnarliest terrain you can find. A rider favorite for a reason. From Vermont snowboarders who\'ve built boards since 1996.",
     specs:{"Profile":"Directional Rocker","Core":"Aspen / Poplar","Shape":"Directional","Gender":"Women's","Terrain":"All-Mountain","Skill Level":"Intermediate","Country":"USA Design"}
   },
@@ -1427,6 +1813,54 @@ const BINDINGS = [
     longDesc:"One of the best freestyle boards to learn and progress on, the Rossignol UltraViolet delivers easy, budget-friendly fun for entry-level riders. A soft, forgiving flex and all-mountain twin shape make it easy to control, catch-free, and endlessly entertaining for new riders finding their footing on the mountain. A go-anywhere board that makes every run fun. Wood cores from sustainably harvested forests.",
     specs:{"Brand":"Rossignol","Profile":"Flat-to-Rocker","Core":"Poplar","Shape":"Directional Twin","Terrain":"All-Mountain","Skill Level":"Intermediate","Country":"France"}
   },
+  {
+    name:"Salomon Assassin", brand:"Salomon", price:649.99, customMsrp:649.99, customPrice:649.99, badge:"New", badgeType:"new", icon:"🏂",
+    cat:"snowboards", sub:"salomon", gender:"unisex", age:"adult", cond:"new", flatmount:true, popular:179,
+    desc:"Salomon's directional all-mountain freeride board. Built for riders who want power and float across variable terrain, from groomers to deep days.",
+    longDesc:"The Salomon Assassin is a directional all-mountain freeride board built for riders who want to charge with confidence across the whole mountain. Strong edge hold and a stable platform make it equally at home ripping groomers or floating through fresh snow, giving aggressive riders the power and precision they need to push their limits.",
+    action:"Add to Cart", link:null,
+    sizes:[
+      {label:"159",  qty:0, hlId:101980},
+      {label:"158W", qty:0, hlId:101982},
+      {label:"163W", qty:0, hlId:101983},
+    ],
+    images:[
+      "https://cdn.shopify.com/s/files/1/0670/5135/6456/files/2027-salomon-assassin-snowboard-l49291700-1-l49291700.jpg?v=1778769540",
+      "https://paulreader.com.au/cdn/shop/files/SalomonAssassin2027-Underside_Purple.jpg?v=1770596811"
+    ],
+    specs:{"Brand":"Salomon","Model":"Assassin","Shape":"Directional","Terrain":"All-Mountain / Freeride","Skill Level":"Advanced–Expert"}
+  },
+  {
+    name:"Rome Artifact", brand:"Rome", price:499.99, customMsrp:499.99, customPrice:499.99, badge:"New", badgeType:"new", icon:"🏂",
+    cat:"snowboards", sub:"rome", gender:"unisex", age:"adult", cond:"new", flatmount:true, popular:177,
+    desc:"Rome's versatile all-mountain board built for riders who want a playful, capable ride anywhere on the hill.",
+    longDesc:"The Rome Artifact is a versatile all-mountain board built to handle whatever the mountain throws at you — groomers, side hits, and everything in between. A balanced, approachable flex keeps it forgiving enough for progressing riders while still delivering the pop and response more advanced riders look for.",
+    action:"Add to Cart", link:null,
+    sizes:[
+      {label:"150",  qty:0, hlId:102328},
+      {label:"153",  qty:0, hlId:102329},
+      {label:"156",  qty:0, hlId:102330},
+      {label:"157W", qty:0, hlId:102331},
+    ],
+    images:[
+      "https://www.evo.com/cdn/shop/files/product-image-1308344.jpg?v=1781550733&width=1200"
+    ],
+    specs:{"Brand":"Rome","Model":"Artifact","Terrain":"All-Mountain","Skill Level":"Beginner–Intermediate"}
+  },
+  {
+    name:"Rossignol One Wide", brand:"Rossignol", price:649.99, customMsrp:649.99, customPrice:649.99, badge:"New", badgeType:"new", icon:"🏂",
+    cat:"snowboards", sub:"rossignol", gender:"unisex", age:"adult", cond:"new", flatmount:true, popular:176,
+    desc:"Rossignol's all-mountain freestyle board in a wide platform. A versatile, directional twin built for riders who want one board that does it all.",
+    longDesc:"The Rossignol One Wide is a go-anywhere all-mountain freestyle board, built in a wider platform for riders who need the extra width underfoot. A directional twin shape keeps it playful in the park while still holding its own charging groomers and exploring the whole mountain.",
+    action:"Add to Cart", link:null,
+    sizes:[
+      {label:"165W", qty:0, hlId:100359},
+    ],
+    images:[
+      "https://www.mountainshop.net/wp-content/uploads/2025/10/Rossignol-One-Snowboard-2026-3-700x700.png"
+    ],
+    specs:{"Brand":"Rossignol","Model":"One Wide","Shape":"Directional Twin","Terrain":"All-Mountain / Freestyle","Skill Level":"Intermediate–Advanced","Country":"France"}
+  },
 
   // ── NIDECKER SNOWBOARD BOOTS ─────────────────────────────
   {
@@ -1455,6 +1889,112 @@ const BINDINGS = [
     specs:{"Brand":"Nidecker","Color":"Black","Flex":"Stiff","Lacing":"Dual-Zone","Liner":"Heat-Moldable","Terrain":"All-Mountain","Skill Level":"Intermediate–Expert","Country":"Switzerland"}
   },
   {
+    name:"Nidecker Cascade M", brand:"Nidecker", price:279.99, customMsrp:279.99, customPrice:279.99, badge:"New", badgeType:"new", icon:"👟",
+    cat:"snowboard-boots", sub:"nidecker", gender:"men", age:"adult", cond:"new", popular:179,
+    desc:"Nidecker's versatile men's all-mountain snowboard boot in Black. Comfortable, reliable performance for riders at every level.",
+    longDesc:"The Nidecker Cascade is a dependable all-mountain boot built for riders who want consistent comfort and performance without overcomplicating things. A balanced flex and quality liner construction deliver all-day comfort on the hill, backed by Nidecker's Swiss design heritage dating back to 1984.",
+    action:"Add to Cart", link:null,
+    sizes:[
+      {label:"7.0",  qty:0, hlId:101124},
+      {label:"7.5",  qty:0, hlId:101125},
+      {label:"8.0",  qty:0, hlId:101126},
+      {label:"8.5",  qty:0, hlId:101127},
+      {label:"9.0",  qty:0, hlId:101128},
+      {label:"9.5",  qty:0, hlId:101129},
+      {label:"10.0", qty:0, hlId:101130},
+      {label:"10.5", qty:0, hlId:101131},
+      {label:"11.0", qty:0, hlId:101132},
+      {label:"11.5", qty:0, hlId:101133},
+      {label:"12.0", qty:0, hlId:101134},
+      {label:"13.0", qty:0, hlId:101135},
+    ],
+    images:[
+      "https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/BCJK_STG/on/demandware.static/-/Sites-global-master-catalog/default/dw7977337a/images/large/1160980_BLCK_1.jpg?sw=800&sh=800",
+      "https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/BCJK_STG/on/demandware.static/-/Sites-global-master-catalog/default/dwe01869bd/images/large/1160980_BLCK_2.jpg?sw=800&sh=800",
+      "https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/BCJK_STG/on/demandware.static/-/Sites-global-master-catalog/default/dw8fe0647a/images/large/1160980_BLCK_3.jpg?sw=800&sh=800",
+      "https://edge.disstg.commercecloud.salesforce.com/dw/image/v2/BCJK_STG/on/demandware.static/-/Sites-global-master-catalog/default/dwcb4a83c5/images/large/1160980_BLCK_5.jpg?sw=800&sh=800"
+    ],
+    specs:{"Brand":"Nidecker","Model":"Cascade","Color":"Black","Terrain":"All-Mountain","Gender":"Men's","Skill Level":"Beginner–Intermediate","Country":"Switzerland"}
+  },
+  {
+    name:"Nidecker Cascade W", brand:"Nidecker", price:269.99, customMsrp:269.99, customPrice:269.99, badge:"New", badgeType:"new", icon:"👟",
+    cat:"snowboard-boots", sub:"nidecker", gender:"women", age:"adult", cond:"new", popular:178,
+    desc:"Nidecker's versatile women's all-mountain snowboard boot in Black. Comfortable, reliable performance for riders at every level.",
+    longDesc:"The Nidecker Cascade W is a dependable all-mountain boot built for riders who want consistent comfort and performance without overcomplicating things. A balanced flex and quality liner construction deliver all-day comfort on the hill, backed by Nidecker's Swiss design heritage dating back to 1984.",
+    action:"Add to Cart", link:null,
+    sizes:[
+      {label:"5.5", qty:0, hlId:101142},
+      {label:"6.0", qty:0, hlId:101143},
+      {label:"6.5", qty:0, hlId:101144},
+      {label:"7.0", qty:0, hlId:101136},
+      {label:"7.5", qty:0, hlId:101137},
+      {label:"8.0", qty:0, hlId:101138},
+      {label:"8.5", qty:0, hlId:101139},
+      {label:"9.0", qty:0, hlId:101140},
+      {label:"9.5", qty:0, hlId:101141},
+    ],
+    images:[
+      "https://www.nidecker.com/cdn/shop/files/N.25.BTW.CSW.BK-Cascade_W_Black-2.webp?v=1786452073&width=1946",
+      "https://www.nidecker.com/cdn/shop/files/N.25.BTW.CSW.BK-Cascade_W_Black-1.webp?v=1786452076&width=1946",
+      "https://www.nidecker.com/cdn/shop/files/N.25.BTW.CSW.BK-Cascade_W_Black-3.webp?v=1786452072&width=1946",
+      "https://www.nidecker.com/cdn/shop/files/N.25.BTW.CSW.BK-Cascade_W_Black-5.webp?v=1786452076&width=1946"
+    ],
+    specs:{"Brand":"Nidecker","Model":"Cascade W","Color":"Black","Terrain":"All-Mountain","Gender":"Women's","Skill Level":"Beginner–Intermediate","Country":"Switzerland"}
+  },
+  {
+    name:"Nidecker Altai M", brand:"Nidecker", price:319.99, customMsrp:319.99, customPrice:319.99, badge:"New", badgeType:"new", icon:"👟",
+    cat:"snowboard-boots", sub:"nidecker", gender:"men", age:"adult", cond:"new", popular:181,
+    desc:"Nidecker's performance men's all-mountain boot in Black. A precise, locked-in fit for riders who want responsive power transfer.",
+    longDesc:"The Nidecker Altai is built for riders who want a precise, responsive fit without sacrificing comfort. A locked-in chassis delivers direct power transfer to your board, while Nidecker's Swiss design heritage ensures quality construction that holds up run after run.",
+    action:"Add to Cart", link:null,
+    sizes:[
+      {label:"7.0",  qty:0, hlId:101103},
+      {label:"7.5",  qty:0, hlId:101104},
+      {label:"8.0",  qty:0, hlId:101105},
+      {label:"8.5",  qty:0, hlId:101106},
+      {label:"9.0",  qty:0, hlId:101107},
+      {label:"9.5",  qty:0, hlId:101108},
+      {label:"10.0", qty:0, hlId:101109},
+      {label:"10.5", qty:0, hlId:101110},
+      {label:"11",   qty:0, hlId:101111},
+      {label:"12",   qty:0, hlId:101112},
+      {label:"13",   qty:0, hlId:101113},
+      {label:"14",   qty:0, hlId:101114},
+    ],
+    images:[
+      "https://content.backcountry.com/images/items/1200/NDK/NDKD0A9/BLA.jpg",
+      "https://content.backcountry.com/images/items/1200/NDK/NDKD0A9/BLA_D4.jpg",
+      "https://content.backcountry.com/images/items/1200/NDK/NDKD0A9/BLA_D2.jpg",
+      "https://content.backcountry.com/images/items/1200/NDK/NDKD0A9/BLA_D1.jpg"
+    ],
+    specs:{"Brand":"Nidecker","Model":"Altai","Color":"Black","Terrain":"All-Mountain","Gender":"Men's","Skill Level":"Intermediate–Advanced","Country":"Switzerland"}
+  },
+  {
+    name:"Nidecker Altai W", brand:"Nidecker", price:319.99, customMsrp:319.99, customPrice:319.99, badge:"New", badgeType:"new", icon:"👟",
+    cat:"snowboard-boots", sub:"nidecker", gender:"women", age:"adult", cond:"new", popular:182,
+    desc:"Nidecker's performance women's all-mountain boot in Purple. A precise, locked-in fit for riders who want responsive power transfer.",
+    longDesc:"The Nidecker Altai W is built for riders who want a precise, responsive fit without sacrificing comfort. A locked-in chassis delivers direct power transfer to your board, while Nidecker's Swiss design heritage ensures quality construction that holds up run after run.",
+    action:"Add to Cart", link:null,
+    sizes:[
+      {label:"5.5", qty:0, hlId:101145},
+      {label:"6.0", qty:0, hlId:101146},
+      {label:"6.5", qty:0, hlId:101147},
+      {label:"7.0", qty:0, hlId:101148},
+      {label:"7.5", qty:0, hlId:101149},
+      {label:"8.0", qty:0, hlId:101150},
+      {label:"8.5", qty:0, hlId:101151},
+      {label:"9.0", qty:0, hlId:101152},
+      {label:"9.5", qty:0, hlId:101153},
+    ],
+    images:[
+      "https://www.nidecker.com/cdn/shop/files/N.26.BTW.ATW.C1-Altai_W_Purple-1.webp?v=1786448609&width=1946",
+      "https://www.nidecker.com/cdn/shop/files/N.26.BTW.ATW.C1-Altai_W_Purple-4.webp?v=1786448610&width=1946",
+      "https://www.nidecker.com/cdn/shop/files/N.26.BTW.ATW.C1-Altai_W_Purple-5.webp?v=1786448609&width=1946",
+      "https://www.nidecker.com/cdn/shop/files/N.26.BTW.ATW.C1-Altai_W_Purple-3.webp?v=1786448609&width=1946"
+    ],
+    specs:{"Brand":"Nidecker","Model":"Altai W","Color":"Purple","Terrain":"All-Mountain","Gender":"Women's","Skill Level":"Intermediate–Advanced","Country":"Switzerland"}
+  },
+  {
     name:"Salomon Faction BOA", brand:"Salomon", price:279.99, customMsrp:279.99, customPrice:279.99, badge:"", badgeType:"default", icon:"👟",
     cat:"snowboard-boots", sub:"salomon", gender:"men", age:"adult", cond:"new", popular:175,
     desc:"Salomon\'s mid-range all-mountain snowboard boot. The Faction BOA delivers a dialed fit with single-zone BOA lacing, a medium flex, and comfortable all-day performance across the whole mountain.",
@@ -1481,6 +2021,383 @@ const BINDINGS = [
     ],
     specs:{"Brand":"Salomon","Lacing":"BOA Single-Zone","Flex":"Medium","Liner":"Custom Fit Molding","Terrain":"All-Mountain","Skill Level":"Beginner–Intermediate","Color":"Black / Steeple Gray"}
   },
+  {
+    name:"Bataleon Salsa Double BOA", brand:"Bataleon", price:439.99, customMsrp:439.99, customPrice:439.99, badge:"New", badgeType:"new", icon:"👟",
+    cat:"snowboard-boots", sub:"bataleon", gender:"women", age:"adult", cond:"new", popular:174,
+    desc:"Bataleon's all-mountain Salsa boot with a Dual BOA system for a secure, precise fit. Vibram outsole and P2 Premium Liner deliver comfort and traction from powder to groomers.",
+    longDesc:"The Bataleon Salsa is built for all-mountain riders who want performance and comfort in equal measure. A Vibram outsole and updated midsole pair with a Dual BOA system for a secure, dialed-in fit, while the P2 Premium Liner with stitched ankle support keeps you comfortable and in control all day long — whether you're navigating powder or carving groomers.",
+    action:"Add to Cart", link:null,
+    sizes:[
+      {label:"8",    qty:0, hlId:101945},
+      {label:"8.5",  qty:0, hlId:101946},
+      {label:"9",    qty:0, hlId:101947},
+      {label:"9.5",  qty:0, hlId:101948},
+      {label:"10",   qty:0, hlId:101949},
+      {label:"10.5", qty:0, hlId:101950},
+      {label:"11",   qty:0, hlId:101951},
+      {label:"11.5", qty:0, hlId:101952},
+      {label:"12",   qty:0, hlId:101953},
+      {label:"13",   qty:0, hlId:101954},
+    ],
+    images:[
+      "https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcQeqxfyFeik6xwYhiC6NOU6nEym996MZMUGbJ16phKRQQ7-gJk0l9j0ZlABQbMxxmtxhtv1oQRJeDc0df2nFkwOtCIlra1ywQ-HhetxD7Ka7u_GMzcWgWJ3",
+      "https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcQw0zSPlBGGxrgc2rlW32whI5uP0iBtzk2Cu1DR24LFXN-U6A29FhV3Lnq_zN60SQPkPHDW2475_EglQcl8mJ5-lBiiO5_nfN_nwfecGfczuS93KLqQ_Dax",
+      "https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcQJsQHI4mIqIRkpWR7BnLW1e_T8jrEvDK2T7teRv8FHo1xQmCpfdOsnjp-h1LwuHy0hyFNlhxFB5U7XHN4qahCU8VZ7JnLDqPGPOhEHO2dtOuVpVndREPjb",
+      "https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcSJe_HlgVCV4eSQOZlSA0C8M8Pa4SA4Ft4FhsodrXHJ-eih5Jb1_QweMRDn_or-NEXCM7pYeahka6D6H41cVL1uAyNLVozofPoOq_snqGTG5H5M0Luq-KJSqb0",
+      "https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcTOeTE0YuBfrgLfxih2HetIjsTaRf3j05V10XFvFAYoKNy1Xi6X2kcpqVKP1gHga9hpEsTb9Eb6jp1MhShYaZLBFHlntoADrBvuJWTVeY4",
+      "https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcTsHtz8M2OK-MTPoAs9RsZgFvARgac_2AcSJUIqwiDsn9dpgzyzQdSYqVGIEjqMNMAiiNU2twrykNu0fW7z8HWJ250xy-9X2QGpXwHi"
+    ],
+    specs:{"Brand":"Bataleon","Model":"Salsa Double BOA","Lacing":"Dual BOA","Outsole":"Vibram","Liner":"P2 Premium","Terrain":"All-Mountain","Gender":"Women's"}
+  },
+  {
+    name:"Salomon Dialogue Dual BOA Wide", brand:"Salomon", price:429.99, customMsrp:429.99, customPrice:429.99, badge:"New", badgeType:"new", icon:"👟",
+    cat:"snowboard-boots", sub:"salomon", gender:"men", age:"adult", cond:"new", popular:176,
+    desc:"Salomon's freestyle-focused Dialogue boot in a Wide fit. Dual Zone BOA lacing with STR8JKT Pro heel harness delivers precise, customizable support.",
+    longDesc:"The Salomon Dialogue Dual BOA Wide blends all-day comfort with progressive freestyle performance in a wider fit for riders who need extra volume. The H4/M+2 Dual Zone BOA system lets you dial in independent adjustments for the upper and lower zones, while the STR8JKT Pro internal harness locks in your heel for confident lateral control. A mid-stiff flex handles everything from park laps to side hits without sacrificing board feel.",
+    action:"Add to Cart", link:null,
+    sizes:[
+      {label:"7",    qty:0, hlId:102137},
+      {label:"7.5",  qty:0, hlId:102138},
+      {label:"8",    qty:0, hlId:102139},
+      {label:"8.5",  qty:0, hlId:102140},
+      {label:"9",    qty:0, hlId:102141},
+      {label:"9.5",  qty:0, hlId:102142},
+      {label:"10",   qty:0, hlId:102143},
+      {label:"11",   qty:0, hlId:102144},
+      {label:"11.5", qty:0, hlId:102145},
+      {label:"13",   qty:0, hlId:102146},
+    ],
+    images:[
+      "https://www.evo.com/cdn/shop/files/product-image-1311297.jpg?v=1782160333&width=1200",
+      "https://www.evo.com/cdn/shop/files/product-image-1311298.jpg?v=1782160333&width=2560",
+      "https://www.evo.com/cdn/shop/files/product-image-1311301.jpg?v=1782160333&width=2560"
+    ],
+    specs:{"Brand":"Salomon","Model":"Dialogue Dual BOA Wide","Lacing":"H4/M+2 Dual Zone BOA","Flex":"Mid-Stiff","Fit":"Wide","Terrain":"Freestyle / All-Mountain","Skill Level":"Intermediate–Advanced"}
+  },
+  {
+    name:"Salomon Launch BOA SJ", brand:"Salomon", price:389.99, customMsrp:389.99, customPrice:389.99, badge:"New", badgeType:"new", icon:"👟",
+    cat:"snowboard-boots", sub:"salomon", gender:"men", age:"adult", cond:"new", popular:177,
+    desc:"Salomon's accessible all-mountain Launch BOA SJ. Easy, reliable BOA lacing with a comfortable medium flex for riders at every level.",
+    longDesc:"The Salomon Launch BOA SJ delivers quick, reliable BOA lacing in a comfortable, approachable package built for all-mountain riding. A medium flex chassis keeps things forgiving for developing riders while still holding up to a full day on the hill. A great entry point into Salomon's BOA boot lineup.",
+    action:"Add to Cart", link:null,
+    sizes:[
+      {label:"8",    qty:0, hlId:100774},
+      {label:"8.5",  qty:0, hlId:100775},
+      {label:"9",    qty:0, hlId:102147},
+      {label:"9.5",  qty:0, hlId:102148},
+      {label:"10",   qty:0, hlId:102149},
+      {label:"10.5", qty:0, hlId:102150},
+      {label:"11",   qty:0, hlId:102151},
+      {label:"11.5", qty:0, hlId:102152},
+      {label:"12",   qty:0, hlId:102153},
+      {label:"12.5", qty:0, hlId:102154},
+    ],
+    images:[
+      "https://cdn.dam.salomon.com/0014fcf7-0671-47c1-8bdd-b40c010d18ef/L49262200/PNG-2000px-max-72dpi.png?width=640&fit=cover&optimize=medium&bg-color=f5f5f5&format=pjpg&auto=avif&canvas=116p%2C144p",
+      "https://cdn.dam.salomon.com/90ad1c0a-93a8-45fc-ad82-b3e200a0ebf5/L49262200/PNG-2000px-max-72dpi.png?width=640&fit=cover&optimize=medium&bg-color=f5f5f5&format=pjpg&auto=avif&canvas=116p%2C144p",
+      "https://cdn.dam.salomon.com/ea6a2168-6a42-4a93-832a-b3e200a0edd5/L49262200/PNG-2000px-max-72dpi.png?width=640&fit=cover&optimize=medium&bg-color=f5f5f5&format=pjpg&auto=avif&canvas=116p%2C144p"
+    ],
+    specs:{"Brand":"Salomon","Model":"Launch BOA SJ","Lacing":"BOA Single-Zone","Flex":"Medium","Terrain":"All-Mountain","Skill Level":"Beginner–Intermediate"}
+  },
+  {
+    name:"Baffin Tundra Boot", brand:"Baffin", price:210.00, customMsrp:210.00, customPrice:210.00, badge:"New", badgeType:"new", icon:"🥾",
+    cat:"winter-boots", sub:"baffin", gender:"men", age:"adult", cond:"new", popular:170,
+    desc:"Baffin Tundra — a premium insulated winter boot built for extreme cold. Rated to -40°F with a removable inner boot system and durable outer shell.",
+    longDesc:"The Baffin Tundra is one of the most capable cold-weather boots available. Rated to -40°F/-40°C, it features Baffin\'s multi-layer insulation system, a removable inner boot for drying and customization, and a durable rubber outer shell for traction on snow and ice. Built in Canada with serious winter in mind — perfect for skiing trips, ice fishing, or any day when the cold means business.",
+    action:"Add to Cart", link:null,
+    sizes:[
+      {label:"8",  qty:0, hlId:102239},
+      {label:"9",  qty:0, hlId:102240},
+      {label:"10", qty:0, hlId:102241},
+      {label:"11", qty:0, hlId:102242},
+      {label:"12", qty:0, hlId:102243}
+    ],
+    images:[
+      "https://www.shoebacca.com/cdn/shop/files/43000162-001_1l.jpg?v=1789430484&width=1160",
+      "https://www.shoebacca.com/cdn/shop/files/43000162-001_2l.jpg?v=1789430484&width=1160",
+      "https://www.shoebacca.com/cdn/shop/files/43000162-001_3l.jpg?v=1789430484&width=1160",
+      "https://www.shoebacca.com/cdn/shop/files/43000162-001_4l.jpg?v=1789430484&width=1160",
+      "https://www.shoebacca.com/cdn/shop/files/43000162-001_5l.jpg?v=1789430484&width=1160"
+    ],
+    specs:{"Brand":"Baffin","Rating":"-40°F / -40°C","Insulation":"Multi-Layer System","Inner Boot":"Removable","Made In":"Canada","Gender":"Men\'s"}
+  },
+  {
+    name:"Baffin Chloe Boot", brand:"Baffin", price:210.00, customMsrp:210.00, customPrice:210.00, badge:"New", badgeType:"new", icon:"🥾",
+    cat:"winter-boots", sub:"baffin", gender:"women", age:"adult", cond:"new", popular:168,
+    desc:"Baffin Chloe — a women's insulated winter boot built for cold-weather comfort and traction. Available in Black and Coastal Grey.",
+    longDesc:"The Baffin Chloe brings the same cold-weather reliability as the rest of the Baffin lineup in a boot built specifically for women. A durable outer shell and insulated construction keep feet warm and dry through winter conditions, while a grippy outsole handles ice and packed snow with confidence. Available in Black and Coastal Grey — select your color below.",
+    action:"Add to Cart", link:null,
+    colorways:[
+      {label:"Black",         image:"https://m.media-amazon.com/images/I/71jWH+Czk8L._AC_SY575_.jpg"},
+      {label:"Coastal Grey",  image:"https://m.media-amazon.com/images/I/71HwmN0-IoL._AC_SY575_.jpg"},
+    ],
+    sizes:[
+      {label:"Black — 6",         qty:0, hlId:102244},
+      {label:"Black — 7",         qty:0, hlId:102246},
+      {label:"Black — 8",         qty:0, hlId:102248},
+      {label:"Black — 9",         qty:0, hlId:102250},
+      {label:"Black — 10",        qty:0, hlId:102252},
+      {label:"Coastal Grey — 6",  qty:0, hlId:102245},
+      {label:"Coastal Grey — 7",  qty:0, hlId:102247},
+      {label:"Coastal Grey — 8",  qty:0, hlId:102249},
+      {label:"Coastal Grey — 9",  qty:0, hlId:102251},
+      {label:"Coastal Grey — 10", qty:0, hlId:102253},
+    ],
+    images:[
+      "https://m.media-amazon.com/images/I/71jWH+Czk8L._AC_SY575_.jpg",
+      "https://m.media-amazon.com/images/I/615+hl35M4L._AC_SY575_.jpg",
+      "https://m.media-amazon.com/images/I/511UyGaOCQL._AC_SY575_.jpg",
+      "https://m.media-amazon.com/images/I/711kHFEpn8L._AC_SY575_.jpg",
+      "https://m.media-amazon.com/images/I/71HwmN0-IoL._AC_SY575_.jpg",
+      "https://m.media-amazon.com/images/I/71L-bpcP6wL._AC_SY575_.jpg",
+      "https://m.media-amazon.com/images/I/71qJ0wcdJyL._AC_SY575_.jpg",
+      "https://m.media-amazon.com/images/I/71FOm+OVYYL._AC_SY575_.jpg",
+      "https://m.media-amazon.com/images/I/618XmJ8Tf9L._AC_SY575_.jpg",
+      "https://m.media-amazon.com/images/I/61tCbktcw-L._AC_SY575_.jpg"
+    ],
+    specs:{"Brand":"Baffin","Gender":"Women\'s","Colors":"Black, Coastal Grey","Sizes":"6-10"}
+  },
+  {
+    name:"Baffin Hunter Boot", brand:"Baffin", price:75.00, customMsrp:75.00, customPrice:75.00, badge:"New", badgeType:"new", icon:"🥾",
+    cat:"winter-boots", sub:"baffin", gender:"men", age:"adult", cond:"new", popular:148,
+    desc:"Baffin Hunter — a rugged men's rubber winter boot in Forest/Black. Built for durability and traction in cold, wet conditions.",
+    longDesc:"The Baffin Hunter is a dependable rubber winter boot built for anyone who spends time outdoors in cold, wet, and muddy conditions. A durable rubber shell in Forest/Black handles the elements while a grippy outsole keeps footing solid on ice and slush.",
+    action:"Add to Cart", link:null,
+    sizes:[
+      {label:"8",  qty:0, hlId:102266},
+      {label:"9",  qty:0, hlId:102267},
+      {label:"10", qty:0, hlId:102268},
+      {label:"11", qty:0, hlId:102269},
+      {label:"12", qty:0, hlId:102270},
+      {label:"13", qty:0, hlId:102271},
+      {label:"14", qty:0, hlId:102272},
+    ],
+    images:[
+      "https://www.baffin.com/cdn/shop/products/HUNTER_85620000_394_PRIMARY_f840c28a-3761-42e9-8956-d6e75be7974b.png?v=1734125772&width=560",
+      "https://www.baffin.com/cdn/shop/products/HUNTER_85620000_394_SOLE.png?v=1734125772&width=560",
+      "https://www.baffin.com/cdn/shop/products/HUNTER_85620000_394_HEEL.png?v=1734125772&width=560",
+      "https://www.baffin.com/cdn/shop/products/HUNTER_85620000_394_MEDIAL.png?v=1734125772&width=560",
+      "https://www.baffin.com/cdn/shop/products/HUNTER_85620000_394_TOP.png?v=1734125773&width=560"
+    ],
+    specs:{"Brand":"Baffin","Gender":"Men\'s","Color":"Forest/Black","Sizes":"8-14"}
+  },
+  {
+    name:"Baffin Cloud Low Boot", brand:"Baffin", price:168.00, customMsrp:168.00, customPrice:168.00, badge:"New", badgeType:"new", icon:"🥾",
+    cat:"winter-boots", sub:"baffin", gender:"women", age:"adult", cond:"new", popular:149,
+    desc:"Baffin Cloud Low — a lightweight women's winter boot available in White and Black.",
+    longDesc:"The Baffin Cloud Low pairs everyday comfort with cold-weather protection in a low-profile silhouette. Available in White and Black — select your color below.",
+    action:"Add to Cart", link:null,
+    colorways:[
+      {label:"White", image:"https://www.baffin.com/cdn/shop/files/CLOUDLOW_EASEW008_WAE_PRIMARY.png?v=1761766711&width=560"},
+      {label:"Black", image:"https://www.baffin.com/cdn/shop/files/CLOUDLOW_EASEW008_BK1_PRIMARY.png?v=1761766711&width=560"},
+    ],
+    sizes:[
+      {label:"White — 6",  qty:0, hlId:102273},
+      {label:"White — 7",  qty:0, hlId:102275},
+      {label:"White — 8",  qty:0, hlId:102277},
+      {label:"White — 9",  qty:0, hlId:102279},
+      {label:"White — 10", qty:0, hlId:102281},
+      {label:"Black — 6",  qty:0, hlId:102274},
+      {label:"Black — 7",  qty:0, hlId:102276},
+      {label:"Black — 8",  qty:0, hlId:102278},
+      {label:"Black — 9",  qty:0, hlId:102280},
+      {label:"Black — 10", qty:0, hlId:102282},
+    ],
+    images:[
+      "https://www.baffin.com/cdn/shop/files/CLOUDLOW_EASEW008_WAE_PRIMARY.png?v=1761766711&width=560",
+      "https://www.baffin.com/cdn/shop/files/CLOUDLOW_EASEW008_WAE_SOLE.png?v=1761766711&width=560",
+      "https://www.baffin.com/cdn/shop/files/CLOUDLOW_EASEW008_WAE_HEEL.png?v=1761766711&width=560",
+      "https://www.baffin.com/cdn/shop/files/CLOUDLOW_EASEW008_WAE_MEDIAL.png?v=1761766711&width=560",
+      "https://www.baffin.com/cdn/shop/files/CLOUDLOW_EASEW008_WAE_TOP.png?v=1761766711&width=560",
+      "https://www.baffin.com/cdn/shop/files/CLOUDLOW_EASEW008_BK1_PRIMARY.png?v=1761766711&width=560",
+      "https://www.baffin.com/cdn/shop/files/CLOUDLOW_EASEW008_BK1_SOLE.png?v=1761766711&width=560",
+      "https://www.baffin.com/cdn/shop/files/CLOUDLOW_EASEW008_BK1_HEEL.png?v=1761766711&width=560",
+      "https://www.baffin.com/cdn/shop/files/CLOUDLOW_EASEW008_BK1_MEDIAL.png?v=1761766711&width=560",
+      "https://www.baffin.com/cdn/shop/files/CLOUDLOW_EASEW008_BK1_TOP.png?v=1761766711&width=560"
+    ],
+    specs:{"Brand":"Baffin","Gender":"Women\'s","Colors":"White, Black","Sizes":"6-10"}
+  },
+  {
+    name:"Baffin Canada Boot", brand:"Baffin", price:192.00, customMsrp:192.00, customPrice:192.00, badge:"New", badgeType:"new", icon:"🥾",
+    cat:"winter-boots", sub:"baffin", gender:"men", age:"adult", cond:"new", popular:150,
+    desc:"Baffin Canada — a premium insulated men's winter boot in Black, built for extreme cold weather performance.",
+    longDesc:"The Baffin Canada is part of Baffin's Heritage collection, built for serious cold-weather performance. A durable Black shell and advanced insulation keep feet warm and protected through winter's worst conditions.",
+    action:"Add to Cart", link:null,
+    sizes:[
+      {label:"8",  qty:0, hlId:102283},
+      {label:"9",  qty:0, hlId:102284},
+      {label:"10", qty:0, hlId:102285},
+      {label:"11", qty:0, hlId:102286},
+      {label:"12", qty:0, hlId:102287},
+    ],
+    images:[
+      "https://www.baffin.com/cdn/shop/products/CANADA_HTGEM001_BBI_PRIMARY.png?v=1734125716&width=560",
+      "https://www.baffin.com/cdn/shop/products/HERITAGE_SOLE_BBI_1.png?v=1734125716&width=560",
+      "https://www.baffin.com/cdn/shop/products/CANADA_HTGEM001_BBI_HEEL.png?v=1734125716&width=560",
+      "https://www.baffin.com/cdn/shop/products/CANADA_HTGEM001_BBI_MEDIAL.png?v=1734125716&width=560",
+      "https://www.baffin.com/cdn/shop/products/CANADA_HTGEM001_BBI_TOP.png?v=1734125716&width=560"
+    ],
+    specs:{"Brand":"Baffin","Gender":"Men\'s","Color":"Black","Sizes":"8-12"}
+  },
+  {
+    name:"Baffin Wander Boot", brand:"Baffin", price:90.00, customMsrp:90.00, customPrice:90.00, badge:"New", badgeType:"new", icon:"🥾",
+    cat:"winter-boots", sub:"baffin", gender:"unisex", age:"kid", cond:"new", popular:147,
+    desc:"Baffin Wander — a kid's winter boot available in Black, Blue, and Pink. Sizes 1-4 and 8-12.",
+    longDesc:"The Baffin Wander keeps kids warm and comfortable on winter adventures, from the school bus stop to the sledding hill. Available in Black, Blue, and Pink — select your color below.",
+    action:"Add to Cart", link:null,
+    colorways:[
+      {label:"Black", image:"https://www.baffin.com/cdn/shop/files/WANDER-Y001_BBI_PRIMARY.png?v=1742499150&width=560"},
+      {label:"Blue",  image:"https://www.baffin.com/cdn/shop/files/WANDER-Y001_BBM_PRIMARY.png?v=1742564626&width=560"},
+      {label:"Pink",  image:"https://www.baffin.com/cdn/shop/files/WANDER-Y001_PK1_PRIMARY.png?v=1742564626&width=560"},
+    ],
+    sizes:[
+      {label:"Black — 1",  qty:0, hlId:102303},
+      {label:"Black — 2",  qty:0, hlId:102306},
+      {label:"Black — 3",  qty:0, hlId:102309},
+      {label:"Black — 4",  qty:0, hlId:102312},
+      {label:"Black — 8",  qty:0, hlId:102288},
+      {label:"Black — 9",  qty:0, hlId:102291},
+      {label:"Black — 10", qty:0, hlId:102294},
+      {label:"Black — 11", qty:0, hlId:102297},
+      {label:"Black — 12", qty:0, hlId:102300},
+      {label:"Blue — 1",   qty:0, hlId:102304},
+      {label:"Blue — 2",   qty:0, hlId:102307},
+      {label:"Blue — 3",   qty:0, hlId:102310},
+      {label:"Blue — 4",   qty:0, hlId:102313},
+      {label:"Blue — 8",   qty:0, hlId:102289},
+      {label:"Blue — 9",   qty:0, hlId:102292},
+      {label:"Blue — 10",  qty:0, hlId:102295},
+      {label:"Blue — 11",  qty:0, hlId:102298},
+      {label:"Blue — 12",  qty:0, hlId:102301},
+      {label:"Pink — 1",   qty:0, hlId:102305},
+      {label:"Pink — 2",   qty:0, hlId:102308},
+      {label:"Pink — 3",   qty:0, hlId:102311},
+      {label:"Pink — 4",   qty:0, hlId:102314},
+      {label:"Pink — 8",   qty:0, hlId:102290},
+      {label:"Pink — 9",   qty:0, hlId:102293},
+      {label:"Pink — 10",  qty:0, hlId:102296},
+      {label:"Pink — 11",  qty:0, hlId:102299},
+      {label:"Pink — 12",  qty:0, hlId:102302},
+    ],
+    images:[
+      "https://www.baffin.com/cdn/shop/files/WANDER-Y001_BBI_PRIMARY.png?v=1742499150&width=560",
+      "https://www.baffin.com/cdn/shop/files/WANDER-Y001_BBI_SOLE.png?v=1742499154&width=560",
+      "https://www.baffin.com/cdn/shop/files/WANDER-Y001_BBI_HEEL.png?v=1742564626&width=560",
+      "https://www.baffin.com/cdn/shop/files/WANDER-Y001_BBI_MEDIAL.png?v=1742564626&width=560",
+      "https://www.baffin.com/cdn/shop/files/WANDER-Y001_BBI_TOP.png?v=1742564626&width=560",
+      "https://www.baffin.com/cdn/shop/files/WANDER-Y001_BBM_PRIMARY.png?v=1742564626&width=560",
+      "https://www.baffin.com/cdn/shop/files/WANDER-Y001_BBM_SOLE.png?v=1742564626&width=560",
+      "https://www.baffin.com/cdn/shop/files/WANDER-Y001_BBM_HEEL.png?v=1742564626&width=560",
+      "https://www.baffin.com/cdn/shop/files/WANDER-Y001_BBM_MEDIAL.png?v=1742564626&width=560",
+      "https://www.baffin.com/cdn/shop/files/WANDER-Y001_BBM_TOP.png?v=1742564626&width=560",
+      "https://www.baffin.com/cdn/shop/files/WANDER-Y001_PK1_PRIMARY.png?v=1742564626&width=560",
+      "https://www.baffin.com/cdn/shop/files/WANDER-Y001_PK1_SOLE.png?v=1742564626&width=560",
+      "https://www.baffin.com/cdn/shop/files/WANDER-LIFESTYLE_3ff2e0cb-8c30-43ae-b1cd-1d8ae8801754.png?v=1742564626&width=560",
+      "https://www.baffin.com/cdn/shop/files/WANDER-Y001_PK1_HEEL.png?v=1742564626&width=560",
+      "https://www.baffin.com/cdn/shop/files/WANDER-Y001_PK1_MEDIAL.png?v=1742564626&width=560"
+    ],
+    specs:{"Brand":"Baffin","Gender":"Kid\'s","Colors":"Black, Blue, Pink","Sizes":"1-4, 8-12"}
+  },
+  {
+    name:"Baffin Ice Castle Boot", brand:"Baffin", price:70.00, customMsrp:70.00, customPrice:70.00, badge:"New", badgeType:"new", icon:"🥾",
+    cat:"winter-boots", sub:"baffin", gender:"unisex", age:"kid", cond:"new", popular:146,
+    desc:"Baffin Ice Castle — a kid's rubber winter boot available in Black and Black/Lavender.",
+    longDesc:"The Baffin Ice Castle is a cozy, easy-on rubber winter boot built for kids. Durable construction with warm insulation keeps little feet comfortable in snow and slush. Available in Black and Black/Lavender — select your color below.",
+    action:"Add to Cart", link:null,
+    colorways:[
+      {label:"Black",          image:"https://www.baffin.com/cdn/shop/products/ICE_CASTLE_WRUB-Y011_BBI_PRIMARY.png?v=1771384407&width=560"},
+      {label:"Black/Lavender", image:"https://www.baffin.com/cdn/shop/products/ICE_CASTLE_WRUB-Y011_BBO_PRIMARY.png?v=1771384407&width=560"},
+    ],
+    sizes:[
+      {label:"Black — 1",           qty:0, hlId:102320},
+      {label:"Black — 2",           qty:0, hlId:102322},
+      {label:"Black — 3",           qty:0, hlId:102324},
+      {label:"Black — 4",           qty:0, hlId:102326},
+      {label:"Black/Lavender — 1",  qty:0, hlId:102321},
+      {label:"Black/Lavender — 2",  qty:0, hlId:102323},
+      {label:"Black/Lavender — 3",  qty:0, hlId:102325},
+      {label:"Black/Lavender — 4",  qty:0, hlId:102327},
+    ],
+    images:[
+      "https://www.baffin.com/cdn/shop/products/ICE_CASTLE_WRUB-Y011_BBI_PRIMARY.png?v=1771384407&width=560",
+      "https://www.baffin.com/cdn/shop/products/ICECASTLE_SOLE_BBI_3f1a5960-dab9-47fb-82d5-0134f8392c90.png?v=1771384407&width=560",
+      "https://www.baffin.com/cdn/shop/products/ICE_CASTLE_WRUB-Y011_BBI_TOP-callout.png?v=1771384407&width=560",
+      "https://www.baffin.com/cdn/shop/files/ICECASTLE_BBI_ONFOOT.png?v=1771384407&width=560",
+      "https://www.baffin.com/cdn/shop/products/ICE_CASTLE_WRUB-Y011_BBI_HEEL.png?v=1771384407&width=560",
+      "https://www.baffin.com/cdn/shop/products/ICE_CASTLE_WRUB-Y011_BBI_MEDIAL.png?v=1771384407&width=560",
+      "https://www.baffin.com/cdn/shop/products/ICE_CASTLE_WRUB-Y011_BBO_PRIMARY.png?v=1771384407&width=560",
+      "https://www.baffin.com/cdn/shop/products/ICECASTLE_SOLE_BBO.png?v=1771384407&width=560",
+      "https://www.baffin.com/cdn/shop/products/icecastle-top.png?v=1771384407&width=560",
+      "https://www.baffin.com/cdn/shop/products/ICE_CASTLE_WRUBY011_BBO_ONFOOT_3-2000x2000png.png?v=1771384407&width=560",
+      "https://www.baffin.com/cdn/shop/products/ICE_CASTLE_WRUB-Y011_BBO_HEEL_1.png?v=1771384407&width=560",
+      "https://www.baffin.com/cdn/shop/products/ICE_CASTLE_WRUB-Y011_BBO_MEDIAL.png?v=1771384407&width=560"
+    ],
+    specs:{"Brand":"Baffin","Gender":"Kid\'s","Colors":"Black, Black/Lavender","Sizes":"1-4"}
+  },
+  {
+    name:"Baffin Dana Boot", brand:"Baffin", price:300.00, customMsrp:300.00, customPrice:300.00, badge:"New", badgeType:"new", icon:"🥾",
+    cat:"winter-boots", sub:"baffin", gender:"women", age:"adult", cond:"new", popular:151,
+    desc:"Baffin Dana — a premium lightweight women's winter boot in Black, built for warmth without the bulk.",
+    longDesc:"The Baffin Dana combines lightweight comfort with serious cold-weather protection, built for women who need reliable warmth without sacrificing mobility. A sleek Black design with advanced insulation technology.",
+    action:"Add to Cart", link:null,
+    sizes:[
+      {label:"6",  qty:0, hlId:102315},
+      {label:"7",  qty:0, hlId:102316},
+      {label:"8",  qty:0, hlId:102317},
+      {label:"9",  qty:0, hlId:102318},
+      {label:"10", qty:0, hlId:102319},
+    ],
+    images:[
+      "https://www.baffin.com/cdn/shop/products/DANA_LITEW013_BK1_PRIMARY.png?v=1627526968&width=560",
+      "https://www.baffin.com/cdn/shop/products/ULTRALITE_SOLE_GY2.png?v=1627526968&width=560",
+      "https://www.baffin.com/cdn/shop/files/Dana_Spring_Swap_2026.png?v=1772648781&width=560",
+      "https://www.baffin.com/cdn/shop/products/DANA_LITEW013_BK1_HEEL.png?v=1772648781&width=560",
+      "https://www.baffin.com/cdn/shop/products/DANA_LITEW013_BK1_MEDIAL.png?v=1772648781&width=560",
+      "https://www.baffin.com/cdn/shop/products/DANA_LITEW013_BK1_TOP.png?v=1772648781&width=560",
+      "https://www.baffin.com/cdn/shop/products/editorial-technology-dana.jpg?v=1772648781&width=560",
+      "https://www.baffin.com/cdn/shop/products/editorial-rating-dana.jpg?v=1772648781&width=560"
+    ],
+    specs:{"Brand":"Baffin","Gender":"Women\'s","Color":"Black","Sizes":"6-10"}
+  },
+  {
+    name:"Baffin Cush Slipper", brand:"Baffin", price:72.00, customMsrp:72.00, customPrice:72.00, badge:"New", badgeType:"new", icon:"🧦",
+    cat:"accessories", sub:"footwear", gender:"unisex", age:"adult", cond:"new", popular:150,
+    desc:"Baffin Cush Slipper — a cozy, cushioned indoor slipper built for warmth and comfort after a day on the mountain. Available in Black and Navy Blue.",
+    longDesc:"The Baffin Cush Slipper is the perfect companion after a day on the slopes — a soft, cushioned footbed and durable outsole make it comfortable enough for lounging but sturdy enough for a quick trip outside. Available in Black and Navy Blue — select your color below.",
+    action:"Add to Cart", link:null,
+    colorways:[
+      {label:"Black",      image:"https://www.baffin.com/cdn/shop/files/CUSHSLIPPER_61270000_001_PRIMARY_2b193e72-bdb1-47ef-b9f2-bc03e189257a.png?v=1752853931&width=560"},
+      {label:"Navy Blue",  image:"https://www.baffin.com/cdn/shop/files/CUSHSLIPPER_61270000_007_PRIMARY_3aed8304-f72f-40de-a3d0-43f3d7f56af8.png?v=1752853931&width=560"},
+    ],
+    sizes:[
+      {label:"Black — S (3-4)",        qty:0, hlId:102254},
+      {label:"Black — M (5-6)",        qty:0, hlId:102256},
+      {label:"Black — L (7-8)",        qty:0, hlId:102258},
+      {label:"Black — XL (9-10)",      qty:0, hlId:102260},
+      {label:"Black — XXL (11-12)",    qty:0, hlId:102262},
+      {label:"Black — 3XL (13-14)",    qty:0, hlId:102264},
+      {label:"Navy Blue — S (3-4)",    qty:0, hlId:102255},
+      {label:"Navy Blue — M (5-6)",    qty:0, hlId:102257},
+      {label:"Navy Blue — L (7-8)",    qty:0, hlId:102259},
+      {label:"Navy Blue — XL (9-10)",  qty:0, hlId:102261},
+      {label:"Navy Blue — XXL (11-12)",qty:0, hlId:102263},
+      {label:"Navy Blue — 3XL (13-14)",qty:0, hlId:102265},
+    ],
+    images:[
+      "https://www.baffin.com/cdn/shop/files/CUSHSLIPPER_61270000_001_PRIMARY_2b193e72-bdb1-47ef-b9f2-bc03e189257a.png?v=1752853931&width=560",
+      "https://www.baffin.com/cdn/shop/files/CUSHSLIPPER_61270000_001_SOLE.png?v=1752853931&width=560",
+      "https://www.baffin.com/cdn/shop/files/CUSHSLIPPER_61270000_001_MEDIAL.png?v=1752853931&width=560",
+      "https://www.baffin.com/cdn/shop/files/CUSHSLIPPER_61270000_001_PAIR.png?v=1752853931&width=560",
+      "https://www.baffin.com/cdn/shop/files/CUSHSLIPPER_61270000_001_TOP.png?v=1752853931&width=560",
+      "https://www.baffin.com/cdn/shop/files/CUSHSLIPPER_61270000_007_PRIMARY_3aed8304-f72f-40de-a3d0-43f3d7f56af8.png?v=1752853931&width=560",
+      "https://www.baffin.com/cdn/shop/files/CUSHSLIPPER_61270000_007_SOLE.png?v=1752853931&width=560",
+      "https://www.baffin.com/cdn/shop/files/CUSHSLIPPER_61270000_007_MEDIAL.png?v=1752853931&width=560",
+      "https://www.baffin.com/cdn/shop/files/CUSHSLIPPER_61270000_007_TOP.png?v=1752853931&width=560",
+      "https://www.baffin.com/cdn/shop/files/CUSHSLIPPER_61270000_007_PAIR.png?v=1752853931&width=560"
+    ],
+    specs:{"Brand":"Baffin","Type":"Indoor/Outdoor Slipper","Colors":"Black, Navy Blue","Sizing":"S (3-4), M (5-6), L (7-8), XL (9-10), XXL (11-12), 3XL (13-14)"}
+  },
+
 ];
 PRODUCTS.push(...BINDINGS);
 
@@ -1883,6 +2800,7 @@ function tsSizeSelectHTML(p, idx, selectId) {
 
 // ══ CATEGORY & SUBCATEGORY ════════════════════════════════
 function tsCat(cat, btn) {
+  tsHideCustomViews();
   activeCat = cat;
   activeSub = "all";
   document.querySelectorAll(".ts-catbtn").forEach(b=>b.classList.remove("on"));
@@ -1898,16 +2816,21 @@ function tsRenderSubcats() {
   const sec  = document.getElementById("sub-section");
   if (!subs.length) { sec.style.display="none"; } else { sec.style.display=""; }
   if (wrap) wrap.innerHTML = subs.map(s =>
-    `<button class="ts-subcat-btn${s.v===activeSub?' on':''}" onclick="tsSub('${s.v}',this)">${s.l}</button>`
+    s.v === "---"
+      ? `<span style="display:inline-block;width:1px;height:18px;background:#ddd;margin:0 4px;vertical-align:middle;"></span>`
+      : `<button class="ts-subcat-btn${s.v===activeSub?' on':''}" onclick="tsSub('${s.v}',this)">${s.l}</button>`
   ).join("");
   // Show/hide size sliders based on category
-  const cmSec   = document.getElementById("size-cm-filter-section");
-  const bootSec = document.getElementById("size-boot-filter-section");
-  if (cmSec)   cmSec.style.display   = (activeCat === "skis" || activeCat === "snowboards" || activeCat === "all") ? "" : "none";
-  if (bootSec) bootSec.style.display = (activeCat === "ski-boots" || activeCat === "all") ? "" : "none";
+  const cmSec     = document.getElementById("size-cm-filter-section");
+  const bootSec   = document.getElementById("size-boot-filter-section");
+  const usBootSec = document.getElementById("size-usboot-filter-section");
+  if (cmSec)     cmSec.style.display     = (activeCat === "skis" || activeCat === "snowboards" || activeCat === "all") ? "" : "none";
+  if (bootSec)   bootSec.style.display   = (activeCat === "ski-boots" || activeCat === "boots" || activeCat === "all") ? "" : "none";
+  if (usBootSec) usBootSec.style.display = (activeCat === "boots") ? "" : "none";
 }
 
 function tsSub(sub, btn) {
+  if (sub === "---") return;
   activeSub = sub;
   document.querySelectorAll(".ts-subcat-btn").forEach(b=>b.classList.remove("on"));
   btn.classList.add("on");
@@ -1926,15 +2849,26 @@ function tsSizeSlider(type) {
     const pct2 = (hi - 70) / (184 - 70) * 100;
     const fill = document.getElementById('size-cm-fill');
     if (fill) { fill.style.left = pct1 + '%'; fill.style.width = (pct2 - pct1) + '%'; }
+  } else if (type === 'usboot') {
+    let lo = parseInt(document.getElementById('size-usboot-min').value);
+    let hi = parseInt(document.getElementById('size-usboot-max').value);
+    if (lo > hi) { const t=lo; lo=hi; hi=t; document.getElementById('size-usboot-min').value=lo; document.getElementById('size-usboot-max').value=hi; }
+    const loD = lo/10, hiD = hi/10;
+    const isAll = lo === 10 && hi === 140;
+    document.getElementById('size-usboot-val').textContent = isAll ? 'All sizes' : loD.toFixed(1) + ' – ' + hiD.toFixed(1);
+    const pct1 = (lo - 10) / (140 - 10) * 100;
+    const pct2 = (hi - 10) / (140 - 10) * 100;
+    const fill = document.getElementById('size-usboot-fill');
+    if (fill) { fill.style.left = pct1 + '%'; fill.style.width = (pct2 - pct1) + '%'; }
   } else {
     let lo = parseInt(document.getElementById('size-boot-min').value);
     let hi = parseInt(document.getElementById('size-boot-max').value);
     if (lo > hi) { const t=lo; lo=hi; hi=t; document.getElementById('size-boot-min').value=lo; document.getElementById('size-boot-max').value=hi; }
     const loD = lo/10, hiD = hi/10;
-    const isAll = lo === 235 && hi === 295;
+    const isAll = lo === 225 && hi === 305;
     document.getElementById('size-boot-val').textContent = isAll ? 'All sizes' : loD.toFixed(1) + ' – ' + hiD.toFixed(1);
-    const pct1 = (lo - 235) / (295 - 235) * 100;
-    const pct2 = (hi - 235) / (295 - 235) * 100;
+    const pct1 = (lo - 225) / (305 - 225) * 100;
+    const pct2 = (hi - 225) / (305 - 225) * 100;
     const fill = document.getElementById('size-boot-fill');
     if (fill) { fill.style.left = pct1 + '%'; fill.style.width = (pct2 - pct1) + '%'; }
   }
@@ -1958,21 +2892,28 @@ function tsFilter() {
   const btMaxEl  = document.getElementById("size-boot-max");
   const cmMin  = cmMinEl  ? parseInt(cmMinEl.value)  : 70;
   const cmMax  = cmMaxEl  ? parseInt(cmMaxEl.value)  : 184;
-  const btMin  = btMinEl  ? parseInt(btMinEl.value)  : 235;
-  const btMax  = btMaxEl  ? parseInt(btMaxEl.value)  : 295;
-  const cmActive   = !(cmMin === 70  && cmMax === 184);
-  const bootActive = !(btMin === 235 && btMax === 295);
+  const btMin  = btMinEl  ? parseInt(btMinEl.value)  : 225;
+  const btMax  = btMaxEl  ? parseInt(btMaxEl.value)  : 305;
+  const usbtMinEl = document.getElementById("size-usboot-min");
+  const usbtMaxEl = document.getElementById("size-usboot-max");
+  const usbtMin = usbtMinEl ? parseInt(usbtMinEl.value) : 10;
+  const usbtMax = usbtMaxEl ? parseInt(usbtMaxEl.value) : 140;
+  const cmActive     = !(cmMin === 70  && cmMax === 184);
+  const bootActive   = !(btMin === 225 && btMax === 305);
+  const usbootActive = !(usbtMin === 10 && usbtMax === 140);
 
   let items = PRODUCTS.filter(p => {
     if (activeCat !== "all") {
       if (activeCat === "boots") {
-        if (p.cat !== "ski-boots" && p.cat !== "snowboard-boots") return false;
+        if (p.cat !== "ski-boots" && p.cat !== "snowboard-boots" && p.cat !== "winter-boots") return false;
       } else if (p.cat !== activeCat) return false;
     }
     if (activeCat !== "all" && activeSub !== "all") {
       if (activeCat === "boots") {
-        if (activeSub === "ski" && p.cat !== "ski-boots") return false;
+        if (activeSub === "ski"     && p.cat !== "ski-boots") return false;
         if (activeSub === "snowboard" && p.cat !== "snowboard-boots") return false;
+        if (activeSub === "winter"  && p.cat !== "winter-boots") return false;
+        if (["roxa","salomon","nidecker","baffin"].includes(activeSub) && p.sub !== activeSub) return false;
       } else if (p.sub !== activeSub) return false;
     }
     if (!genders.includes(p.gender)) return false;
@@ -2015,13 +2956,23 @@ function tsFilter() {
       });
       if (!hasBootSize) return false;
     }
+    // Size range filter — boot slider (US sizes: snowboard & winter boots)
+    if (usbootActive && (p.cat === "snowboard-boots" || p.cat === "winter-boots")) {
+      if (!p.sizes || !p.sizes.length) return false;
+      const hasUsBootSize = p.sizes.some(s => {
+        const v = parseFloat(s.label);
+        if (isNaN(v)) return false;
+        return Math.round(v * 10) >= usbtMin && Math.round(v * 10) <= usbtMax;
+      });
+      if (!hasUsBootSize) return false;
+    }
     return true;
   });
 
   if      (sort==="price_lo") items.sort((a,b)=>a.price-b.price);
   else if (sort==="price_hi") items.sort((a,b)=>b.price-a.price);
   else if (sort==="name")     items.sort((a,b)=>a.name.localeCompare(b.name));
-  else                        items.sort((a,b)=>b.popular-a.popular);
+  else                        items.sort((a,b)=>tsDiscountPct(b)-tsDiscountPct(a) || b.popular-a.popular);
   // Always push fully out-of-stock items to bottom
   items.sort((a,b)=>{
     const aStock = a.sizes ? a.sizes.reduce((s,x)=>s+x.qty,0) : 1;
@@ -2150,18 +3101,26 @@ function tsClearFilters() {
   const cmMaxEl = document.getElementById("size-cm-max");
   const btMinEl = document.getElementById("size-boot-min");
   const btMaxEl = document.getElementById("size-boot-max");
+  const usbtMinEl = document.getElementById("size-usboot-min");
+  const usbtMaxEl = document.getElementById("size-usboot-max");
   if (cmMinEl) cmMinEl.value = 70;
   if (cmMaxEl) cmMaxEl.value = 184;
-  if (btMinEl) btMinEl.value = 235;
-  if (btMaxEl) btMaxEl.value = 295;
+  if (btMinEl) btMinEl.value = 225;
+  if (btMaxEl) btMaxEl.value = 305;
+  if (usbtMinEl) usbtMinEl.value = 10;
+  if (usbtMaxEl) usbtMaxEl.value = 140;
   const cmVal = document.getElementById("size-cm-val");
   const btVal = document.getElementById("size-boot-val");
+  const usbtVal = document.getElementById("size-usboot-val");
   if (cmVal) cmVal.textContent = "All sizes";
   if (btVal) btVal.textContent = "All sizes";
+  if (usbtVal) usbtVal.textContent = "All sizes";
   const cmFill = document.getElementById("size-cm-fill");
   const btFill = document.getElementById("size-boot-fill");
+  const usbtFill = document.getElementById("size-usboot-fill");
   if (cmFill) { cmFill.style.left="0%"; cmFill.style.width="100%"; }
   if (btFill) { btFill.style.left="0%"; btFill.style.width="100%"; }
+  if (usbtFill) { usbtFill.style.left="0%"; usbtFill.style.width="100%"; }
   // reset category tab highlights
   document.querySelectorAll(".ts-catbtn").forEach(b => b.classList.remove("on"));
   const allCatBtn = document.querySelector(".ts-catbtn");
@@ -2380,7 +3339,7 @@ function tsAccToggle(btn) { const b=btn.nextElementSibling; const o=b.classList.
 
 // ══ CART ══════════════════════════════════════════════════
 function tsRemove(key) { cart=cart.filter(i=>i.key!==key); tsSave(); tsUpdateUI(); tsRenderDrawer(); }
-function tsQty(key,d) { const i=cart.find(x=>x.key===key); if(i){i.qty=Math.max(1,i.qty+d); tsSave(); tsUpdateUI(); tsRenderDrawer();} }
+function tsQty(key,d) { const i=cart.find(x=>x.key===key); if(i){i.qty=Math.max(1,i.qty+d); if(i.deal) i.qty=1; tsSave(); tsUpdateUI(); tsRenderDrawer();} }
 function tsSave()  { localStorage.setItem("ts_cart6",JSON.stringify(cart)); }
 function tsTotal() {
   return cart.reduce((s,i) => s + i.price * (i.qty||1), 0);
@@ -2412,7 +3371,7 @@ function tsRemoveIdx(btn) {
 function tsQtyIdx(btn) {
   const n = parseInt(btn.getAttribute('data-idx'));
   const d = parseInt(btn.getAttribute('data-d'));
-  if (!isNaN(n) && cart[n]) { cart[n].qty = Math.max(1, cart[n].qty + d); tsSave(); tsUpdateUI(); tsRenderDrawer(); }
+  if (!isNaN(n) && cart[n]) { cart[n].qty = Math.max(1, cart[n].qty + d); if (cart[n].deal) cart[n].qty = 1; tsSave(); tsUpdateUI(); tsRenderDrawer(); }
 }
 function tsOpenCart()  { tsRenderDrawer(); document.getElementById("ts-drawer").classList.add("open"); document.getElementById("ts-scrim").classList.add("open"); }
 function tsCloseCart() { document.getElementById("ts-drawer").classList.remove("open"); document.getElementById("ts-scrim").classList.remove("open"); }
@@ -2488,6 +3447,18 @@ function tsMagLeave(wrap) {
 // Exact qty map from Heartland — keyed by (name_fragment, size_label)
 // Updated: 2026-03-15. Re-run the console script to refresh.
 
+// Hide any package-picker card whose product is fully out of stock
+function pkgRefreshStock() {
+  document.querySelectorAll('#ts-package-view .pkg-card, #ts-ski-package-view .pkg-card').forEach(function(card) {
+    var name = card.getAttribute('data-name');
+    var prod = PRODUCTS.find(function(p){ return p.name === name; });
+    if (!prod || !prod.sizes || !prod.sizes.length) { card.style.display = ''; return; }
+    var inStock = prod.sizes.some(function(s){ return s.qty > 0; });
+    card.style.display = inStock ? '' : 'none';
+  });
+}
+window.pkgRefreshStock = pkgRefreshStock;
+
 async function hlSyncInventory() {
   try {
     const resp = await fetch('https://tuneskis-server.onrender.com/inventory');
@@ -2530,8 +3501,11 @@ async function hlSyncInventory() {
       }
     });
 
+    window._tsHlMap = hlMap;
     console.log('[TuneSkis] Live sync: updated', updated, 'sizes from Heartland');
     tsFilter();
+    pkgRefreshStock();
+    dealRender();
   } catch(e) {
     console.warn('[TuneSkis] Sync failed:', e.message);
   }
@@ -2544,6 +3518,8 @@ async function hlSyncInventory() {
   // Init slider fills to full width
   const cmFill = document.getElementById("size-cm-fill");
   const btFill = document.getElementById("size-boot-fill");
+  const usbtFillInit = document.getElementById("size-usboot-fill");
+  if (usbtFillInit) { usbtFillInit.style.left="0%"; usbtFillInit.style.width="100%"; }
   if (cmFill) { cmFill.style.left="0%"; cmFill.style.width="100%"; }
   if (btFill) { btFill.style.left="0%"; btFill.style.width="100%"; }
   tsRenderSubcats();
@@ -2581,6 +3557,585 @@ window.tsZoomOpen = tsZoomOpen;
 window.tsZoomClose = tsZoomClose;
 window.tshShowShop = tshShowShop;
 window.tshShowHome = tshShowHome;
+
+function tshShowPackage() {
+  tshShowShop();
+  setTimeout(function() {
+    var store = document.getElementById("ts-store");
+    var pkg = document.getElementById("ts-package-view");
+    var skiPkg = document.getElementById("ts-ski-package-view");
+    var dealV = document.getElementById("ts-deal-view");
+    if (store) store.style.display = "none";
+    if (skiPkg) skiPkg.style.display = "none";
+    if (dealV) dealV.style.display = "none";
+    if (pkg) { pkg.style.display = "block"; window.scrollTo({top:0,behavior:"smooth"}); }
+    pkgRefreshStock();
+  }, 150);
+}
+window.tshShowPackage = tshShowPackage;
+
+function tshShowSkiPackage() {
+  tshShowShop();
+  setTimeout(function() {
+    var store = document.getElementById("ts-store");
+    var pkg = document.getElementById("ts-ski-package-view");
+    var boardPkg = document.getElementById("ts-package-view");
+    if (store) store.style.display = "none";
+    if (boardPkg) boardPkg.style.display = "none";
+    var dealV = document.getElementById("ts-deal-view");
+    if (dealV) dealV.style.display = "none";
+    if (pkg) { pkg.style.display = "block"; window.scrollTo({top:0,behavior:"smooth"}); }
+    pkgRefreshStock();
+  }, 150);
+}
+window.tshShowSkiPackage = tshShowSkiPackage;
+
+// ── Hide every custom view (packages, deal) and bring the store grid back ──
+function tsHideCustomViews() {
+  ["ts-package-view","ts-ski-package-view","ts-deal-view"].forEach(function(id){
+    var el = document.getElementById(id); if (el) el.style.display = "none";
+  });
+  var store = document.getElementById("ts-store"); if (store) store.style.display = "";
+}
+
+// ══════════════════════════════════════════════════════════════
+//  DEAL OF THE DAY ENGINE
+// ══════════════════════════════════════════════════════════════
+var DEAL_DAYS = ["sun","mon","tue","wed","thu","fri","sat"];
+var DEAL_DAY_NAMES = {sun:"Sunday",mon:"Monday",tue:"Tuesday",wed:"Wednesday",thu:"Thursday",fri:"Friday",sat:"Saturday"};
+
+// "Now" as a Date whose clock fields are Eastern (shop) time
+function dealNowNY() {
+  return new Date(new Date().toLocaleString("en-US", { timeZone: "America/New_York" }));
+}
+function dealRevealOn(dateNY) {
+  var t = new Date(dateNY); t.setHours(DEAL_OF_DAY.revealHour, DEAL_OF_DAY.revealMinute, 0, 0); return t;
+}
+function dealFor(dateNY) {
+  var d = DEAL_OF_DAY.deals[DEAL_DAYS[dateNY.getDay()]];
+  return (d && d.active && d.hlId) ? d : null;
+}
+// Next reveal moment that actually has a deal configured (within the next week)
+function dealNextReveal(nowNY) {
+  for (var i = 0; i < 8; i++) {
+    var day = new Date(nowNY); day.setDate(day.getDate() + i);
+    var reveal = dealRevealOn(day);
+    if (reveal > nowNY && dealFor(day)) return { at: reveal, deal: dealFor(day), key: DEAL_DAYS[day.getDay()] };
+  }
+  return null;
+}
+function dealLiveQty(deal) {
+  var map = window._tsHlMap;
+  if (!map || !deal || map[deal.hlId] === undefined) return null;   // unknown until sync
+  return map[deal.hlId].qty;
+}
+// Next occurrence of revealHour:revealMinute, regardless of whether any day
+// actually has a valid deal configured — always ticks toward *something*.
+function dealGenericCountdown(nowNY) {
+  var next = new Date(nowNY);
+  next.setHours(DEAL_OF_DAY.revealHour, DEAL_OF_DAY.revealMinute, 0, 0);
+  if (next <= nowNY) next.setDate(next.getDate() + 1);
+  return next;
+}
+// Most recent PAST day (not today) with an active, named deal — for the
+// "looks like that one got away" teaser. Lenient: doesn't require hlId,
+// since this is just a look-what-you-missed display, not a sale.
+function dealPreviousDeal(nowNY) {
+  for (var i = 1; i <= 7; i++) {
+    var day = new Date(nowNY); day.setDate(day.getDate() - i);
+    var d = DEAL_OF_DAY.deals[DEAL_DAYS[day.getDay()]];
+    // Only counts as a real "previous" deal once it has an actual Heartland
+    // item wired up (same bar as dealFor) — a day that's just active:true
+    // with no hlId yet hasn't genuinely run, so it stays hidden.
+    if (d && d.active && d.name && d.hlId) return d;
+  }
+  return null;
+}
+// Returns {state, deal, qty, countdownTo, key}
+function dealState() {
+  var now = dealNowNY();
+
+  // ⚠️ TEMPORARY TEST WINDOW — forces the deal live for a few minutes on a
+  // specific date/time so you can see it work without Heartland connected.
+  // Safe to delete this whole block once you've confirmed it's working.
+  var testStart = new Date(now); testStart.setFullYear(2026, 9, 7); testStart.setHours(18, 7, 0, 0);
+  var testEnd   = new Date(now); testEnd.setFullYear(2026, 9, 7);   testEnd.setHours(18, 12, 0, 0);
+  if (now >= testStart && now <= testEnd) {
+    return { state:"live", deal: DEAL_OF_DAY.deals.thu, qty: 1, key:"thu", isTest:true };
+  }
+
+  var todays = dealFor(now);
+  var revealToday = dealRevealOn(now);
+  if (todays && now < revealToday) {
+    return { state:"pending", deal:todays, countdownTo:revealToday, key:DEAL_DAYS[now.getDay()] };
+  }
+  if (todays && now >= revealToday) {
+    var q = dealLiveQty(todays);
+    if (q === null || q > 0) return { state:"live", deal:todays, qty:q, key:DEAL_DAYS[now.getDay()] };
+    var nxt = dealNextReveal(now);
+    return { state:"soldout", deal:todays, countdownTo: nxt ? nxt.at : null, key:DEAL_DAYS[now.getDay()] };
+  }
+  var next = dealNextReveal(now);
+  return {
+    state:"none",
+    countdownTo: next ? next.at : dealGenericCountdown(now),
+    nextDeal: next ? next.deal : null,
+    previousDeal: dealPreviousDeal(now)
+  };
+}
+function dealFmtCountdown(target) {
+  var ms = Math.max(0, target - dealNowNY());
+  var s = Math.floor(ms/1000), d = Math.floor(s/86400), h = Math.floor((s%86400)/3600), m = Math.floor((s%3600)/60), sec = s%60;
+  var pad = function(n){ return (n<10?"0":"")+n; };
+  return (d > 0 ? d + "d " : "") + pad(h) + ":" + pad(m) + ":" + pad(sec);
+}
+function dealRevealLabel() {
+  var h = DEAL_OF_DAY.revealHour, m = DEAL_OF_DAY.revealMinute;
+  var ampm = h >= 12 ? "PM" : "AM"; var h12 = h % 12; if (h12 === 0) h12 = 12;
+  return h12 + (m ? ":" + (m<10?"0":"")+m : "") + " " + ampm;
+}
+function dealMoney(n) { return "$" + Number(n).toFixed(2); }
+
+// "Today's" / "Tomorrow's" / "Thursday's" — relative to NY now
+function dealDayLabel(targetDate, nowNY) {
+  var a = new Date(nowNY.getFullYear(), nowNY.getMonth(), nowNY.getDate());
+  var b = new Date(targetDate.getFullYear(), targetDate.getMonth(), targetDate.getDate());
+  var diffDays = Math.round((b - a) / 86400000);
+  if (diffDays === 0) return "Today's";
+  if (diffDays === 1) return "Tomorrow's";
+  return DEAL_DAY_NAMES[DEAL_DAYS[targetDate.getDay()]] + "'s";
+}
+
+// Render both the homepage banner and the dedicated page from one state
+function dealRender() {
+  var st = dealState();
+  var now = dealNowNY();
+  var $ = function(id){ return document.getElementById(id); };
+  var banner = null, bTopline = null, bCount = null; // homepage banner is static for now
+  var pImgWrap = $("ts-deal-imgwrap"), pImg = $("ts-deal-img"), pMystery = $("ts-deal-mystery"), pTag = $("ts-deal-tag"), pName = $("ts-deal-name"),
+      pDesc = $("ts-deal-desc"), pPrice = $("ts-deal-price"), pMsrp = $("ts-deal-msrp"), pLeft = $("ts-deal-left"), pCount = $("ts-deal-count"),
+      pBtn = $("ts-deal-btn"), pRules = $("ts-deal-rules"), pSizeWrap = $("ts-deal-sizewrap"), pSizeSel = $("ts-deal-size"),
+      pSpecsWrap = $("ts-deal-specs-wrap"), pSpecsTable = $("ts-deal-specs-table"), pBindingsBadge = $("ts-deal-bindings-badge"),
+      pThumbs = $("ts-deal-thumbs");
+  function renderSpecs(deal) {
+    if (!pSpecsWrap || !pSpecsTable) return;
+    var specs = deal && deal.specs;
+    var keys = specs ? Object.keys(specs) : [];
+    if (!keys.length) { pSpecsWrap.style.display = "none"; return; }
+    pSpecsTable.innerHTML = keys.map(function(k){ return "<tr><td>" + k + "</td><td>" + specs[k] + "</td></tr>"; }).join("");
+    pSpecsWrap.style.display = "";
+  }
+  function renderDealThumbs(deal) {
+    if (!pThumbs) return;
+    var imgs = (deal && deal.images && deal.images.length) ? deal.images : (deal && deal.image ? [deal.image] : []);
+    if (imgs.length < 2) { pThumbs.style.display = "none"; pThumbs.innerHTML = ""; return; }
+    pThumbs.innerHTML = imgs.map(function(src, i){
+      return '<img class="ts-pm-thumb' + (i === 0 ? ' active' : '') + '" src="' + src + '" alt="Photo ' + (i+1) + '">';
+    }).join("");
+    pThumbs.style.display = "flex";
+    Array.prototype.forEach.call(pThumbs.querySelectorAll(".ts-pm-thumb"), function(el){
+      el.addEventListener("click", function(){
+        if (pImg) pImg.src = el.src;
+        Array.prototype.forEach.call(pThumbs.querySelectorAll(".ts-pm-thumb"), function(t){ t.classList.remove("active"); });
+        el.classList.add("active");
+      });
+    });
+  }
+  if (!pBtn) return;
+  var setText = function(el, t){ if (el) el.textContent = t; };
+  var show = function(el, on){ if (el) el.style.display = on ? "" : "none"; };
+
+  var revealTxt = dealRevealLabel();
+  if (st.state === "none") {
+    if (st.countdownTo) {
+      show(banner, true);
+      setText(bTopline, dealDayLabel(st.countdownTo, now) + " deal drops at " + revealTxt);
+      setText(bCount, dealFmtCountdown(st.countdownTo));
+    } else { show(banner, false); }
+    var prev = st.previousDeal;
+    show(pMystery, !prev);
+    show(pImg, !!(prev && prev.image)); if (pImg && prev && prev.image) { pImg.src = prev.image; pImg.style.opacity = "0.45"; }
+    setText(pTag, "🔥 Deal of the Day");
+    setText(pName, prev ? "Looks like that one got away" : (st.countdownTo ? dealDayLabel(st.countdownTo, now) + " deal drops at " + revealTxt : "No deals scheduled right now"));
+    setText(pDesc, prev ? ("The last deal was " + prev.name + " for " + dealMoney(prev.price) + " — gone! Next one drops " + dealDayLabel(st.countdownTo, now).replace(/'s$/, "") + " at " + revealTxt + ".")
+                          : "Check back soon — our best deals are gone fast.");
+    show(pPrice, false); show(pMsrp, false); show(pLeft, false); show(pSizeWrap, false);
+    setText(pCount, st.countdownTo ? dealFmtCountdown(st.countdownTo) : "");
+    show(pCount, !!st.countdownTo);
+    if (pBtn) { pBtn.disabled = true; pBtn.textContent = "Not Available Yet"; }
+    renderSpecs(null);
+    show(pBindingsBadge, false);
+    renderDealThumbs(null);
+  }
+  else if (st.state === "pending") {
+    show(banner, true);
+    setText(bTopline, dealDayLabel(st.countdownTo, now) + " deal drops at " + revealTxt);
+    setText(bCount, dealFmtCountdown(st.countdownTo));
+    show(pImg, false); show(pMystery, true);
+    setText(pTag, "🔥 " + dealDayLabel(st.countdownTo, now) + " Deal Drops at " + revealTxt);
+    setText(pName, "Mystery Deal");
+    setText(pDesc, st.deal.teaser || "Something good is coming. First come, first served.");
+    show(pPrice, false); show(pMsrp, false); show(pSizeWrap, false);
+    show(pLeft, true); setText(pLeft, "Only " + st.deal.limit + " available");
+    show(pCount, true); setText(pCount, dealFmtCountdown(st.countdownTo));
+    if (pBtn) { pBtn.disabled = true; pBtn.textContent = "Unlocks at " + revealTxt; }
+    renderSpecs(null);
+    show(pBindingsBadge, false);
+    renderDealThumbs(null);
+  }
+  else if (st.state === "live") {
+    var left = (st.qty === null) ? st.deal.limit : Math.min(st.qty, st.deal.limit);
+    show(banner, true);
+    setText(bTopline, "🔥 LIVE NOW — " + dealMoney(st.deal.price) + (st.deal.msrp > st.deal.price ? " (reg. " + dealMoney(st.deal.msrp) + ")" : "") + " · " + left + " left");
+    setText(bCount, "");
+    show(pMystery, false); show(pImg, !!st.deal.image); if (pImg && st.deal.image) pImg.src = st.deal.image;
+    setText(pTag, "🔥 Deal of the Day — Live Now");
+    setText(pName, st.deal.name);
+    setText(pDesc, st.deal.desc || "");
+    show(pPrice, true); setText(pPrice, dealMoney(st.deal.price));
+    show(pMsrp, st.deal.msrp > st.deal.price); setText(pMsrp, st.deal.msrp > st.deal.price ? dealMoney(st.deal.msrp) : "");
+    show(pLeft, true); setText(pLeft, left + " left — first come, first served");
+    show(pCount, false);
+    var hasSizes = st.deal.sizes && st.deal.sizes.length > 0;
+    show(pSizeWrap, hasSizes);
+    if (hasSizes && pSizeSel) {
+      // Only (re)populate if the option list doesn't already match this deal's sizes —
+      // avoids wiping the customer's selection on every periodic re-render.
+      var curOpts = Array.prototype.map.call(pSizeSel.options, function(o){ return o.value; }).join("|");
+      var wantOpts = [""].concat(st.deal.sizes).join("|");
+      if (curOpts !== wantOpts) {
+        pSizeSel.innerHTML = "";
+        var def = document.createElement("option"); def.value = ""; def.textContent = "Choose a size...";
+        pSizeSel.appendChild(def);
+        st.deal.sizes.forEach(function(s){ var o = document.createElement("option"); o.value = s; o.textContent = s; pSizeSel.appendChild(o); });
+      }
+    }
+    if (pBtn) {
+      if (hasSizes && (!pSizeSel || !pSizeSel.value)) { pBtn.disabled = true; pBtn.textContent = "Select a Size"; }
+      else { pBtn.disabled = false; pBtn.textContent = "Buy Now — " + dealMoney(st.deal.price); }
+    }
+    renderSpecs(st.deal);
+    show(pBindingsBadge, !!st.deal.bindings);
+    renderDealThumbs(st.deal);
+  }
+  else if (st.state === "soldout") {
+    show(banner, true);
+    setText(bTopline, "SOLD OUT" + (st.countdownTo ? " — " + dealDayLabel(st.countdownTo, now) + " drop at " + revealTxt : ""));
+    setText(bCount, st.countdownTo ? dealFmtCountdown(st.countdownTo) : "");
+    show(pMystery, false); show(pImg, !!st.deal.image); if (pImg && st.deal.image) { pImg.src = st.deal.image; pImg.style.opacity = "0.4"; }
+    setText(pTag, "🔥 Deal of the Day — SOLD OUT");
+    setText(pName, st.deal.name);
+    setText(pDesc, "This one's gone. " + (st.countdownTo ? dealDayLabel(st.countdownTo, now) + " deal drops at " + revealTxt + "." : ""));
+    show(pPrice, true); setText(pPrice, dealMoney(st.deal.price));
+    show(pMsrp, st.deal.msrp > st.deal.price); setText(pMsrp, st.deal.msrp > st.deal.price ? dealMoney(st.deal.msrp) : "");
+    show(pLeft, true); setText(pLeft, "SOLD OUT"); show(pSizeWrap, false);
+    show(pCount, !!st.countdownTo); setText(pCount, st.countdownTo ? dealFmtCountdown(st.countdownTo) : "");
+    if (pBtn) { pBtn.disabled = true; pBtn.textContent = "Sold Out"; }
+    renderSpecs(st.deal);
+    show(pBindingsBadge, !!st.deal.bindings);
+    renderDealThumbs(st.deal);
+  }
+  if (st.state === "live") { if (pImg) pImg.style.opacity = ""; }
+  if (pRules) pRules.textContent = "Deals unlock daily at " + revealTxt + " Eastern. Only one available. While supplies last.";
+}
+window.dealRender = dealRender;
+
+// Lightweight stock refresh for the deal only (doesn't re-render the store grid)
+function dealPollStock() {
+  var st = dealState();
+  if (st.state !== "live" && st.state !== "soldout") return;
+  fetch("https://tuneskis-server.onrender.com/inventory")
+    .then(function(r){ return r.ok ? r.json() : null; })
+    .then(function(data){
+      if (!data || !data.success || !data.items) return;
+      var map = window._tsHlMap || {};
+      data.items.forEach(function(it){ map[it.id] = { qty: it.qty || 0, price: it.price || 0 }; });
+      window._tsHlMap = map;
+      dealRender();
+    }).catch(function(){});
+}
+
+function dealBuy() {
+  var st = dealState();
+  if (st.state !== "live") { alert("This deal isn't available right now."); dealRender(); return; }
+  var hasSizes = st.deal.sizes && st.deal.sizes.length > 0;
+  var sizeSel = document.getElementById("ts-deal-size");
+  var chosenSize = hasSizes ? (sizeSel && sizeSel.value) : "Deal of the Day";
+  if (hasSizes && !chosenSize) { alert("Please select a size first."); return; }
+  var key = "DEAL:" + st.key;
+  if (cart.find(function(i){ return i.key === key; })) { alert("Deal of the Day is limited to 1 per customer — it's already in your cart."); tsOpenCart(); return; }
+  cart.push({ key:key, name:"🔥 " + st.deal.name, size:chosenSize, price:st.deal.price, msrp:st.deal.msrp||null, icon:"🔥", qty:1, hlId:st.deal.hlId, deal:true });
+  tsSave(); tsUpdateUI(); tsOpenCart();
+}
+window.dealBuy = dealBuy;
+
+function tshShowDeal(btn) {
+  tshShowShop();
+  setTimeout(function() {
+    tsHideCustomViews();
+    var store = document.getElementById("ts-store"); if (store) store.style.display = "none";
+    var v = document.getElementById("ts-deal-view");
+    if (v) { v.style.display = "block"; window.scrollTo({top:0,behavior:"smooth"}); }
+    document.querySelectorAll(".ts-catbtn").forEach(function(b){ b.classList.remove("on"); });
+    if (btn && btn.classList) btn.classList.add("on");
+    dealRender();
+  }, 150);
+}
+window.tshShowDeal = tshShowDeal;
+
+function dealBack() { tsHideCustomViews(); }
+window.dealBack = dealBack;
+
+// Tick the countdowns every second; refresh live stock every 90s
+setInterval(function(){
+  var st = dealState();
+  if (st.state === "live") return;           // live shows stock, not a timer
+  var c1 = document.getElementById("tsh-deal-count"), c2 = document.getElementById("ts-deal-count");
+  var t = st.countdownTo ? dealFmtCountdown(st.countdownTo) : "";
+  if (c1) c1.textContent = t;
+  if (c2) c2.textContent = t;
+  if (st.countdownTo && st.countdownTo - dealNowNY() <= 1000) setTimeout(dealRender, 1200); // flip to live at reveal
+}, 1000);
+setInterval(dealPollStock, 90000);
+
+var pkgSel = {board:null, binding:null, boot:null};
+
+function pkgPick(type, card) {
+  var name = card.getAttribute("data-name");
+  var price = parseFloat(card.getAttribute("data-price"));
+  var prod = PRODUCTS.find(function(p){ return p.name === name; });
+  var sizes = prod ? prod.sizes : [];
+  var inStock = sizes.filter(function(s){ return s.qty > 0; });
+
+  // If no sizes or only one, select directly
+  if (!sizes.length) {
+    pkgConfirm(type, card, name, price, "");
+    return;
+  }
+
+  // Show size popup
+  var overlay = document.createElement("div");
+  overlay.style.cssText = "position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:99999;display:flex;align-items:center;justify-content:center;";
+  var modal = document.createElement("div");
+  modal.style.cssText = "background:#fff;border-radius:12px;padding:24px;max-width:320px;width:90%;font-family:Lato,sans-serif;";
+
+  var title = document.createElement("div");
+  title.style.cssText = "font-weight:700;font-size:1rem;margin-bottom:12px;";
+  title.textContent = name;
+
+  var sizeLabel = document.createElement("div");
+  sizeLabel.style.cssText = "font-size:0.72rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#888;margin-bottom:8px;";
+  sizeLabel.textContent = "Select Size";
+
+  var sel = document.createElement("select");
+  sel.style.cssText = "width:100%;padding:10px;border:1px solid #ddd;border-radius:6px;font-size:0.9rem;margin-bottom:16px;";
+  var def = document.createElement("option");
+  def.value = ""; def.textContent = "Choose a size...";
+  sel.appendChild(def);
+  sizes.forEach(function(s) {
+    var opt = document.createElement("option");
+    opt.value = s.label;
+    opt.textContent = s.label + (s.qty === 0 ? " (out of stock)" : "");
+    opt.disabled = s.qty === 0;
+    sel.appendChild(opt);
+  });
+
+  var btnRow = document.createElement("div");
+  btnRow.style.cssText = "display:flex;gap:8px;";
+
+  var cancelBtn = document.createElement("button");
+  cancelBtn.textContent = "Cancel";
+  cancelBtn.style.cssText = "flex:1;padding:10px;border:1px solid #ddd;border-radius:6px;background:#fff;cursor:pointer;font-size:0.9rem;";
+  cancelBtn.onclick = function(){ document.body.removeChild(overlay); };
+
+  var selectBtn = document.createElement("button");
+  selectBtn.textContent = "Select";
+  selectBtn.style.cssText = "flex:1;padding:10px;border:none;border-radius:6px;background:#1a1a2e;color:#fff;cursor:pointer;font-size:0.9rem;font-weight:700;";
+  selectBtn.onclick = function() {
+    if (!sel.value) { sel.style.borderColor = "red"; return; }
+    document.body.removeChild(overlay);
+    pkgConfirm(type, card, name, price, sel.value);
+  };
+
+  btnRow.appendChild(cancelBtn); btnRow.appendChild(selectBtn);
+  modal.appendChild(title); modal.appendChild(sizeLabel); modal.appendChild(sel); modal.appendChild(btnRow);
+  overlay.appendChild(modal);
+  overlay.addEventListener("click", function(e){ if(e.target===overlay) document.body.removeChild(overlay); });
+  document.body.appendChild(overlay);
+}
+
+function pkgConfirm(type, card, name, price, size) {
+  card.parentElement.querySelectorAll(".pkg-card").forEach(function(c) {
+    c.classList.remove("pkg-sel");
+    var chk = c.querySelector(".pkg-chk");
+    if (chk) chk.style.display = "none";
+  });
+  card.classList.add("pkg-sel");
+  var chk = card.querySelector(".pkg-chk");
+  if (chk) chk.style.display = "flex";
+  pkgSel[type] = {name:name, price:price, size:size};
+  pkgUpdate();
+}
+window.pkgConfirm = pkgConfirm;
+window.pkgPick = pkgPick;
+
+function pkgUpdate() {
+  var ready = pkgSel.board && pkgSel.binding && pkgSel.boot;
+  var btn = document.getElementById("pkg-btn");
+  var info = document.getElementById("pkg-info");
+  if (btn) { btn.disabled = !ready; btn.style.opacity = ready ? "1" : "0.4"; }
+  if (info) {
+    if (ready) {
+      var retail = pkgSel.board.price + pkgSel.binding.price + pkgSel.boot.price;
+      info.innerHTML = pkgSel.board.name + (pkgSel.board.size?" ("+pkgSel.board.size+")":"") + " + " +
+        pkgSel.binding.name + (pkgSel.binding.size?" ("+pkgSel.binding.size+")":"") + " + " +
+        pkgSel.boot.name + (pkgSel.boot.size?" ("+pkgSel.boot.size+")":"") +
+        "<br><span style='color:#27ae60;font-weight:600'>Retail $" + retail.toFixed(2) + " — you save $" + (retail-699.99).toFixed(2) + "!</span>" +
+        "<span style='color:#aaa;font-size:0.72rem'> + tax & shipping</span>";
+    } else {
+      info.textContent = "Select a board, bindings, and boots.";
+    }
+  }
+}
+
+function pkgBack() {
+  var store = document.getElementById("ts-store");
+  var pkg = document.getElementById("ts-package-view");
+  if (store) store.style.display = "";
+  if (pkg) pkg.style.display = "none";
+}
+window.pkgBack = pkgBack;
+
+function pkgAddToCart() {
+  if (!pkgSel.board || !pkgSel.binding || !pkgSel.boot) return;
+  var desc = pkgSel.board.name + " + " + pkgSel.binding.name + " + " + pkgSel.boot.name;
+  var ex = cart.find(function(i){ return i.key === "Snowboard Package"; });
+  if (ex) { ex.qty++; } else {
+    cart.push({key:"Snowboard Package", name:"Snowboard Package", size:desc, price:699.99, icon:"🏂", qty:1, hlId:null});
+  }
+  tsSave(); tsUpdateUI();
+  pkgBack();
+  tsOpenCart();
+}
+window.pkgAddToCart = pkgAddToCart;
+
+// ── Ski Package (RX9 + Roxa Boots) — mirrors the snowboard package above, independently ──
+var skiPkgSel = {ski:null, boot:null};
+
+function skiPkgPick(type, card) {
+  var name = card.getAttribute("data-name");
+  var price = parseFloat(card.getAttribute("data-price"));
+  var prod = PRODUCTS.find(function(p){ return p.name === name; });
+  var sizes = prod ? prod.sizes : [];
+
+  if (!sizes.length) {
+    skiPkgConfirm(type, card, name, price, "");
+    return;
+  }
+
+  var overlay = document.createElement("div");
+  overlay.style.cssText = "position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:99999;display:flex;align-items:center;justify-content:center;";
+  var modal = document.createElement("div");
+  modal.style.cssText = "background:#fff;border-radius:12px;padding:24px;max-width:320px;width:90%;font-family:Lato,sans-serif;";
+
+  var title = document.createElement("div");
+  title.style.cssText = "font-weight:700;font-size:1rem;margin-bottom:12px;";
+  title.textContent = name;
+
+  var sizeLabel = document.createElement("div");
+  sizeLabel.style.cssText = "font-size:0.72rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#888;margin-bottom:8px;";
+  sizeLabel.textContent = "Select Size";
+
+  var sel = document.createElement("select");
+  sel.style.cssText = "width:100%;padding:10px;border:1px solid #ddd;border-radius:6px;font-size:0.9rem;margin-bottom:16px;";
+  var def = document.createElement("option");
+  def.value = ""; def.textContent = "Choose a size...";
+  sel.appendChild(def);
+  sizes.forEach(function(s) {
+    var opt = document.createElement("option");
+    opt.value = s.label;
+    opt.textContent = s.label + (s.qty === 0 ? " (out of stock)" : "");
+    opt.disabled = s.qty === 0;
+    sel.appendChild(opt);
+  });
+
+  var btnRow = document.createElement("div");
+  btnRow.style.cssText = "display:flex;gap:8px;";
+
+  var cancelBtn = document.createElement("button");
+  cancelBtn.textContent = "Cancel";
+  cancelBtn.style.cssText = "flex:1;padding:10px;border:1px solid #ddd;border-radius:6px;background:#fff;cursor:pointer;font-size:0.9rem;";
+  cancelBtn.onclick = function(){ document.body.removeChild(overlay); };
+
+  var selectBtn = document.createElement("button");
+  selectBtn.textContent = "Select";
+  selectBtn.style.cssText = "flex:1;padding:10px;border:none;border-radius:6px;background:#1a1a2e;color:#fff;cursor:pointer;font-size:0.9rem;font-weight:700;";
+  selectBtn.onclick = function() {
+    if (!sel.value) { sel.style.borderColor = "red"; return; }
+    document.body.removeChild(overlay);
+    skiPkgConfirm(type, card, name, price, sel.value);
+  };
+
+  btnRow.appendChild(cancelBtn); btnRow.appendChild(selectBtn);
+  modal.appendChild(title); modal.appendChild(sizeLabel); modal.appendChild(sel); modal.appendChild(btnRow);
+  overlay.appendChild(modal);
+  overlay.addEventListener("click", function(e){ if(e.target===overlay) document.body.removeChild(overlay); });
+  document.body.appendChild(overlay);
+}
+window.skiPkgPick = skiPkgPick;
+
+function skiPkgConfirm(type, card, name, price, size) {
+  card.parentElement.querySelectorAll(".pkg-card").forEach(function(c) {
+    c.classList.remove("pkg-sel");
+    var chk = c.querySelector(".pkg-chk");
+    if (chk) chk.style.display = "none";
+  });
+  card.classList.add("pkg-sel");
+  var chk = card.querySelector(".pkg-chk");
+  if (chk) chk.style.display = "flex";
+  skiPkgSel[type] = {name:name, price:price, size:size};
+  skiPkgUpdate();
+}
+window.skiPkgConfirm = skiPkgConfirm;
+
+function skiPkgUpdate() {
+  var ready = skiPkgSel.ski && skiPkgSel.boot;
+  var btn = document.getElementById("ski-pkg-btn");
+  var info = document.getElementById("ski-pkg-info");
+  if (btn) { btn.disabled = !ready; btn.style.opacity = ready ? "1" : "0.4"; }
+  if (info) {
+    if (ready) {
+      var retail = skiPkgSel.ski.price + skiPkgSel.boot.price;
+      info.innerHTML = skiPkgSel.ski.name + (skiPkgSel.ski.size?" ("+skiPkgSel.ski.size+")":"") + " + " +
+        skiPkgSel.boot.name + (skiPkgSel.boot.size?" ("+skiPkgSel.boot.size+")":"") +
+        "<br><span style='color:#27ae60;font-weight:600'>Retail $" + retail.toFixed(2) + " — you save $" + (retail-799.99).toFixed(2) + "!</span>" +
+        "<span style='color:#aaa;font-size:0.72rem'> + tax & shipping</span>";
+    } else {
+      info.textContent = "Select your skis and boots.";
+    }
+  }
+}
+
+function skiPkgBack() {
+  var store = document.getElementById("ts-store");
+  var pkg = document.getElementById("ts-ski-package-view");
+  if (store) store.style.display = "";
+  if (pkg) pkg.style.display = "none";
+}
+window.skiPkgBack = skiPkgBack;
+
+function skiPkgAddToCart() {
+  if (!skiPkgSel.ski || !skiPkgSel.boot) return;
+  var desc = skiPkgSel.ski.name + " + " + skiPkgSel.boot.name;
+  var ex = cart.find(function(i){ return i.key === "RX9 Roxa Boot Package"; });
+  if (ex) { ex.qty++; } else {
+    cart.push({key:"RX9 Roxa Boot Package", name:"RX9 + Roxa Boot Package", size:desc, price:799.99, icon:"🎿", qty:1, hlId:null});
+  }
+  tsSave(); tsUpdateUI();
+  skiPkgBack();
+  tsOpenCart();
+}
+window.skiPkgAddToCart = skiPkgAddToCart;
 window.tshScrollToShop = tshScrollToShop;
 window.tshGoTo = tshGoTo;
 window.tshGoToBrand = tshGoToBrand;
@@ -2593,9 +4148,6 @@ window.tsCoClose = tsCoClose;
 window.tsCoCloseBtn = tsCoCloseBtn;
 window.tsPColorway = tsPColorway;
 window.tsFulfillToggle = tsFulfillToggle;
-window.tshShowPackage = tshShowPackage;
-window.tsPkgSelect = tsPkgSelect;
-window.tsPkgAddAll = tsPkgAddAll;
 window.tsCoUpdateShipping = tsCoUpdateShipping;
 window.tsCoSubmit = tsCoSubmit;
 window.tsPThumb = tsPThumb;
@@ -2702,8 +4254,7 @@ function tsOpenCheckout() {
 
 // ── Tax calculation (NY 8%) ──────────────────────────────────
 function tsCalcTax(subtotal, state) {
-  if ((state || '').toUpperCase() === 'NY') return Math.round(subtotal * 0.08 * 100) / 100;
-  return 0;
+  return Math.round(subtotal * 0.08 * 100) / 100; // flat 8% sales tax on every order
 }
 
 // ── Shipping calculation ─────────────────────────────────────
@@ -2881,100 +4432,366 @@ function tsCoCloseBtn() {
   document.body.style.overflow = '';
 }
 
-// ════════════════════════════════════════════════════
-// PACKAGE BUILDER
-// ════════════════════════════════════════════════════
-var pkgSelected = { board: null, binding: null, boots: null };
 
-// Products to show in package builder
-var PKG_BOARDS   = ['Rossignol Ampage Vol. 2 Wide', 'Rossignol Ampage Vol. 1'];
-var PKG_BINDINGS = ['Rossignol Myth Binding', 'Rossignol Works Binding', 'Rossignol Ultraviolet Binding'];
-var PKG_BOOTS    = ['Salomon Faction BOA'];
+// Package view
+(function(){
+  var style = document.createElement("style");
+  style.textContent = ".pkg-card{background:#fff;border:2px solid #e0e0e0;border-radius:10px;padding:12px;cursor:pointer;transition:border 0.15s;text-align:center;}.pkg-card:hover{border-color:#4db8ff;}.pkg-card.pkg-sel{border-color:#1a1a2e;}.pkg-chk{display:none;background:#1a1a2e;color:#fff;border-radius:50%;width:22px;height:22px;align-items:center;justify-content:center;font-size:13px;margin:6px auto 0;}.pkg-img{width:100%;height:120px;object-fit:contain;background:#f8f8f8;border-radius:6px;}";
+  document.head.appendChild(style);
 
-function tshShowPackage() {
-  // Hide home, hide store, show package
-  document.getElementById('ts-home').style.display    = 'none';
-  document.getElementById('ts-store').style.display   = 'none';
-  document.getElementById('ts-package').style.display = '';
-  document.body.classList.add('ts-active');
-  pkgSelected = { board: null, binding: null, boots: null };
-  tsPkgRender();
-}
+  var wrap = document.createElement("div");
+  wrap.id = "ts-package-view";
+  wrap.style.cssText = "display:none;max-width:860px;margin:0 auto;padding:32px 20px 80px;font-family:Lato,sans-serif;";
+  var root = document.getElementById("ts-storefront-root") || document.body;
+  root.appendChild(wrap);
 
-function tsPkgRender() {
-  tsPkgRenderGrid('pkg-boards',   PKG_BOARDS,   'board');
-  tsPkgRenderGrid('pkg-bindings', PKG_BINDINGS, 'binding');
-  tsPkgRenderGrid('pkg-boots',    PKG_BOOTS,    'boots');
-  tsPkgUpdateSummary();
-}
+  function mkLabel(txt) {
+    var d = document.createElement("p");
+    d.style.cssText = "font-size:0.7rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:#888;margin:0 0 10px;";
+    d.textContent = txt;
+    return d;
+  }
+  function mkGrid() {
+    var d = document.createElement("div");
+    d.style.cssText = "display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:28px;";
+    return d;
+  }
+  function mkCard(type, name, price, imgSrc) {
+    var card = document.createElement("div");
+    card.className = "pkg-card";
+    card.setAttribute("data-name", name);
+    card.setAttribute("data-price", price);
+    card.addEventListener("click", function(){ pkgPick(type, card); });
+    var img = document.createElement("img");
+    img.src = imgSrc; img.className = "pkg-img";
+    var lbl = document.createElement("div");
+    lbl.style.cssText = "font-size:0.82rem;font-weight:700;margin-top:8px;";
+    lbl.textContent = name;
+    var msrp = document.createElement("div");
+    msrp.style.cssText = "font-size:0.75rem;color:#888;margin-top:2px;";
+    msrp.textContent = "MSRP: $" + price.toFixed(2);
+    var chk = document.createElement("div");
+    chk.className = "pkg-chk"; chk.textContent = "✓";
+    card.appendChild(img); card.appendChild(lbl); card.appendChild(msrp); card.appendChild(chk);
+    return card;
+  }
 
-function tsPkgRenderGrid(elId, names, slot) {
-  var el = document.getElementById(elId);
-  if (!el) return;
-  el.innerHTML = names.map(function(name) {
-    var p = PRODUCTS.find(function(x){ return x.name === name; });
-    if (!p) return '';
-    var isSelected = pkgSelected[slot] && pkgSelected[slot].name === name;
-    var price = p.customPrice || p.price;
-    var msrp  = p.customMsrp  || p.msrp;
-    var priceHtml = (msrp && msrp > price)
-      ? '<span class="ts-pkg-card-price"><s style="color:#aaa;font-weight:400;">$'+msrp.toFixed(2)+'</s> $'+price.toFixed(2)+'</span>'
-      : '<span class="ts-pkg-card-full">$'+price.toFixed(2)+'</span>';
-    var img = p.images && p.images.length ? '<img src="'+p.images[0]+'" alt="'+name+'" />' : '';
-    return '<div class="ts-pkg-card'+(isSelected?' selected':'')+'" onclick="tsPkgSelect(''+slot+'',''+name+'')">'
-      + img
-      + '<div class="ts-pkg-card-name">'+name+'</div>'
-      + priceHtml
-      + '</div>';
-  }).join('');
-}
+  // Back button
+  var back = document.createElement("button");
+  back.textContent = "← Back to Store";
+  back.onclick = pkgBack;
+  back.style.cssText = "background:#1a1a2e;color:#fff;border:none;padding:9px 18px;border-radius:6px;cursor:pointer;font-weight:700;margin-bottom:24px;font-family:Montserrat,sans-serif;";
+  wrap.appendChild(back);
 
-function tsPkgSelect(slot, name) {
-  var p = PRODUCTS.find(function(x){ return x.name === name; });
-  if (!p) return;
-  pkgSelected[slot] = p;
-  tsPkgRender();
-}
+  // Title
+  var h2 = document.createElement("h2");
+  h2.style.cssText = "font-size:1.4rem;font-weight:700;margin-bottom:4px;font-family:Montserrat,sans-serif;";
+  h2.textContent = "🏂 Customize Your Package";
+  wrap.appendChild(h2);
+  var sub = document.createElement("p");
+  sub.style.cssText = "color:#888;margin-bottom:28px;";
+  sub.innerHTML = "Package price: <strong style='color:#1a1a2e'>$699.99</strong>";
+  wrap.appendChild(sub);
 
-function tsPkgUpdateSummary() {
-  var summary = document.getElementById('ts-pkg-summary');
-  var items   = document.getElementById('ts-pkg-summary-items');
-  var totalEl = document.getElementById('ts-pkg-total');
-  if (!summary || !items || !totalEl) return;
+  // Board
+  wrap.appendChild(mkLabel("Choose Snowboard"));
+  var boardGrid = mkGrid();
+  boardGrid.appendChild(mkCard("board","Rossignol Ampage Vol. 2 Wide",349.99,"https://www.evo.com/cdn/shop/files/product-image-1262117.jpg?v=1767739622&width=1200"));
+  boardGrid.appendChild(mkCard("board","Rossignol Ampage Vol. 1",379.99,"https://images.evo.com/imgp/700/268697/1262117/clone.jpg"));
+  boardGrid.appendChild(mkCard("board","Rome Mechanic",399.99,"https://gotyourgear.com/cdn/shop/products/XiRRlqZjulHp70JHemJLlGhxj5vrXtXG-25.jpg?v=1663706289"));
+  wrap.appendChild(boardGrid);
 
-  var selected = [pkgSelected.board, pkgSelected.binding, pkgSelected.boots].filter(Boolean);
-  if (!selected.length) { summary.style.display = 'none'; return; }
+  // Bindings
+  wrap.appendChild(mkLabel("Choose Bindings"));
+  var bindGrid = mkGrid();
+  bindGrid.appendChild(mkCard("binding","Rossignol Myth Binding",179.99,"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQsNn_RTeBU6Fq2IduH14g-UDZ139V4NTZbNAemY404RZfOs75rtrOXpco&s=10"));
+  bindGrid.appendChild(mkCard("binding","Rossignol Works Binding",179.99,"https://www.rossignol.com/dw/image/v2/BJJZ_PRD/on/demandware.static/-/Sites-rossignol-catalog/default/dwb2c92e3d/images/large/RGPC210000_72DPI_01_v00.jpg?sw=1200&sh=1200"));
+  bindGrid.appendChild(mkCard("binding","Rossignol Ultraviolet Binding",179.99,"https://www.philbricks.com/cdn/shop/files/jpwzk6eacykcfzrvimjq_535x.jpg?v=1776807735"));
+  wrap.appendChild(bindGrid);
 
-  summary.style.display = '';
-  var total = 0;
-  items.innerHTML = selected.map(function(p) {
-    var price = p.customPrice || p.price;
-    total += price;
-    return '<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #eee;font-size:0.9rem;">'
-      + '<span>'+p.name+'</span>'
-      + '<span style="font-weight:700;">$'+price.toFixed(2)+'</span>'
-      + '</div>';
-  }).join('');
-  totalEl.textContent = '$' + total.toFixed(2);
-}
+  // Boots
+  wrap.appendChild(mkLabel("Choose Boots"));
+  var bootGrid = mkGrid();
+  bootGrid.appendChild(mkCard("boot","Salomon Faction BOA",279.99,"https://images.evo.com/imgp/700/239780/1013306/salomon-faction-boa-snowboard-boots-.jpg"));
+  wrap.appendChild(bootGrid);
 
-function tsPkgAddAll() {
-  var selected = [pkgSelected.board, pkgSelected.binding, pkgSelected.boots].filter(Boolean);
-  if (!selected.length) { alert('Please select at least one item.'); return; }
-  selected.forEach(function(p) {
-    var price = p.customPrice || p.price;
-    var key   = p.name;
-    var ex    = cart.find(function(i){ return i.key === key; });
-    if (ex) { ex.qty++; }
-    else { cart.push({key:key, name:p.name, size:'', price:price, icon:p.icon||'🏂', qty:1}); }
-  });
-  tsSave(); tsUpdateUI();
-  // Go to store so they can checkout
-  tshShowShop();
-  alert('Package added to cart! Proceed to checkout.');
-}
-
-
+  // Summary bar
+  var summary = document.createElement("div");
+  summary.style.cssText = "background:#fff;border:2px solid #e0e0e0;border-radius:10px;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;";
+  var left = document.createElement("div");
+  var total = document.createElement("div");
+  total.style.cssText = "font-size:1.1rem;font-weight:700;";
+  total.textContent = "Package Total: $699.99";
+  var info = document.createElement("div");
+  info.id = "pkg-info";
+  info.style.cssText = "font-size:0.8rem;color:#888;margin-top:4px;";
+  info.textContent = "Select a board, bindings, and boots.";
+  left.appendChild(total); left.appendChild(info);
+  var btn = document.createElement("button");
+  btn.id = "pkg-btn";
+  btn.disabled = true;
+  btn.onclick = pkgAddToCart;
+  btn.style.cssText = "background:#1a1a2e;color:#fff;border:none;border-radius:6px;padding:12px 28px;font-size:0.9rem;font-weight:700;cursor:pointer;opacity:0.4;font-family:Montserrat,sans-serif;";
+  btn.textContent = "Add Package to Cart";
+  summary.appendChild(left); summary.appendChild(btn);
+  wrap.appendChild(summary);
 })();
 
-</script>
+// Ski package view (RX9 + Roxa Boots)
+(function(){
+  var wrap = document.createElement("div");
+  wrap.id = "ts-ski-package-view";
+  wrap.style.cssText = "display:none;max-width:860px;margin:0 auto;padding:32px 20px 80px;font-family:Lato,sans-serif;";
+  var root = document.getElementById("ts-storefront-root") || document.body;
+  root.appendChild(wrap);
+
+  function mkLabel(txt) {
+    var d = document.createElement("p");
+    d.style.cssText = "font-size:0.7rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:#888;margin:0 0 10px;";
+    d.textContent = txt;
+    return d;
+  }
+  function mkGrid() {
+    var d = document.createElement("div");
+    d.style.cssText = "display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:28px;";
+    return d;
+  }
+  function mkCard(type, name, price, imgSrc) {
+    var card = document.createElement("div");
+    card.className = "pkg-card";
+    card.setAttribute("data-name", name);
+    card.setAttribute("data-price", price);
+    card.addEventListener("click", function(){ skiPkgPick(type, card); });
+    var img = document.createElement("img");
+    img.src = imgSrc; img.className = "pkg-img";
+    var lbl = document.createElement("div");
+    lbl.style.cssText = "font-size:0.82rem;font-weight:700;margin-top:8px;";
+    lbl.textContent = name;
+    var msrp = document.createElement("div");
+    msrp.style.cssText = "font-size:0.75rem;color:#888;margin-top:2px;";
+    msrp.textContent = "MSRP: $" + price.toFixed(2);
+    var chk = document.createElement("div");
+    chk.className = "pkg-chk"; chk.textContent = "✓";
+    card.appendChild(img); card.appendChild(lbl); card.appendChild(msrp); card.appendChild(chk);
+    return card;
+  }
+
+  // Back button
+  var back = document.createElement("button");
+  back.textContent = "← Back to Store";
+  back.onclick = skiPkgBack;
+  back.style.cssText = "background:#1a1a2e;color:#fff;border:none;padding:9px 18px;border-radius:6px;cursor:pointer;font-weight:700;margin-bottom:24px;font-family:Montserrat,sans-serif;";
+  wrap.appendChild(back);
+
+  // Title
+  var h2 = document.createElement("h2");
+  h2.style.cssText = "font-size:1.4rem;font-weight:700;margin-bottom:4px;font-family:Montserrat,sans-serif;";
+  h2.textContent = "🎿 Customize Your Package";
+  wrap.appendChild(h2);
+  var sub = document.createElement("p");
+  sub.style.cssText = "color:#888;margin-bottom:28px;";
+  sub.innerHTML = "Package price: <strong style='color:#1a1a2e'>$799.99</strong>";
+  wrap.appendChild(sub);
+
+  // Skis
+  wrap.appendChild(mkLabel("Choose Skis"));
+  var skiGrid = mkGrid();
+  skiGrid.appendChild(mkCard("ski","Kästle RX9",950.00,"https://kaestle.com/cdn/shop/files/rx9_01.jpg?v=1752671657"));
+  wrap.appendChild(skiGrid);
+
+  // Boots
+  wrap.appendChild(mkLabel("Choose Boots"));
+  var bootGrid = mkGrid();
+  bootGrid.appendChild(mkCard("boot","Roxa R/Fit 80",349.99,"https://www.utahskigear.com/cdn/shop/files/RFIT80.jpg?v=1693330629&width=1800"));
+  bootGrid.appendChild(mkCard("boot","Roxa R/Fit Hike 85W",449.99,"https://cdn11.bigcommerce.com/s-gvjzgt2kex/images/stencil/original/attribute_rule_images/26680_source_1745273743.jpg"));
+  bootGrid.appendChild(mkCard("boot","Roxa R/Fit 100",449.99,"https://www.roxa.com/wp-content/uploads/2025/06/RFIT-HV-100-1.webp"));
+  bootGrid.appendChild(mkCard("boot","Roxa R/Fit MV 110",649.99,"https://cdn11.bigcommerce.com/s-8p220y2h7i/images/stencil/608x608/products/72621/95945/3__05143.1727116205.JPG?c=2"));
+  bootGrid.appendChild(mkCard("boot","Roxa Trinity 95",699.99,"https://www.christysports.com/dw/image/v2/BGBB_PRD/on/demandware.static/-/Sites-master-winter/default/dwf9f6680e/8101098_050_1.jpg?sw=1600&sh=1600"));
+  bootGrid.appendChild(mkCard("boot","Roxa R/Fit HV 75",349.99,"https://cdn11.bigcommerce.com/s-gvjzgt2kex/images/stencil/1280x1280/products/9347/179574/145223_BLACK-AQUA_LG__20758.1752095426.jpg?c=1"));
+  bootGrid.appendChild(mkCard("boot","Roxa R/Fit HV 80",349.99,"https://www.roxa.com/wp-content/uploads/2025/06/RFIT-HV-80-763x1024.webp"));
+  bootGrid.appendChild(mkCard("boot","Roxa Element 120",724.99,"https://bootfitters.com/files/styles/mug/public/images/boots/element_120_u75.png"));
+  bootGrid.appendChild(mkCard("boot","Roxa R/Fit Pro 110",649.99,"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRUwTtCr-goC9TfuDsWQnyQDos9zq2dmPSGpKd0DALDhgPcNsjvRG5VgmI&s=10"));
+  bootGrid.appendChild(mkCard("boot","Roxa R/Fit Pro 120",699.99,"https://content.backcountry.com/images/items/900/RXA/RXAC04A/DKGREORA.jpg"));
+  bootGrid.appendChild(mkCard("boot","Roxa R/Fit Pro 85 W",449.99,"https://cdn11.bigcommerce.com/s-eoq23gh9op/images/stencil/1280x1280/products/241/662/RFIT-PRO-85-W__63210.1698828184.jpg?c=1?imbypass=on"));
+  wrap.appendChild(bootGrid);
+
+  // Summary bar
+  var summary = document.createElement("div");
+  summary.style.cssText = "background:#fff;border:2px solid #e0e0e0;border-radius:10px;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;";
+  var left = document.createElement("div");
+  var total = document.createElement("div");
+  total.style.cssText = "font-size:1.1rem;font-weight:700;";
+  total.textContent = "Package Total: $799.99";
+  var info = document.createElement("div");
+  info.id = "ski-pkg-info";
+  info.style.cssText = "font-size:0.8rem;color:#888;margin-top:4px;";
+  info.textContent = "Select your skis and boots.";
+  left.appendChild(total); left.appendChild(info);
+  var btn = document.createElement("button");
+  btn.id = "ski-pkg-btn";
+  btn.disabled = true;
+  btn.onclick = skiPkgAddToCart;
+  btn.style.cssText = "background:#1a1a2e;color:#fff;border:none;border-radius:6px;padding:12px 28px;font-size:0.9rem;font-weight:700;cursor:pointer;opacity:0.4;font-family:Montserrat,sans-serif;";
+  btn.textContent = "Add Package to Cart";
+  summary.appendChild(left); summary.appendChild(btn);
+  wrap.appendChild(summary);
+})();
+
+// ── Deal of the Day HOMEPAGE BANNER — built here so it doesn't depend on the header file ──
+(function insertDealBanner(){
+  var home = document.getElementById("ts-home");
+  var cats = home && home.querySelector(".tsh-cats-section");
+  if (!home || !cats) { setTimeout(insertDealBanner, 100); return; }
+  // remove any older header-based banner so there's never two
+  var old = document.getElementById("tsh-deal-banner"); if (old) old.parentNode.removeChild(old);
+  if (document.getElementById("tsh-dotd")) return;
+
+  var css = document.createElement("style");
+  css.textContent =
+    "#tsh-dotd{position:relative;overflow:hidden;text-align:center;padding:80px 7vw;cursor:pointer;" +
+      "background:linear-gradient(135deg,#061222 0%,#0e2d4d 22%,#4db8ff 45%,#f3faff 50%,#4db8ff 55%,#0e2d4d 78%,#061222 100%);" +
+      "background-size:320% 320%;background-repeat:no-repeat;animation:tshDotdBg 13s ease-in-out infinite;" +
+      "border-top:3px solid #4db8ff;border-bottom:3px solid #4db8ff;}" +
+    "#tsh-dotd::before{content:'';position:absolute;top:0;left:-60%;width:40%;height:100%;pointer-events:none;" +
+      "background:linear-gradient(120deg,transparent,rgba(255,255,255,0.2),transparent);animation:tshDotdShine 3.2s ease-in-out infinite;}" +
+    "@keyframes tshDotdBg{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}" +
+    "@keyframes tshDotdShine{0%{left:-60%}55%,100%{left:130%}}" +
+    "@keyframes tshDotdPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.03)}}" +
+    "#tsh-dotd .dotd-countline{position:relative;z-index:2;margin:0 0 14px;}" +
+    "#tsh-dotd .dotd-countlabel{display:block;font-family:Montserrat,Arial,sans-serif;font-size:0.8rem;font-weight:700;" +
+      "letter-spacing:0.16em;text-transform:uppercase;color:#fff;margin:0 0 8px;text-shadow:0 0 14px rgba(77,184,255,0.9);}" +
+    "#tsh-dotd .dotd-countdown{display:block;font-family:'Bebas Neue',Impact,sans-serif;font-size:2.7rem;letter-spacing:0.14em;" +
+      "color:#fff;text-shadow:0 0 20px rgba(77,184,255,0.9);}" +
+    "#tsh-dotd .dotd-title{position:relative;z-index:2;font-family:'Bebas Neue',Impact,sans-serif;font-size:7rem;line-height:0.95;" +
+      "letter-spacing:0.05em;color:#fff;text-transform:uppercase;margin:0 0 28px;text-shadow:0 0 40px rgba(77,184,255,0.9),0 0 14px rgba(0,0,0,0.25);" +
+      "animation:tshDotdPulse 1.6s ease-in-out infinite;}" +
+    "#tsh-dotd .dotd-btn{position:relative;z-index:2;display:inline-block;background:#fff;color:#1a1a2e;border:none;border-radius:3px;" +
+      "padding:16px 44px;font-family:Montserrat,Arial,sans-serif;font-size:0.95rem;font-weight:800;letter-spacing:0.2em;" +
+      "text-transform:uppercase;cursor:pointer;transition:transform .2s,box-shadow .2s;}" +
+    "#tsh-dotd .dotd-btn:hover{transform:scale(1.06);box-shadow:0 0 30px 4px rgba(77,184,255,0.6);}" +
+    "@media(max-width:640px){#tsh-dotd{padding:52px 6vw}#tsh-dotd .dotd-title{font-size:3.6rem}#tsh-dotd .dotd-countdown{font-size:1.9rem}}";
+  document.head.appendChild(css);
+
+  var banner = document.createElement("div");
+  banner.id = "tsh-dotd";
+  banner.innerHTML =
+    '<div class="dotd-countline"><span class="dotd-countlabel">Next Deal Drops In</span><span class="dotd-countdown" id="dotd-countdown">--:--:--</span></div>' +
+    '<div class="dotd-title">DEAL OF THE DAY</div>' +
+    '<button class="dotd-btn" type="button">See Today\'s Deal →</button>';
+  banner.addEventListener("click", function(){ if (typeof tshShowDeal === "function") tshShowDeal(); });
+  home.insertBefore(banner, cats);
+
+  // Countdown to the next DEAL_OF_DAY.revealHour:revealMinute, Eastern time —
+  // automatically resets to the next day's 12:00 PM once it passes.
+  function dotdNextDrop() {
+    var now = dealNowNY();
+    var next = new Date(now);
+    next.setHours(DEAL_OF_DAY.revealHour, DEAL_OF_DAY.revealMinute, 0, 0);
+    if (next <= now) next.setDate(next.getDate() + 1);
+    return next;
+  }
+  function dotdTick() {
+    var el = document.getElementById("dotd-countdown");
+    if (!el) return;
+    el.textContent = dealFmtCountdown(dotdNextDrop());
+  }
+  dotdTick();
+  setInterval(dotdTick, 1000);
+})();
+
+// Deal of the Day page
+(function(){
+  var wrap = document.createElement("div");
+  wrap.id = "ts-deal-view";
+  wrap.style.cssText = "display:none;width:100%;padding:32px 5vw 80px;box-sizing:border-box;font-family:Lato,sans-serif;";
+  var root = document.getElementById("ts-storefront-root") || document.body;
+  root.appendChild(wrap);
+
+  var back = document.createElement("button");
+  back.textContent = "← Back to Store";
+  back.onclick = dealBack;
+  back.style.cssText = "background:#1a1a2e;color:#fff;border:none;padding:9px 18px;border-radius:6px;cursor:pointer;font-weight:700;margin-bottom:24px;font-family:Montserrat,sans-serif;";
+  wrap.appendChild(back);
+
+  var card = document.createElement("div");
+  card.style.cssText = "background:#fff;border:2px solid #e0e0e0;border-radius:12px;padding:28px;display:grid;grid-template-columns:minmax(0,360px) 1fr;gap:28px;align-items:start;";
+  var leftCol = document.createElement("div");
+  var imgwrap = document.createElement("div");
+  imgwrap.id = "ts-deal-imgwrap";
+  imgwrap.style.cssText = "position:relative;background:#f6f6f6;border-radius:10px;min-height:280px;display:flex;align-items:center;justify-content:center;overflow:hidden;margin-bottom:10px;";
+  var img = document.createElement("img");
+  img.id = "ts-deal-img"; img.alt = "Deal of the Day";
+  img.style.cssText = "width:100%;height:100%;max-height:360px;object-fit:contain;display:none;cursor:pointer;";
+  var mystery = document.createElement("div");
+  mystery.id = "ts-deal-mystery";
+  mystery.textContent = "?";
+  mystery.style.cssText = "font-family:'Bebas Neue',Montserrat,sans-serif;font-size:9rem;color:#1a1a2e;opacity:0.15;line-height:1;";
+  var bindingsBadge = document.createElement("div");
+  bindingsBadge.id = "ts-deal-bindings-badge";
+  bindingsBadge.textContent = "Bindings Included";
+  bindingsBadge.style.cssText = "display:none;position:absolute;top:10px;right:10px;background:#1a1a2e;color:#fff;font-family:Montserrat,sans-serif;font-size:0.68rem;font-weight:700;letter-spacing:0.04em;padding:6px 11px;border-radius:4px;z-index:2;";
+  imgwrap.appendChild(img); imgwrap.appendChild(mystery); imgwrap.appendChild(bindingsBadge);
+  var thumbs = document.createElement("div");
+  thumbs.id = "ts-deal-thumbs";
+  thumbs.className = "ts-pm-thumbs";
+  thumbs.style.cssText = "display:none;";
+  leftCol.appendChild(imgwrap); leftCol.appendChild(thumbs);
+
+  var info = document.createElement("div");
+  var tag = document.createElement("div"); tag.id = "ts-deal-tag";
+  tag.style.cssText = "font-size:0.7rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:#e8641b;margin-bottom:10px;";
+  var name = document.createElement("h2"); name.id = "ts-deal-name";
+  name.style.cssText = "font-size:1.6rem;font-weight:700;margin:0 0 10px;font-family:Montserrat,sans-serif;color:#1a1a2e;";
+  var desc = document.createElement("p"); desc.id = "ts-deal-desc";
+  desc.style.cssText = "color:#666;line-height:1.6;margin:0 0 16px;";
+  var priceRow = document.createElement("div"); priceRow.style.cssText = "display:flex;align-items:baseline;gap:12px;margin-bottom:8px;";
+  var price = document.createElement("span"); price.id = "ts-deal-price";
+  price.style.cssText = "font-size:2rem;font-weight:800;color:#1a1a2e;font-family:Montserrat,sans-serif;";
+  var msrp = document.createElement("span"); msrp.id = "ts-deal-msrp";
+  msrp.style.cssText = "font-size:1.1rem;color:#999;text-decoration:line-through;";
+  priceRow.appendChild(price); priceRow.appendChild(msrp);
+  var left = document.createElement("div"); left.id = "ts-deal-left";
+  left.style.cssText = "font-size:0.85rem;font-weight:700;color:#e8641b;margin-bottom:14px;";
+  var sizeWrap = document.createElement("div"); sizeWrap.id = "ts-deal-sizewrap";
+  sizeWrap.style.cssText = "margin-bottom:16px;";
+  var sizeLabel = document.createElement("label");
+  sizeLabel.style.cssText = "display:block;font-size:0.72rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#888;margin-bottom:6px;";
+  sizeLabel.textContent = "Select Size";
+  var sizeSel = document.createElement("select"); sizeSel.id = "ts-deal-size";
+  sizeSel.style.cssText = "width:100%;max-width:280px;padding:10px 12px;border:1px solid #ddd;border-radius:6px;font-size:0.9rem;font-family:Lato,sans-serif;";
+  sizeSel.onchange = function(){ dealRender(); };
+  sizeWrap.appendChild(sizeLabel); sizeWrap.appendChild(sizeSel);
+  var count = document.createElement("div"); count.id = "ts-deal-count";
+  count.style.cssText = "font-family:'Bebas Neue',Montserrat,sans-serif;font-size:3rem;letter-spacing:0.08em;color:#1a1a2e;line-height:1;margin-bottom:16px;";
+  var btn = document.createElement("button"); btn.id = "ts-deal-btn";
+  btn.disabled = true; btn.onclick = dealBuy;
+  btn.style.cssText = "background:#e8641b;color:#fff;border:none;border-radius:6px;padding:14px 32px;font-size:0.95rem;font-weight:700;cursor:pointer;font-family:Montserrat,sans-serif;";
+  var rules = document.createElement("p"); rules.id = "ts-deal-rules";
+  rules.style.cssText = "font-size:0.72rem;color:#999;margin:14px 0 0;";
+  info.appendChild(tag); info.appendChild(name); info.appendChild(desc); info.appendChild(priceRow);
+  info.appendChild(left); info.appendChild(sizeWrap); info.appendChild(count); info.appendChild(btn); info.appendChild(rules);
+  card.appendChild(leftCol); card.appendChild(info);
+  wrap.appendChild(card);
+
+  // Full specs — same table/accordion the regular product pages use
+  var specsWrap = document.createElement("div"); specsWrap.id = "ts-deal-specs-wrap";
+  specsWrap.style.cssText = "margin-top:20px;display:none;";
+  var specsAcc = document.createElement("div"); specsAcc.className = "ts-accordion";
+  var specsBtn = document.createElement("button"); specsBtn.className = "ts-accordion-btn"; specsBtn.type = "button";
+  specsBtn.onclick = function(){ tsAccToggle(specsBtn); };
+  specsBtn.innerHTML = 'Specs <span class="ts-acc-arrow">▼</span>';
+  var specsBody = document.createElement("div"); specsBody.className = "ts-accordion-body";
+  var specsTable = document.createElement("table"); specsTable.className = "ts-pm-specs"; specsTable.id = "ts-deal-specs-table";
+  specsBody.appendChild(specsTable);
+  specsAcc.appendChild(specsBtn); specsAcc.appendChild(specsBody);
+  specsWrap.appendChild(specsAcc);
+  wrap.appendChild(specsWrap);
+
+  var style = document.createElement("style");
+  style.textContent = "#ts-deal-btn:disabled{opacity:0.45;cursor:not-allowed;}@media(max-width:640px){#ts-deal-view > div:nth-child(2){grid-template-columns:1fr !important;}}";
+  document.head.appendChild(style);
+
+  dealRender();
+})();
+
+})();
