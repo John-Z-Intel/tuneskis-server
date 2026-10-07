@@ -3658,8 +3658,8 @@ function dealState() {
   // ⚠️ TEMPORARY TEST WINDOW — forces the deal live for a few minutes on a
   // specific date/time so you can see it work without Heartland connected.
   // Safe to delete this whole block once you've confirmed it's working.
-  var testStart = new Date(now); testStart.setFullYear(2026, 9, 7); testStart.setHours(18, 37, 0, 0);
-  var testEnd   = new Date(now); testEnd.setFullYear(2026, 9, 7);   testEnd.setHours(18, 42, 0, 0);
+  var testStart = new Date(now); testStart.setFullYear(2026, 9, 7); testStart.setHours(18, 45, 0, 0);
+  var testEnd   = new Date(now); testEnd.setFullYear(2026, 9, 7);   testEnd.setHours(18, 50, 0, 0);
   if (now >= testStart && now <= testEnd) {
     return { state:"live", deal: DEAL_OF_DAY.deals.thu, qty: 1, key:"thu", isTest:true };
   }
