@@ -2,7 +2,7 @@
 // ── Build stamp — check what's actually deployed ──────────────
 // In the browser console on /store you'll see this line. If the number
 // doesn't match the ?v= in the Squarespace footer, you're on a stale file.
-window.TS_BUILD = "250 (Icelantic Nomad 100 added, ski bindings removed)";
+window.TS_BUILD = "252 (QST 100 updated to Black/Iceberg colorway + current price)";
 console.log("%c[TuneSkis] storefront build " + window.TS_BUILD, "background:#4db8ff;color:#000;padding:2px 6px;border-radius:3px;font-weight:bold");
 // Prints what the deal engine actually sees. Run tsDealDebug() in the console
 // any time to find out why a deal is or isn't showing.
@@ -453,7 +453,7 @@ const PRODUCTS = [
     desc:"A daily driver that performs anywhere the trail takes you. More carbon in the layup and a touch more camber make it livelier than ever — the most versatile Nomad of the bunch.",
     action:"Add to Cart", link:null,
     sizes:[{label:"176cm",qty:0,hlId:101963},{label:"182cm",qty:0,hlId:101964}],
-    images:["https://www.evo.com/cdn/shop/files/product-image-1215080.jpg?v=1767737736","https://www.evo.com/cdn/shop/files/product-image-1215078.jpg?v=1767737737"],
+    images:["https://www.evo.com/cdn/shop/files/product-image-1338419.jpg?v=1787752880"],
     longDesc:"A daily driver you can count on to perform anywhere the trail takes you, the Icelantic Nomad 100 has more carbon in the layup and a tiny bit more camber than the rest of the Nomad lineup, making it livelier than ever and a pleasure to push from turn to turn. The 100mm waist sets you up for success no matter what the snow conditions, making this the most versatile Nomad of the bunch. Poplar Wood Core for toughness and resilience. Free Rocker Profile with Vertical Carbon Stringers (4 above and 4 below the core) add pop and energy. This year's graphics feature original artwork by Doug Good Feather, a Native American Lakota artist and founder of the Lakota Way Healing Center, who blends sacred geometry, nature, and Lakota traditions into the topsheet. Handmade in Colorado. Backed by Icelantic's 3-Year Bombproof Warranty.",
     specs:{"Brand":"Icelantic","Waist Width":"100mm","Dimensions":"135 / 100 / 127 mm","Profile":"Free Rocker (Tip 36cm / Camber 4mm / Tail 31cm)","Core":"Poplar Wood + Vertical Carbon Stringers","Terrain":"All-Mountain, Big Mountain","Skill Level":"Intermediate–Advanced","Gender":"Men\'s","Country":"USA (Colorado)"}
   },
@@ -1213,15 +1213,15 @@ const BINDINGS = [
 
   // SALOMON SKIS
   {
-    name:"Salomon QST 100", brand:"Salomon", price:699.95, badge:"All-Mountain", badgeType:"new", icon:"🎿",
+    name:"Salomon QST 100", brand:"Salomon", price:749.99, customMsrp:749.99, customPrice:749.99, badge:"All-Mountain", badgeType:"new", icon:"🎿",
     cat:"skis", sub:"salomon", gender:"unisex", age:"adult", cond:"new", bindings:false, flatmount:true, popular:146,
-    desc:"Iconic all-mountain ski. The QST 100 handles everything from groomed runs to powder with ease.",
+    desc:"Black/Iceberg colorway. Iconic all-mountain ski — the most playful QST yet. The 100mm waist handles everything from groomed runs to powder with ease.",
     action:"Add to Cart", link:null,
-    sizes:[{label:"164cm",qty:0,hlId:101549},{label:"172cm",qty:0,hlId:101010},{label:"180cm",qty:0,hlId:101011}],
-    images:["https://www.freshskis.com/cdn/shop/files/salomon-qst-100-skis-iceberg-green-2025-2026.jpg?v=1760439904&width=320"],
-    longDesc:"The Salomon QST 100 is an iconic all-mountain charger with a 100mm waist that handles everything from groomed runs to powder with ease. A twin rocker profile with camber underfoot delivers quick response and confident edge hold, while the Poplar/Beech woodcore keeps it lively and forgiving. Cork Damper inserts at the tip and tail quiet the ride in chop, and the Edge Amplifier adds grip when you need it most. One of the most versatile one-ski-quiver options in the Salomon lineup.",
-    specs:{"Brand":"Salomon","Waist Width":"100mm","Profile":"Tip/Tail Rocker + Camber Underfoot","Core":"Poplar / Beech Woodcore","Technology":"Cork Damper, Edge Amplifier","Base":"Electraskin 4400","Turn Radius":"~17m (172cm)","Terrain":"All-Mountain / Off-Piste","Skill Level":"Intermediate–Expert","Country":"France"},
-    breakdown:[{label:"Skis (Salomon QST 100)",amount:699.99},{label:"Binding Mount",amount:0,note:"Free"},{label:"Tune & Wax",amount:0,note:"Free"},{label:"Total",amount:699.99}]
+    sizes:[{label:"164cm",qty:0,hlId:101549},{label:"172cm",qty:0,hlId:102017},{label:"180cm",qty:0,hlId:102018}],
+    images:["https://www.evo.com/cdn/shop/files/product-image-1302384.jpg?v=1780506447","https://www.evo.com/cdn/shop/files/product-image-1302385.jpg?v=1780506447","https://www.evo.com/cdn/shop/files/product-image-1302386.jpg?v=1780506447","https://www.evo.com/cdn/shop/files/product-image-1302387.jpg?v=1780506447"],
+    longDesc:"Meet the most playful Salomon QST yet — the Black/Iceberg colorway of the 2026 QST 100. With a 100mm waist and dynamic freeride shape, it's perfect for daily shredding, equally at home carving groomers and exploring new terrain. A Full Poplar Woodcore maximizes liveliness, stability, and ski-to-snow contact while filtering vibrations. Basalt & Fiberglass fiber runs the full length of the ski for unparalleled flex and edge grip, and an all-new Cork Damplifier — a single injected piece of cork and TPU in the tip and tail — delivers best-in-class vibration dampening. Full Sandwich Sidewalls keep it stable and precise. One of the most versatile one-ski-quiver options in the Salomon lineup.",
+    specs:{"Brand":"Salomon","Model":"QST 100","Color":"Black/Iceberg","Waist Width":"100mm","Profile":"Freeride Rocker (21% Tip / Camber / 17% Tail)","Core":"Full Poplar Woodcore","Reinforcement":"Basalt & Fiberglass Fiber","Technology":"Cork Damplifier","Construction":"Full Sandwich Sidewalls","Turn Radius":"Medium (17-22m)","Terrain":"All-Mountain","Skill Level":"Intermediate–Advanced","Country":"France"},
+    breakdown:[{label:"Skis (Salomon QST 100)",amount:749.99},{label:"Binding Mount",amount:0,note:"Free"},{label:"Tune & Wax",amount:0,note:"Free"},{label:"Total",amount:749.99}]
   },
   {
     name:"Salomon QST Spark", brand:"Salomon", price:499.99, customMsrp:499.99, customPrice:499.99, badge:"New", badgeType:"new", icon:"🎿",
