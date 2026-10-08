@@ -2,7 +2,7 @@
 // ── Build stamp — check what's actually deployed ──────────────
 // In the browser console on /store you'll see this line. If the number
 // doesn't match the ?v= in the Squarespace footer, you're on a stale file.
-window.TS_BUILD = "257 (Colorways added; Arcade W 80, Soul Pro, Soul W Pro added)";
+window.TS_BUILD = "258 (Nova 2 updated with official Rossignol.com specs + photos)";
 console.log("%c[TuneSkis] storefront build " + window.TS_BUILD, "background:#4db8ff;color:#000;padding:2px 6px;border-radius:3px;font-weight:bold");
 // Prints what the deal engine actually sees. Run tsDealDebug() in the console
 // any time to find out why a deal is or isn't showing.
@@ -1744,12 +1744,12 @@ const BINDINGS = [
   {
     name:"Rossignol Nova 2", brand:"Rossignol", price:449.99, badge:"Women's", badgeType:"new", icon:"🎿",
     cat:"skis", sub:"rossignol", gender:"women", age:"adult", cond:"new", bindings:true, flatmount:false, popular:131,
-    desc:"Women's beginner/intermediate ski. Super lightweight and easy to initiate turns — a great first performance ski. Comes with bindings.",
+    desc:"Discover effortless carving and confident turns. Consistent carving performance for entry-level skiers, with a relaxed feel and easy turn initiation.",
     action:"Add to Cart", link:null,
     sizes:[{label:"138cm",qty:0,hlId:102185},{label:"146cm",qty:0,hlId:102186},{label:"154cm",qty:0,hlId:102187},{label:"162cm",qty:0,hlId:102188}],
-    images:["https://shop.petersonsskiandcycle.com/cdn/shop/files/Nova2Express_1024x1024.jpg?v=1759163121"],
-    longDesc:"The Rossignol Nova 2 is an all-mountain ski tuned for intermediate women looking to build confidence and progress their skiing across the resort. A forgiving flex and intuitive shape make it easy to learn and improve, while the poplar wood core delivers a smooth, balanced ride in changing snow conditions. A versatile, encouraging companion for skiers who are ready to explore more of the mountain. Comes with bindings included.",
-    specs:{"Waist Width":"Nova 2","Color":"Pink & White","Core":"Air Tip Paulownia","Profile":"Progressive Camber","Gender":"Women's","Terrain":"Groomed","Skill Level":"Beginner","Country":"France"}
+    images:["https://www.rossignol.com/dw/image/v2/BJJZ_PRD/on/demandware.static/-/Sites-rossignol-catalog/default/dw7f4bbbf0/images/large/RAPPV01000_72DPI_01_v00.jpg?sw=800","https://www.rossignol.com/dw/image/v2/BJJZ_PRD/on/demandware.static/-/Sites-rossignol-catalog/default/dweccffe55/images/large/RAPPV01000_72DPI_02_v00.jpg?sw=800","https://www.rossignol.com/dw/image/v2/BJJZ_PRD/on/demandware.static/-/Sites-rossignol-catalog/default/dw439195c2/images/large/RAPPV01000_72DPI_03_v00.jpg?sw=800"],
+    longDesc:"Discover effortless carving and confident turns. The Rossignol Nova 2 brings consistent carving performance to entry-level skiers. Its innovative shape and race-inspired design are tuned for a smooth learning curve, with a relaxed feel and easy turn initiation — step in and discover the power of the carve. The PEFC Poplar Wood Core balances dampness, elasticity, and weight savings, while V-Profile technology delivers an energetic boost with a smooth, connected flex. Cap Sidewalls keep things light and chip-resistant, and the Oversize Sidecut delivers powerful carving precision and edge grip. ASSIST Flex — the softest of Rossignol's three adaptive flex profiles — makes this the most forgiving, comfortable, easy-to-handle ski in the lineup. Tip Rocker eases turn initiation while retaining traditional camber for power and snow feel.",
+    specs:{"Brand":"Rossignol","Product Code":"RAPPV01000","Waist Width":"74mm","Color":"Pink & White","Sidecut":"126 / 74 / 111 mm","Radius":"10-13m (by length)","Core":"PEFC Poplar Wood","Construction":"Cap, Oversize Sidecut","Flex":"ASSIST (softest)","Profile":"Tip Rocker + Camber","Gender":"Women's","Skill Level":"Beginner","Country":"France"}
   },
   {
     name:"Rossignol Forza 70", brand:"Rossignol", price:1049.99, customMsrp:649.99, customPrice:649.99, badge:"Race", badgeType:"pop", icon:"🎿",
