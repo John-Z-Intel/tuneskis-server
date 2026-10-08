@@ -1,4 +1,9 @@
 (function(){
+// ── Build stamp — check what's actually deployed ──────────────
+// In the browser console on /store you'll see this line. If the number
+// doesn't match the ?v= in the Squarespace footer, you're on a stale file.
+window.TS_BUILD = "243 (deal works without Heartland item)";
+console.log("%c[TuneSkis] storefront build " + window.TS_BUILD, "background:#4db8ff;color:#000;padding:2px 6px;border-radius:3px;font-weight:bold");
 // ═══════════════════════════════════════════════════════════════════
 //  🔥 DEAL OF THE DAY — EDIT THIS BLOCK AT THE START OF EACH WEEK
 // ═══════════════════════════════════════════════════════════════════
@@ -22,6 +27,9 @@
 //  • teaser = what shows before the reveal (product stays hidden until then).
 // ═══════════════════════════════════════════════════════════════════
 const DEAL_OF_DAY = {
+  // First day deals ever ran. Nothing before this is treated as a past deal,
+  // which stops an upcoming product from being revealed early.
+  startDate: "2026-10-08",
   revealHour: 12,
   revealMinute: 0,
   deals: {
@@ -3613,7 +3621,10 @@ function dealRevealOn(dateNY) {
 }
 function dealFor(dateNY) {
   var d = DEAL_OF_DAY.deals[DEAL_DAYS[dateNY.getDay()]];
-  return (d && d.active && d.hlId) ? d : null;
+  // A Heartland item is optional: with one, stock comes from Heartland;
+  // without one, the server's own sales counter enforces the limit.
+  // A day just needs to be switched on and filled in.
+  return (d && d.active && d.name && d.price > 0) ? d : null;
 }
 // Next reveal moment that actually has a deal configured (within the next week)
 function dealNextReveal(nowNY) {
@@ -3647,13 +3658,16 @@ function dealGenericCountdown(nowNY) {
 // "looks like that one got away" teaser. Lenient: doesn't require hlId,
 // since this is just a look-what-you-missed display, not a sale.
 function dealPreviousDeal(nowNY) {
+  // Never look back past the day deals actually started running, otherwise
+  // the same weekly config slot gets reported as a "past" deal before it
+  // has ever gone live — which would leak the product early.
+  var startStr = DEAL_OF_DAY.startDate;
+  var start = startStr ? new Date(startStr + "T00:00:00") : null;
   for (var i = 1; i <= 7; i++) {
     var day = new Date(nowNY); day.setDate(day.getDate() - i);
+    if (start && day < start) break;
     var d = DEAL_OF_DAY.deals[DEAL_DAYS[day.getDay()]];
-    // Only counts as a real "previous" deal once it has an actual Heartland
-    // item wired up (same bar as dealFor) — a day that's just active:true
-    // with no hlId yet hasn't genuinely run, so it stays hidden.
-    if (d && d.active && d.name && d.hlId) return d;
+    if (d && d.active && d.name) return d;
   }
   return null;
 }
