@@ -2,7 +2,7 @@
 // ── Build stamp — check what's actually deployed ──────────────
 // In the browser console on /store you'll see this line. If the number
 // doesn't match the ?v= in the Squarespace footer, you're on a stale file.
-window.TS_BUILD = "247 (Salomon Stance 84/84W/80 + missing Pro sizes)";
+window.TS_BUILD = "249 (ski bindings, QST Spark/94, fixed QST Jr colorway bug)";
 console.log("%c[TuneSkis] storefront build " + window.TS_BUILD, "background:#4db8ff;color:#000;padding:2px 6px;border-radius:3px;font-weight:bold");
 // Prints what the deal engine actually sees. Run tsDealDebug() in the console
 // any time to find out why a deal is or isn't showing.
@@ -1209,16 +1209,38 @@ const BINDINGS = [
     action:"Add to Cart", link:null,
     sizes:[{label:"164cm",qty:0,hlId:101549},{label:"172cm",qty:0,hlId:101010},{label:"180cm",qty:0,hlId:101011}],
     images:["https://www.freshskis.com/cdn/shop/files/salomon-qst-100-skis-iceberg-green-2025-2026.jpg?v=1760439904&width=320"],
-    longDesc:"The Rossignol Sender Free 100 combines all-mountain power with playful finesse — a 100mm-waisted charger that lets you transition from high-speed carves to laid-back smears without missing a beat. A twin rocker profile, progressive sidecut, and lively wood core offer quick response and endless pop, making it the perfect ski for freeriders who want to get creative with the entire mountain. Air Tip technology keeps the tips light for effortless maneuverability in soft snow.",
+    longDesc:"The Salomon QST 100 is an iconic all-mountain charger with a 100mm waist that handles everything from groomed runs to powder with ease. A twin rocker profile with camber underfoot delivers quick response and confident edge hold, while the Poplar/Beech woodcore keeps it lively and forgiving. Cork Damper inserts at the tip and tail quiet the ride in chop, and the Edge Amplifier adds grip when you need it most. One of the most versatile one-ski-quiver options in the Salomon lineup.",
     specs:{"Brand":"Salomon","Waist Width":"100mm","Profile":"Tip/Tail Rocker + Camber Underfoot","Core":"Poplar / Beech Woodcore","Technology":"Cork Damper, Edge Amplifier","Base":"Electraskin 4400","Turn Radius":"~17m (172cm)","Terrain":"All-Mountain / Off-Piste","Skill Level":"Intermediate–Expert","Country":"France"},
     breakdown:[{label:"Skis (Salomon QST 100)",amount:699.99},{label:"Binding Mount",amount:0,note:"Free"},{label:"Tune & Wax",amount:0,note:"Free"},{label:"Total",amount:699.99}]
+  },
+  {
+    name:"Salomon QST Spark", brand:"Salomon", price:499.99, customMsrp:499.99, customPrice:499.99, badge:"New", badgeType:"new", icon:"🎿",
+    cat:"skis", sub:"salomon", gender:"unisex", age:"adult", cond:"new", bindings:false, flatmount:true, popular:145,
+    desc:"Freestyle-driven twin tip for the park and everyday resort laps. A poplar woodcore and twin-rocker profile keep it nimble and forgiving while still holding an edge on groomers.",
+    action:"Add to Cart", link:null,
+    sizes:[{label:"150cm",qty:0,hlId:100667},{label:"157cm",qty:0,hlId:100668},{label:"164cm",qty:0,hlId:100669},{label:"171cm",qty:0,hlId:100670},{label:"178cm",qty:0,hlId:100671}],
+    images:["https://glisshop-glisshop-fr-storage.omn.proximis.com/Imagestorage/imagesSynchro/0/0/6ea2c9a4bd40253e27178608c31c5efc7b139cde_H24SALOSKI379724_0.jpeg","https://glisshop-glisshop-fr-storage.omn.proximis.com/Imagestorage/imagesSynchro/0/0/45a290c6a5abd66ec32e139dd1819b01e57dc34b_H24SALOSKI379724_1.jpeg"],
+    longDesc:"Park progression and playful resort laps are where the Salomon QST Spark feels most at home. A poplar wood core, an 85mm waist, and a twin-rocker profile with camber underfoot keep it nimble and forgiving while still holding an edge on groomers, and wide steel edges add durability where a park ski needs it most. Newer skiers experimenting with switch riding and small features get an accessible twin tip that doesn't punish mistakes — twin tips for twice the fun, letting you stomp airs, slide rails, and rule the mountain.",
+    specs:{"Brand":"Salomon","Model":"QST Spark","Waist Width":"85mm","Dimensions":"117 / 85 / 109 mm","Core":"Poplar Woodcore","Construction":"Stepdown Sidewalls","Profile":"Twin Rocker (FS Park)","Terrain":"Park / Freestyle","Skill Level":"Beginner–Intermediate","Tail Type":"Full Twin Tip"},
+    breakdown:[{label:"Skis (Salomon QST Spark)",amount:499.99},{label:"Binding Mount",amount:0,note:"Free"},{label:"Tune & Wax",amount:0,note:"Free"},{label:"Total",amount:499.99}]
+  },
+  {
+    name:"Salomon QST 94", brand:"Salomon", price:749.99, customMsrp:749.99, customPrice:749.99, badge:"New", badgeType:"new", icon:"🎿",
+    cat:"skis", sub:"salomon", gender:"unisex", age:"adult", cond:"new", bindings:false, flatmount:true, popular:148,
+    desc:"Your ticket to ski it all. A wide tip for softer snow and a 94mm waist bridge the gap between all-mountain and freeride, with Ti binding reinforcement for hard-snow edging.",
+    action:"Add to Cart", link:null,
+    sizes:[{label:"164cm",qty:0,hlId:102019},{label:"172cm",qty:0,hlId:102020},{label:"180cm",qty:0,hlId:102021}],
+    images:["https://www.evo.com/cdn/shop/files/product-image-1302396.jpg?v=1780506450&width=1080","https://www.evo.com/cdn/shop/files/product-image-1302397.jpg?v=1780506447&width=1080","https://www.evo.com/cdn/shop/files/product-image-1302401.jpg?v=1780506447&width=1080","https://www.evo.com/cdn/shop/files/product-image-1302398.jpg?v=1780506448&width=1080"],
+    longDesc:"The 4th-generation QST 94 replaces the long-standing QST 92 with more top-end performance and real power on hardpack, without sacrificing any of the playfulness that made the QST line a staple of the all-mountain freeride space. With a wide tip for softer snow and a 94mm waist, it bridges the gap between all-mountain and freeride, delivering excellent grip and stability on piste while providing extra float when you need it most. Full Poplar Woodcore maximizes liveliness and ski-to-snow contact; Cork Damplifier inserts at tip and tail quell vibration; Basalt & Fiberglass fiber reinforcement runs full-length for unparalleled flex and edge grip; and a Titanal insert underfoot adds maximal power and hard-snow edging. Full Sandwich Sidewalls guarantee stability and precision.",
+    specs:{"Brand":"Salomon","Model":"QST 94","Waist Width":"94mm","Dimensions (180cm)":"134 / 94 / 120 mm","Core":"Full Poplar Woodcore","Reinforcement":"Basalt & Fiberglass + Ti Binding Reinforcement","Technology":"Cork Damplifier","Profile":"Freeride Rocker (20% Tip / 64% Camber / 16% Tail)","Turn Radius":"~13.5–14.5m","Terrain":"All-Mountain / Freeride","Skill Level":"Intermediate–Advanced"},
+    breakdown:[{label:"Skis (Salomon QST 94)",amount:749.99},{label:"Binding Mount",amount:0,note:"Free"},{label:"Tune & Wax",amount:0,note:"Free"},{label:"Total",amount:749.99}]
   },
   {
     name:"Salomon QST Jr — Blue/Purple", brand:"Salomon", price:269.99, customMsrp:269.99, customPrice:269.99, badge:"Junior", badgeType:"new", icon:"🎿",
     cat:"skis", sub:"salomon", gender:"unisex", age:"kid", cond:"new", bindings:true, flatmount:false, popular:147,
     desc:"Junior ski designed to help kids progress confidently. Light, forgiving, and available in multiple sizes. Blue/purple colorway. Comes with bindings.",
     action:"Add to Cart", link:null,
-    sizes:[{label:"100cm",qty:0,hlId:101575},{label:"110cm",qty:0,hlId:101577},{label:"120cm",qty:0,hlId:101579},{label:"140cm",qty:0,hlId:101582},{label:"150cm",qty:0,hlId:101583}],
+    sizes:[{label:"100cm",qty:0,hlId:101576},{label:"110cm",qty:0,hlId:101578},{label:"120cm",qty:0,hlId:101580},{label:"130cm",qty:0,hlId:101996},{label:"140cm",qty:0,hlId:101582},{label:"150cm",qty:0,hlId:101584}],
     images:["https://images.evo.com/imgp/700/254041/1098890/salomon-qst-jr-s-skis-c5-gw-bindings-kids-2026-.jpg","https://images.evo.com/imgp/700/254041/1098886/salomon-qst-jr-s-skis-c5-gw-bindings-kids-2026-.jpg","https://images.evo.com/imgp/700/254041/1098888/salomon-qst-jr-s-skis-c5-gw-bindings-kids-2026-.jpg"],
     longDesc:"The Salomon QST Blank Team Junior is built for the next generation of freeriders — a junior all-mountain freeride ski with a 92mm waist (88mm in shorter lengths) that delivers float on powder days and serious style in the park. Rockered tip and tail make landings smooth and turns snappy wherever the mountain takes you. A poplar woodcore offers stability, liveliness, and forgiveness with great ski-to-snow contact, while the lightweight cap construction keeps it maneuverable for growing riders. The younger sibling to the QST Blank, built to charge. Comes with bindings included.",
     specs:{"Brand":"Salomon","Profile":"Tip Rocker + Camber","Core":"Poplar Woodcore","Technology":"Cork Damper","Base":"Cap Construction","Terrain":"All-Mountain","Skill Level":"Beginner–Intermediate","Age Group":"Junior (100–150cm)","Color":"Blue / Purple","Country":"France"},
@@ -1229,7 +1251,7 @@ const BINDINGS = [
     cat:"skis", sub:"salomon", gender:"unisex", age:"kid", cond:"new", bindings:true, flatmount:false, popular:146,
     desc:"Junior ski designed to help kids progress confidently. Light, forgiving, and available in multiple sizes. Pink/orange colorway. Comes with bindings.",
     action:"Add to Cart", link:null,
-    sizes:[{label:"100cm",qty:0,hlId:101575},{label:"110cm",qty:0,hlId:101577},{label:"120cm",qty:0,hlId:101579},{label:"140cm",qty:0,hlId:101582},{label:"150cm",qty:0,hlId:101583}],
+    sizes:[{label:"100cm",qty:0,hlId:101575},{label:"110cm",qty:0,hlId:101577},{label:"120cm",qty:0,hlId:101579},{label:"130cm",qty:0,hlId:101995},{label:"140cm",qty:0,hlId:101581},{label:"150cm",qty:0,hlId:101583}],
     images:["https://images.evo.com/imgp/700/254044/1098910/salomon-lux-jr-s-skis-c5-gw-bindings-kids-2026-.jpg","https://images.evo.com/imgp/700/254044/1098905/salomon-lux-jr-s-skis-c5-gw-bindings-kids-2026-.jpg","https://images.evo.com/imgp/700/254044/1098906/salomon-lux-jr-s-skis-c5-gw-bindings-kids-2026-.jpg"],
     longDesc:"The Salomon QST Blank Team Junior in Pink/Orange colorway — a junior all-mountain freeride ski with a 92mm waist (88mm in shorter lengths) that delivers float on powder days and serious style in the park. Rockered tip and tail make landings smooth and turns snappy wherever the mountain takes you. A poplar woodcore offers stability, liveliness, and forgiveness with great ski-to-snow contact, while the lightweight cap construction keeps it maneuverable for growing riders. The younger sibling to the QST Blank, built to charge. Comes with bindings included.",
     specs:{"Brand":"Salomon","Profile":"Tip Rocker + Camber","Core":"Poplar Woodcore","Technology":"Cork Damper","Base":"Cap Construction","Terrain":"All-Mountain","Skill Level":"Beginner–Intermediate","Age Group":"Junior (100–150cm)","Color":"Pink / Orange","Country":"France"},
@@ -2519,38 +2541,60 @@ const BINDINGS = [
     specs:{"Brand":"Baffin","Type":"Indoor/Outdoor Slipper","Colors":"Black, Navy Blue","Sizing":"S (3-4), M (5-6), L (7-8), XL (9-10), XXL (11-12), 3XL (13-14)"}
   },
 
+  // ── SKI BINDINGS (new — first ski bindings in the catalog) ──
+  {
+    name:"Look SPX 12", brand:"Look", price:229.99, badge:"", badgeType:"default", icon:"🔩",
+    cat:"bindings", sub:"ski-binding", gender:"unisex", age:"adult", cond:"new", popular:95,
+    desc:"High-performance all-mountain binding for intermediate to advanced skiers. Full Action toe and SPX heel deliver 27mm of elastic travel for excellent retention and shock absorption.",
+    action:"Add to Cart", link:null,
+    sizes:[{label:"One Size",qty:0,hlId:100797}],
+    images:["https://content.backcountry.com/images/items/large/LKK/LKK001N/FOR30.jpg"],
+    longDesc:"",
+    specs:{"Brand":"Look","Model":"SPX 12","DIN Range":"3.5–12","Brake Width":"80 / 90 / 100 / 110 / 120mm","Boot Compatibility":"Alpine (ISO 5355) & GripWalk (ISO 23223)","Skill Level":"Intermediate–Advanced"},
+    breakdown:[{label:"Binding",amount:229.99},{label:"Professional Mount",amount:0,note:"Free"},{label:"Total",amount:229.99}]
+  },
+  {
+    name:"Look SPX 13", brand:"Look", price:279.99, badge:"", badgeType:"default", icon:"🔩",
+    cat:"bindings", sub:"ski-binding", gender:"unisex", age:"adult", cond:"new", popular:96,
+    desc:"Stepped-up version of the SPX 12 with a higher DIN ceiling for stronger or more aggressive skiers. Same 27mm of elastic travel and all-mountain reliability.",
+    action:"Add to Cart", link:null,
+    sizes:[{label:"One Size",qty:0,hlId:100798}],
+    images:["https://content.backcountry.com/images/items/large/LKK/LKK001N/FOR30.jpg"],
+    longDesc:"",
+    specs:{"Brand":"Look","Model":"SPX 13","DIN Range":"4–13","Brake Width":"80 / 90 / 100 / 110 / 120mm","Boot Compatibility":"Alpine (ISO 5355) & GripWalk (ISO 23223)","Skill Level":"Advanced"},
+    breakdown:[{label:"Binding",amount:279.99},{label:"Professional Mount",amount:0,note:"Free"},{label:"Total",amount:279.99}]
+  },
+  {
+    name:"Look Pivot 12", brand:"Look", price:329.99, badge:"New", badgeType:"new", icon:"🔩",
+    cat:"bindings", sub:"ski-binding", gender:"unisex", age:"adult", cond:"new", popular:98,
+    desc:"Look's signature Pivot heel pivots at the boot sole for exceptional release safety without sacrificing power transmission. A favorite for freeride and all-mountain charging.",
+    action:"Add to Cart", link:null,
+    sizes:[{label:"One Size",qty:0,hlId:100799}],
+    images:["https://www.icelanticskis.com/cdn/shop/files/0002_ATTACK11GWBRAKE85_A__solidblack_sideLeft_1390x1390_0004_13-BLUSTE.jpg?v=1764034122"],
+    longDesc:"",
+    specs:{"Brand":"Look","Model":"Pivot 12","DIN Range":"3.5–12","Brake Width":"95 / 105 / 120mm","Boot Compatibility":"Alpine (ISO 5355) & GripWalk (ISO 23223)","Skill Level":"Advanced–Expert"},
+    breakdown:[{label:"Binding",amount:329.99},{label:"Professional Mount",amount:0,note:"Free"},{label:"Total",amount:329.99}]
+  },
+  {
+    name:"Look Pivot 15", brand:"Look", price:429.99, badge:"New", badgeType:"new", icon:"🔩",
+    cat:"bindings", sub:"ski-binding", gender:"unisex", age:"adult", cond:"new", popular:99,
+    desc:"The top of Look's Pivot line, built for expert and freeride skiers who demand maximum retention at speed. Pivoting heel design protects the knee on backward falls.",
+    action:"Add to Cart", link:null,
+    sizes:[{label:"One Size",qty:0,hlId:100800}],
+    images:["https://www.icelanticskis.com/cdn/shop/files/0002_ATTACK11GWBRAKE85_A__solidblack_sideLeft_1390x1390_0001_15-BLU_23c606c5-3e19-4a77-a031-020017d45b0e.jpg?v=1764034339"],
+    longDesc:"",
+    specs:{"Brand":"Look","Model":"Pivot 15","DIN Range":"4–15","Brake Width":"95 / 105 / 120mm","Boot Compatibility":"Alpine (ISO 5355) & GripWalk (ISO 23223)","Skill Level":"Expert"},
+    breakdown:[{label:"Binding",amount:429.99},{label:"Professional Mount",amount:0,note:"Free"},{label:"Total",amount:429.99}]
+  },
+
 ];
 PRODUCTS.push(...BINDINGS);
 
 // Compatible bindings shown for all flat-mount skis
-const COMPAT_BINDINGS_NAMES = {
-  "Icelantic Pioneer 96":         "ski-binding",
-  "Icelantic Pioneer 86":         "ski-binding",
-  "Icelantic Riveter 85":         "ski-binding",
-  "Icelantic Shaman 99":          "ski-binding",
-  "Kästle EX74":                  "ski-binding",
-  "Kästle RX9":                   "ski-binding",
-  "Kästle M9 76":                 "ski-binding",
-  "Kästle M9 82":                 "ski-binding",
-  "Kästle MX 88":                 "ski-binding",
-  "Kästle Paragon 93":            "ski-binding",
-  "Kästle Quartz":                "ski-binding",
-  "Kästle Obsidian":              "ski-binding",
-  "Kästle M8 84":                 "ski-binding",
-  "Kästle Legend":                "ski-binding",
-  "Kästle KX Holly":              "ski-binding",
-  "Kästle ZX Alpha":              "ski-binding",
-  "Rossignol Savage":             "ski-binding",
-  "Rossignol Super Blackops":     "ski-binding",
-  "Rossignol Sender Free 100":    "ski-binding",
-  "Rossignol Sender Free Pro":    "ski-binding",
-  "Salomon Stance Pro 90":        "ski-binding",
-  "Salomon Stance Pro 88 W":      "ski-binding",
-  "Salomon QST 100":              "ski-binding",
-  "Salomon QST Blank Team 2026":  "ski-binding",
-};
-// No sub-category fallback — compatible bindings only for explicitly listed skis above
-const COMPATIBLE_BINDINGS_MAP = {};
+// Compatible-bindings matching is now automatic (see tsPOpen below) — any ski
+// product with bindings:false gets "Popular Binding Choices" offering
+// ski-binding items, with no per-product name list to maintain. This replaced
+// a hand-maintained whitelist that silently missed every ski added afterward.
 
   // ── Search aliases: misspellings, alternate names, common terms ──────────────
   const SEARCH_ALIASES = {
@@ -3333,8 +3377,14 @@ function tsPOpen(idx) {
     ? `<a class="ts-pm-contact" href="${p.link}" target="_blank">${p.action}</a>`
     : `<button class="ts-pm-add" onclick="tsPAdd(${idx})">Add to Cart</button>`;
 
-  // Compatible Bindings
-  const compatSubcat = COMPAT_BINDINGS_NAMES[p.name] || (p.cat === "snowboards" ? "snowboard-binding" : COMPATIBLE_BINDINGS_MAP[p.sub]);
+  // Compatible Bindings — snowboards keep their original unconditional
+  // behavior (no snowboard product declares a bindings:true/false field, so
+  // gating that would have silently broken it for all of them). Skis are
+  // newly automatic: any ski with bindings:false gets suggestions, with no
+  // per-product list to maintain.
+  const compatSubcat = p.cat === "snowboards" ? "snowboard-binding"
+    : (p.cat === "skis" && p.bindings === false) ? "ski-binding"
+    : null;
   let compatHTML = "";
   if (compatSubcat) {
     // Smart binding selection: 2 same-brand + price-matched
