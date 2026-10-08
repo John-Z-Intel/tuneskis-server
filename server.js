@@ -22,7 +22,13 @@ app.get('/storefront.js', (req, res) => {
   res.sendFile(path.join(__dirname, 'storefront.js'));
 });
 // Lets Squarespace show the hero instantly while the big script downloads
-app.get('/ping', (req, res) => res.json({ ok: true }));
+app.get('/ping', (req, res) => res.json({
+  ok: true,
+  build: 'server-244',
+  // Proves the Deal of the Day cap is actually running on this server.
+  // Visit https://tuneskis-server.onrender.com/ping — dealCapActive must be true.
+  dealCapActive: typeof dealRecordSale === 'function' && typeof reservedQty === 'function'
+}));
 
 // ── Heartland config ──────────────────────────────────────────
 const HL_TOKEN    = process.env.HL_TOKEN    || 'eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiJkYTYyMzc3My05MTkzLTQyZDctOTMwMi02MGU3ZTI3MTVjYjgiLCJpYXQiOjE3NzM1OTM4NzEsInN1YiI6MTAwMDE3LCJhdWQiOjU1OTIxLCJpc3MiOm51bGx9.KRaSs789CQVOOhl7xy0JoYJkKvqJ3TiEZ3jSugagZ6k';
@@ -97,10 +103,12 @@ function saveDealSales() {
 function dealDateKeyNY() {
   return new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' }); // YYYY-MM-DD
 }
-function dealSlot(dealKey) { return `${dealKey}:${dealDateKeyNY()}`; }
-function dealSoldCount(dealKey) { return dealSales[dealSlot(dealKey)] || 0; }
-function dealRecordSale(dealKey, n) {
-  const slot = dealSlot(dealKey);
+// A capKey (absolute) is NOT date-suffixed, so a deal pinned across several
+// dates shares one limit. A plain day key resets daily, as before.
+function dealSlot(dealKey, absolute) { return absolute ? `cap:${dealKey}` : `${dealKey}:${dealDateKeyNY()}`; }
+function dealSoldCount(dealKey, absolute) { return dealSales[dealSlot(dealKey, absolute)] || 0; }
+function dealRecordSale(dealKey, n, absolute) {
+  const slot = dealSlot(dealKey, absolute);
   dealSales[slot] = (dealSales[slot] || 0) + (n || 1);
   // prune anything older than a week so the file stays tiny
   const cutoff = new Date(Date.now() - 7*24*60*60*1000).toLocaleDateString('en-CA', { timeZone:'America/New_York' });
@@ -113,7 +121,8 @@ function dealRecordSale(dealKey, n) {
 app.get('/deal-status', (req, res) => {
   const key = String(req.query.key || '');
   const limit = Math.max(1, parseInt(req.query.limit, 10) || 1);
-  const sold = dealSoldCount(key);
+  const absolute = req.query.absolute === '1' || req.query.absolute === 'true';
+  const sold = dealSoldCount(key, absolute);
   const held = reservedQty('DEAL:' + key);
   const left = Math.max(0, limit - sold - held);
   res.json({ success: true, key, limit, sold, left, soldOut: left <= 0 });
@@ -205,7 +214,9 @@ app.post('/create-payment-intent', async (req, res) => {
   for (const d of dealItems) {
     const limit = Math.max(1, parseInt(d.dealLimit, 10) || 1);
     const want = Math.max(1, d.qty || 1);
-    const taken = dealSoldCount(d.dealKey) + reservedQty('DEAL:' + d.dealKey);
+    const capKey = d.dealCapKey || d.dealKey;
+    const absolute = !!d.dealCapKey;
+    const taken = dealSoldCount(capKey, absolute) + reservedQty('DEAL:' + capKey);
     if (taken + want > limit) {
       console.log(`[deal cap] REFUSED ${d.dealKey} want:${want} sold:${dealSoldCount(d.dealKey)} held:${reservedQty('DEAL:'+d.dealKey)} limit:${limit}`);
       return res.status(409).json({
@@ -220,8 +231,9 @@ app.post('/create-payment-intent', async (req, res) => {
   // Hold the deal slots for this checkout
   dealItems.forEach(d => {
     const want = Math.max(1, d.qty || 1);
-    reserve('DEAL:' + d.dealKey, want);
-    claimed.push({ hlId: 'DEAL:' + d.dealKey, qty: want });
+    const ck = d.dealCapKey || d.dealKey;
+    reserve('DEAL:' + ck, want);
+    claimed.push({ hlId: 'DEAL:' + ck, qty: want });
   });
   if (tracked.length) {
     let qtyMap;
@@ -338,9 +350,11 @@ app.post('/send-order-email', async (req, res) => {
     // Payment went through — count any Deal of the Day items against the cap
     (order.items || []).forEach(i => {
       if (i && i.dealKey) {
-        dealRecordSale(i.dealKey, i.qty || 1);
-        releaseOne('DEAL:' + i.dealKey, i.qty || 1); // hold becomes a confirmed sale
-        console.log(`[deal cap] SOLD ${i.dealKey} -> ${dealSoldCount(i.dealKey)} total today`);
+        const ck = i.dealCapKey || i.dealKey;
+        const abs = !!i.dealCapKey;
+        dealRecordSale(ck, i.qty || 1, abs);
+        releaseOne('DEAL:' + ck, i.qty || 1); // hold becomes a confirmed sale
+        console.log(`[deal cap] SOLD ${ck} -> ${dealSoldCount(ck, abs)} total`);
       }
     });
     // Decrement inventory in Heartland
