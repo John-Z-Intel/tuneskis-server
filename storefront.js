@@ -2,7 +2,7 @@
 // ── Build stamp — check what's actually deployed ──────────────
 // In the browser console on /store you'll see this line. If the number
 // doesn't match the ?v= in the Squarespace footer, you're on a stale file.
-window.TS_BUILD = "252 (QST 100 updated to Black/Iceberg colorway + current price)";
+window.TS_BUILD = "256 (Nova 2 + Arcade 78 restocked; Forza 20 + Arcade 82 added)";
 console.log("%c[TuneSkis] storefront build " + window.TS_BUILD, "background:#4db8ff;color:#000;padding:2px 6px;border-radius:3px;font-weight:bold");
 // Prints what the deal engine actually sees. Run tsDealDebug() in the console
 // any time to find out why a deal is or isn't showing.
@@ -805,6 +805,39 @@ const BINDINGS = [
     specs:{"Brand":"Roxa","Model":"R/Fit Pro 85 W","Flex Index":"85","Gender":"Women's","Skill Level":"Intermediate–Advanced"},
     breakdown:[{label:"Boots",amount:449.99},{label:"Total",amount:449.99}]
   },
+  {
+    name:"Rossignol Kelia 50", brand:"Rossignol", price:249.99, customMsrp:249.99, customPrice:249.99, badge:"New", badgeType:"new", icon:"👟",
+    cat:"ski-boots", sub:"alpineboots", gender:"women", age:"adult", cond:"new", popular:160,
+    desc:"Women's beginner-friendly comfort boot. Super wide 104mm last and forgiving 50 flex make it welcoming for new and progressing skiers.",
+    action:"Add to Cart", link:null,
+    sizes:[{label:"22.5",qty:0,hlId:100153},{label:"23.5",qty:0,hlId:100154},{label:"24.5",qty:0,hlId:100155},{label:"25.5",qty:0,hlId:100156},{label:"26.5",qty:0,hlId:100157},{label:"27.5",qty:0,hlId:100158}],
+    images:["https://www.evo.com/cdn/shop/files/product-image-1177046.jpg?v=1767736355","https://www.evo.com/cdn/shop/files/product-image-1177045.jpg?v=1767736354","https://www.evo.com/cdn/shop/files/product-image-1177048.jpg?v=1767736353"],
+    longDesc:"There's nothing worse than trying to learn to ski with aching feet. The Rossignol Kelia 50 stops foot pain in its tracks, with a super wide 104mm last and forgiving 50 flex that's about as welcoming as a worn pair of Crocs — so you can focus on making the jump to parallel. The Sensor Matrix shell reduces overall weight while boosting power transfer, and the women's-specific tulip-shaped cuff relieves pressure on the shin and calf for improved circulation and all-day comfort. A soft plastic insert around the instep makes entry and exit easy, while the semi-custom liner conforms to your shape for warmth and support. GripWalk compatible (soles sold separately).",
+    specs:{"Brand":"Rossignol","Model":"Kelia 50","Last Width":"104mm (Relaxed Fit)","Flex Index":"50","Shell":"Polyolefine, Sensor Matrix","Buckles":"3 Micro Alloy","Liner":"Semi-Custom","Sole":"Replaceable ISO 5355 Alpine","Ability Level":"Beginner–Intermediate","Gender":"Women's","Warranty":"2 Years"},
+    breakdown:[{label:"Boots",amount:249.99},{label:"Total",amount:249.99}]
+  },
+  {
+    name:"Rossignol Evo 70", brand:"Rossignol", price:249.99, customMsrp:249.99, customPrice:249.99, badge:"New", badgeType:"new", icon:"👟",
+    cat:"ski-boots", sub:"alpineboots", gender:"unisex", age:"adult", cond:"new", popular:161,
+    desc:"Unisex entry-level comfort boot. Super wide 104mm fit, 3-buckle design, and easygoing 70 flex make this the perfect beginner boot.",
+    action:"Add to Cart", link:null,
+    sizes:[{label:"25.5",qty:0,hlId:100159},{label:"26.5",qty:0,hlId:100160},{label:"27.5",qty:0,hlId:100161},{label:"28.5",qty:0,hlId:100162},{label:"29.5",qty:0,hlId:100163},{label:"30.5",qty:0,hlId:100164},{label:"31.5",qty:0,hlId:100165}],
+    images:["https://www.evo.com/cdn/shop/files/product-image-1283410.jpg?v=1774627835","https://www.evo.com/cdn/shop/files/product-image-1283405.jpg?v=1774627837","https://www.evo.com/cdn/shop/files/product-image-1283400.jpg?v=1774627837","https://www.evo.com/cdn/shop/files/product-image-1283403.jpg?v=1774627839"],
+    longDesc:"Supreme comfort is the name of the game with the Rossignol Evo 70. A new entry-level boot built to let you forget you're wearing ski boots and get on with the joy of skiing, it pairs a super wide 104mm fit with a 3-buckle design and an easygoing 70 flex — the perfect beginner boot. The overlap shell structure is wide open at the rear for easy foot entry, while an articulated highback recreates the feel of a traditional four-buckle boot. The Comfort Fit liner uses soft, plush materials with a welded sole for added thermal insulation, and a 35mm velcro power strap adds a final layer of secure, adjustable support.",
+    specs:{"Brand":"Rossignol","Model":"Evo 70","Last Width":"104mm (Comfort Fit)","Flex Index":"70","Shell":"Polyolefine, Overlap Structure","Buckles":"3 Micro Alloy","Liner":"Comfort Fit, Welded Sole","Power Strap":"35mm Velcro","Sole":"Replaceable ISO 5355 Alpine","Ability Level":"Beginner–Intermediate","Gender":"Unisex","Warranty":"2 Years"},
+    breakdown:[{label:"Boots",amount:249.99},{label:"Total",amount:249.99}]
+  },
+  {
+    name:"Rossignol Pure Comfort 60", brand:"Rossignol", price:299.99, customMsrp:299.99, customPrice:299.99, badge:"New", badgeType:"new", icon:"👟",
+    cat:"ski-boots", sub:"alpineboots", gender:"women", age:"adult", cond:"new", popular:162,
+    desc:"Women's all-day comfort boot. The right fit for award-winning power and precision in a customizable, boot-fitter friendly design.",
+    action:"Add to Cart", link:null,
+    sizes:[{label:"22.5",qty:0,hlId:100180},{label:"23.5",qty:0,hlId:100181},{label:"24.5",qty:0,hlId:100182},{label:"25.5",qty:0,hlId:100183},{label:"26.5",qty:0,hlId:100184},{label:"27.5",qty:0,hlId:100185}],
+    images:["https://www.evo.com/cdn/shop/files/product-image-1044711.jpg?v=1767730968","https://www.evo.com/cdn/shop/files/product-image-1044715.jpg?v=1767730966","https://www.evo.com/cdn/shop/files/product-image-1044713.jpg?v=1767730966"],
+    longDesc:"The right fit for all-day performance. The Rossignol Pure Comfort 60 delivers award-winning power and precision in a customizable, boot-fitter friendly design. The Sensor Matrix shell lightens the boot and helps focus energy directly into the ski, while the women's-specific 104mm last provides a relaxed fit ideal for wider feet and recreational skiers who place a premium on comfort. The Custom liner is insulated with polar fleece that retains heat even when wet and dries quickly, delivering a sock-like, contoured fit that's unmatched out of the box. A softer plastic insert around the instep makes entry and exit effortless.",
+    specs:{"Brand":"Rossignol","Model":"Pure Comfort 60","Last Width":"104mm (Relaxed Fit)","Flex Index":"60","Shell":"Polyolefine, Sensor Matrix","Buckles":"4 Micro-Adjust Aluminum","Liner":"Custom, Polar Fleece Insulation","Power Strap":"40mm Velcro","Sole":"GripWalk (ISO 23223)","Ability Level":"Beginner–Intermediate","Gender":"Women's","Warranty":"2 Years"},
+    breakdown:[{label:"Boots",amount:299.99},{label:"Total",amount:299.99}]
+  },
 
   // ── XC CROSS-COUNTRY ──────────────────────────────────
   {
@@ -1188,11 +1221,33 @@ const BINDINGS = [
     cat:"skis", sub:"rossignol", gender:"unisex", age:"adult", cond:"new", bindings:true, flatmount:false, popular:144,
     desc:"Carving-oriented all-mountain ski with a 78mm waist. Precise and energetic on groomed runs. Comes with bindings.",
     action:"Add to Cart", link:null,
-    sizes:[{label:"156cm",qty:0,hlId:101545}],
+    sizes:[{label:"156cm",qty:0,hlId:101545},{label:"164cm",qty:0,hlId:102176},{label:"172cm",qty:0,hlId:102177},{label:"180cm",qty:0,hlId:102178}],
     images:["https://i.ebayimg.com/images/g/4v0AAeSw9qppIdrE/s-l1600.webp"],
     longDesc:"The Rossignol Arcade 78 is built to handle whatever snow the resort throws at you with effortless carving and all-conditions adaptability. Air Tip technology reduces weight for increased maneuverability, and V-A-S construction absorbs shock for a smooth, connected feel through variable terrain. The Arcade 78 balances the playful feel of rocker with reliable edge control, making it a confident companion from first chair to final lap — perfect for intermediate skiers looking for a dependable, fun all-mountain ride. Comes with bindings included.",
     specs:{"Brand":"Rossignol","Waist Width":"78mm","Profile":"Progressive Camber","Core":"Poplar / Paulownia Wood","Fiberglass":"Full Fiberglass","Base":"ABS Electra","Turn Radius":"~14m (156cm)","Terrain":"Groomed Piste / All-Mountain","Skill Level":"Intermediate","Country":"France"},
     breakdown:[{label:"Skis (Rossignol Arcade 78)",amount:549.99},{label:"Binding Mount",amount:0,note:"Free"},{label:"Tune & Wax",amount:0,note:"Free"},{label:"Total",amount:549.99}]
+  },
+  {
+    name:"Rossignol Forza 20", brand:"Rossignol", price:449.99, customMsrp:449.99, customPrice:449.99, badge:"New", badgeType:"new", icon:"🎿",
+    cat:"skis", sub:"rossignol", gender:"unisex", age:"adult", cond:"new", bindings:true, flatmount:false, popular:145,
+    desc:"Carving-focused frontside ski for beginner to intermediate skiers. Quick edge engagement and a smooth, repeatable turn shape make carving feel natural. Comes with bindings.",
+    action:"Add to Cart", link:null,
+    sizes:[{label:"156cm",qty:0,hlId:102182},{label:"164cm",qty:0,hlId:102183},{label:"171cm",qty:0,hlId:102184}],
+    images:["https://www.evo.com/cdn/shop/files/product-image-1020506.jpg?v=1767730069"],
+    longDesc:"Ready to set a new PR? The Rossignol Forza 20 is your introduction to fast, aggressive groomer ripping, with a powerful layup that provides all the edge you need for arcing turns — a frontside carver perfect for intermediate skiers who love carving up the piste. Piste Rocker (95% Camber / 5% Tip Rocker) and a Supersized Sidecut deliver instant engagement, power, and acceleration through every carve. The PEFC-certified poplar wood core keeps it lightweight and stable, and a High Density Sintered Base provides reliable glide and durability in all conditions. Line Control Technology harnesses pure power and energy for optimum stability through the turn. Comes with Xpress bindings included.",
+    specs:{"Brand":"Rossignol","Waist Width":"74mm","Dimensions (171cm)":"125 / 74 / 111 mm","Turn Radius":"14m","Profile":"Piste Rocker (95% Camber / 5% Tip Rocker)","Core":"PEFC Poplar Wood","Base":"High Density Sintered","Terrain":"Carving / Groomers","Skill Level":"Beginner–Intermediate","Country":"France"},
+    breakdown:[{label:"Skis (Rossignol Forza 20)",amount:449.99},{label:"Binding Mount",amount:0,note:"Free"},{label:"Tune & Wax",amount:0,note:"Free"},{label:"Total",amount:449.99}]
+  },
+  {
+    name:"Rossignol Arcade 82", brand:"Rossignol", price:749.99, customMsrp:749.99, customPrice:749.99, badge:"New", badgeType:"new", icon:"🎿",
+    cat:"skis", sub:"rossignol", gender:"men", age:"adult", cond:"new", bindings:true, flatmount:false, popular:147,
+    desc:"Men's all-mountain ski redefining versatility — carves through every on-piste condition. Blends race tech with freeride construction. Comes with bindings.",
+    action:"Add to Cart", link:null,
+    sizes:[{label:"160cm",qty:0,hlId:102173},{label:"168cm",qty:0,hlId:102174},{label:"176cm",qty:0,hlId:102175}],
+    images:["https://oberson.com/cdn/shop/files/media_94590748-991b-456e-a867-99c3cdca0fe9.jpg?v=1785658823"],
+    longDesc:"The Rossignol Arcade 82 redefines all-mountain versatility with the ability to carve through every on-piste condition, from freshly groomed morning runs to slushy afternoon snow. It balances the playful feel of rocker with the edge control of full sidewall construction for confidence through varied snow. The Poplar PEFC wood core keeps it exceptionally light while maintaining durability, and an integrated Titanium/Carbon Beam reinforces stability and torsional rigidity. Air Tip technology lightens the tips for easier maneuvering and smoother transitions, while VAS construction absorbs vibration for a stable, connected feel at speed. Intermediate and advanced skiers will appreciate the blend of race tech and freeride construction — built for first chair to final lap, every turn guaranteed. Comes with Xpress bindings included.",
+    specs:{"Brand":"Rossignol","Waist Width":"82mm","Dimensions":"132 / 82 / 120 mm","Turn Radius":"11-15m (by length)","Profile":"Tip & Tail Rocker + Classic Camber","Core":"Poplar PEFC Wood + Carbon/Titanium Beam","Construction":"Rectangular Full Sidewall","Terrain":"All-Mountain","Skill Level":"Intermediate–Advanced","Gender":"Unisex","Country":"France"},
+    breakdown:[{label:"Skis (Rossignol Arcade 82)",amount:749.99},{label:"Binding Mount",amount:0,note:"Free"},{label:"Tune & Wax",amount:0,note:"Free"},{label:"Total",amount:749.99}]
   },
   {name:"Rossignol Sender Free 100", hlName:"Sender Free 100", brand:"Rossignol", price:699.99, badge:"Freeride", badgeType:"pop", icon:"🎿",
     cat:"skis", sub:"rossignol", gender:"unisex", age:"adult", cond:"new", bindings:false, flatmount:true, popular:145,
@@ -1213,15 +1268,26 @@ const BINDINGS = [
 
   // SALOMON SKIS
   {
-    name:"Salomon QST 100", brand:"Salomon", price:749.99, customMsrp:749.99, customPrice:749.99, badge:"All-Mountain", badgeType:"new", icon:"🎿",
+    name:"Salomon QST 100", brand:"Salomon", price:699.95, badge:"All-Mountain", badgeType:"new", icon:"🎿",
     cat:"skis", sub:"salomon", gender:"unisex", age:"adult", cond:"new", bindings:false, flatmount:true, popular:146,
-    desc:"Black/Iceberg colorway. Iconic all-mountain ski — the most playful QST yet. The 100mm waist handles everything from groomed runs to powder with ease.",
+    desc:"Iconic all-mountain ski. The QST 100 handles everything from groomed runs to powder with ease.",
     action:"Add to Cart", link:null,
-    sizes:[{label:"164cm",qty:0,hlId:101549},{label:"172cm",qty:0,hlId:102017},{label:"180cm",qty:0,hlId:102018}],
+    sizes:[{label:"164cm",qty:0,hlId:101549},{label:"172cm",qty:0,hlId:101010},{label:"180cm",qty:0,hlId:101011}],
+    images:["https://www.freshskis.com/cdn/shop/files/salomon-qst-100-skis-iceberg-green-2025-2026.jpg?v=1760439904&width=320"],
+    longDesc:"The Salomon QST 100 is an iconic all-mountain charger with a 100mm waist that handles everything from groomed runs to powder with ease. A twin rocker profile with camber underfoot delivers quick response and confident edge hold, while the Poplar/Beech woodcore keeps it lively and forgiving. Cork Damper inserts at the tip and tail quiet the ride in chop, and the Edge Amplifier adds grip when you need it most. One of the most versatile one-ski-quiver options in the Salomon lineup.",
+    specs:{"Brand":"Salomon","Waist Width":"100mm","Profile":"Tip/Tail Rocker + Camber Underfoot","Core":"Poplar / Beech Woodcore","Technology":"Cork Damper, Edge Amplifier","Base":"Electraskin 4400","Turn Radius":"~17m (172cm)","Terrain":"All-Mountain / Off-Piste","Skill Level":"Intermediate–Expert","Country":"France"},
+    breakdown:[{label:"Skis (Salomon QST 100)",amount:699.99},{label:"Binding Mount",amount:0,note:"Free"},{label:"Tune & Wax",amount:0,note:"Free"},{label:"Total",amount:699.99}]
+  },
+  {
+    name:"Salomon QST 100 — Black/Iceberg", brand:"Salomon", price:749.99, customMsrp:749.99, customPrice:749.99, badge:"Limited Stock", badgeType:"new", icon:"🎿",
+    cat:"skis", sub:"salomon", gender:"unisex", age:"adult", cond:"new", bindings:false, flatmount:true, popular:149,
+    desc:"This year's Black/Iceberg colorway — only 2 left, both 180cm. The most playful QST yet, with a 100mm waist for daily shredding and a dynamic freeride shape.",
+    action:"Add to Cart", link:null,
+    sizes:[{label:"180cm",qty:0,hlId:102018}],
     images:["https://www.evo.com/cdn/shop/files/product-image-1302384.jpg?v=1780506447","https://www.evo.com/cdn/shop/files/product-image-1302385.jpg?v=1780506447","https://www.evo.com/cdn/shop/files/product-image-1302386.jpg?v=1780506447","https://www.evo.com/cdn/shop/files/product-image-1302387.jpg?v=1780506447"],
-    longDesc:"Meet the most playful Salomon QST yet — the Black/Iceberg colorway of the 2026 QST 100. With a 100mm waist and dynamic freeride shape, it's perfect for daily shredding, equally at home carving groomers and exploring new terrain. A Full Poplar Woodcore maximizes liveliness, stability, and ski-to-snow contact while filtering vibrations. Basalt & Fiberglass fiber runs the full length of the ski for unparalleled flex and edge grip, and an all-new Cork Damplifier — a single injected piece of cork and TPU in the tip and tail — delivers best-in-class vibration dampening. Full Sandwich Sidewalls keep it stable and precise. One of the most versatile one-ski-quiver options in the Salomon lineup.",
+    longDesc:"Meet the most playful Salomon QST yet — this year's Black/Iceberg colorway of the 2026 QST 100. With a 100mm waist and dynamic freeride shape, it's perfect for daily shredding, equally at home carving groomers and exploring new terrain. A Full Poplar Woodcore maximizes liveliness, stability, and ski-to-snow contact while filtering vibrations. Basalt & Fiberglass fiber runs the full length of the ski for unparalleled flex and edge grip, and an all-new Cork Damplifier — a single injected piece of cork and TPU in the tip and tail — delivers best-in-class vibration dampening. Full Sandwich Sidewalls keep it stable and precise.",
     specs:{"Brand":"Salomon","Model":"QST 100","Color":"Black/Iceberg","Waist Width":"100mm","Profile":"Freeride Rocker (21% Tip / Camber / 17% Tail)","Core":"Full Poplar Woodcore","Reinforcement":"Basalt & Fiberglass Fiber","Technology":"Cork Damplifier","Construction":"Full Sandwich Sidewalls","Turn Radius":"Medium (17-22m)","Terrain":"All-Mountain","Skill Level":"Intermediate–Advanced","Country":"France"},
-    breakdown:[{label:"Skis (Salomon QST 100)",amount:749.99},{label:"Binding Mount",amount:0,note:"Free"},{label:"Tune & Wax",amount:0,note:"Free"},{label:"Total",amount:749.99}]
+    breakdown:[{label:"Skis (Salomon QST 100 — Black/Iceberg)",amount:749.99},{label:"Binding Mount",amount:0,note:"Free"},{label:"Tune & Wax",amount:0,note:"Free"},{label:"Total",amount:749.99}]
   },
   {
     name:"Salomon QST Spark", brand:"Salomon", price:499.99, customMsrp:499.99, customPrice:499.99, badge:"New", badgeType:"new", icon:"🎿",
@@ -1643,11 +1709,11 @@ const BINDINGS = [
   },
 
   {
-    name:"Rossignol Nova 2", brand:"Rossignol", price:399.99, badge:"Women's", badgeType:"new", icon:"🎿",
+    name:"Rossignol Nova 2", brand:"Rossignol", price:449.99, badge:"Women's", badgeType:"new", icon:"🎿",
     cat:"skis", sub:"rossignol", gender:"women", age:"adult", cond:"new", bindings:true, flatmount:false, popular:131,
     desc:"Women's beginner/intermediate ski. Super lightweight and easy to initiate turns — a great first performance ski. Comes with bindings.",
     action:"Add to Cart", link:null,
-    sizes:[{label:"138cm",qty:0,hlId:101559},{label:"154cm",qty:0,hlId:101560}],
+    sizes:[{label:"138cm",qty:0,hlId:102185},{label:"146cm",qty:0,hlId:102186},{label:"154cm",qty:0,hlId:102187},{label:"162cm",qty:0,hlId:102188}],
     images:["https://shop.petersonsskiandcycle.com/cdn/shop/files/Nova2Express_1024x1024.jpg?v=1759163121"],
     longDesc:"The Rossignol Nova 2 is an all-mountain ski tuned for intermediate women looking to build confidence and progress their skiing across the resort. A forgiving flex and intuitive shape make it easy to learn and improve, while the poplar wood core delivers a smooth, balanced ride in changing snow conditions. A versatile, encouraging companion for skiers who are ready to explore more of the mountain. Comes with bindings included.",
     specs:{"Waist Width":"Nova 2","Core":"Air Tip Paulownia","Profile":"Progressive Camber","Gender":"Women's","Terrain":"Groomed","Skill Level":"Beginner","Country":"France"}
