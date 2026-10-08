@@ -2,7 +2,7 @@
 // ── Build stamp — check what's actually deployed ──────────────
 // In the browser console on /store you'll see this line. If the number
 // doesn't match the ?v= in the Squarespace footer, you're on a stale file.
-window.TS_BUILD = "259 (Nova 2 full 7-photo gallery)";
+window.TS_BUILD = "261 (Soul Pro + Arcade 88 updated with verified real specs/photos)";
 console.log("%c[TuneSkis] storefront build " + window.TS_BUILD, "background:#4db8ff;color:#000;padding:2px 6px;border-radius:3px;font-weight:bold");
 // Prints what the deal engine actually sees. Run tsDealDebug() in the console
 // any time to find out why a deal is or isn't showing.
@@ -1246,7 +1246,7 @@ const BINDINGS = [
     sizes:[{label:"160cm",qty:0,hlId:102173},{label:"168cm",qty:0,hlId:102174},{label:"176cm",qty:0,hlId:102175}],
     images:["https://oberson.com/cdn/shop/files/media_94590748-991b-456e-a867-99c3cdca0fe9.jpg?v=1785658823"],
     longDesc:"The Rossignol Arcade 82 redefines all-mountain versatility with the ability to carve through every on-piste condition, from freshly groomed morning runs to slushy afternoon snow. It balances the playful feel of rocker with the edge control of full sidewall construction for confidence through varied snow. The Poplar PEFC wood core keeps it exceptionally light while maintaining durability, and an integrated Titanium/Carbon Beam reinforces stability and torsional rigidity. Air Tip technology lightens the tips for easier maneuvering and smoother transitions, while VAS construction absorbs vibration for a stable, connected feel at speed. Intermediate and advanced skiers will appreciate the blend of race tech and freeride construction — built for first chair to final lap, every turn guaranteed. Comes with Xpress bindings included.",
-    specs:{"Brand":"Rossignol","Waist Width":"82mm","Dimensions":"132 / 82 / 120 mm","Turn Radius":"11-15m (by length)","Profile":"Tip & Tail Rocker + Classic Camber","Core":"Poplar PEFC Wood + Carbon/Titanium Beam","Construction":"Rectangular Full Sidewall","Terrain":"All-Mountain","Skill Level":"Intermediate–Advanced","Gender":"Unisex","Country":"France"},
+    specs:{"Brand":"Rossignol","Waist Width":"82mm","Color":"Grey","Dimensions":"132 / 82 / 120 mm","Turn Radius":"11-15m (by length)","Profile":"Tip & Tail Rocker + Classic Camber","Core":"Poplar PEFC Wood + Carbon/Titanium Beam","Construction":"Rectangular Full Sidewall","Terrain":"All-Mountain","Skill Level":"Intermediate–Advanced","Gender":"Unisex","Country":"France"},
     breakdown:[{label:"Skis (Rossignol Arcade 82)",amount:749.99},{label:"Binding Mount",amount:0,note:"Free"},{label:"Tune & Wax",amount:0,note:"Free"},{label:"Total",amount:749.99}]
   },
   {
@@ -1263,12 +1263,12 @@ const BINDINGS = [
   {
     name:"Rossignol Soul Pro", brand:"Rossignol", price:499.99, customMsrp:499.99, customPrice:499.99, badge:"New", badgeType:"new", icon:"🎿",
     cat:"skis", sub:"rossignol", gender:"men", age:"adult", cond:"new", bindings:false, flatmount:true, popular:148,
-    desc:"All-terrain freeride ski built to slash, smear, and carve across the mountain. Lively wood core keeps it agile, with a double rocker profile for a playful, versatile ride.",
+    desc:"Approachable and confidence-inspiring all-mountain ski. 92mm waist with versatile construction that ventures from on-piste to off and back again without hesitation.",
     action:"Add to Cart", link:null,
     sizes:[{label:"150cm",qty:0,hlId:102189},{label:"160cm",qty:0,hlId:102190},{label:"170cm",qty:0,hlId:102191}],
-    images:["https://i.ebayimg.com/images/g/4v0AAeSw9qppIdrE/s-l1600.webp"],
-    longDesc:"Full gas, always fast. The Rossignol Soul Pro is an all-terrain weapon of one that opens the door to slash, smear, and carve across the mountain at will. The ski's lively Poplar PEFC wood core keeps it agile, while its double rocker profile makes for a playful ride with the freedom to blur the boundaries between frontside and freeride. Cap Sidewalls roll the topsheet material edge-to-edge for lightweight ease-of-use and increased resistance to chipping, while fiberglass reinforcement offers more elasticity than carbon for a customized, forgiving flex. Built for skiers who want to explore the whole mountain without being pinned to one terrain type.",
-    specs:{"Brand":"Rossignol","Model":"Soul Pro","Color":"Red & Black","Core":"Poplar PEFC Wood","Reinforcement":"Fiberglass","Sidewalls":"Cap Construction","Profile":"Double (Tip & Tail) Rocker","Terrain":"All-Mountain / Freeride","Skill Level":"Intermediate–Advanced","Gender":"Men's","Country":"France"},
+    images:["https://cdn.media.amplience.net/i/scheelspoc/41500001079?w=800&h=800&fmt=auto","https://cdn.media.amplience.net/i/scheelspoc/41500001079_1?w=800&h=800&fmt=auto","https://cdn.media.amplience.net/i/scheelspoc/41500001079_2?w=800&h=800&fmt=auto"],
+    longDesc:"Approachable and confidence inspiring, the Rossignol Soul Pro is a complete ski for those looking to explore the entirety of the mountain. With versatility at their core, the Soul Pro skis venture from on-piste to off and back again without hesitation, and their lightweight construction makes them easy to maneuver no matter what snow conditions you encounter. The All Trail Profile is designed to ensure smooth and progressive absorption of uneven terrain in all types of snow, while the perfectly tailored profile and sidecut guarantee ideal tip behavior in any conditions. An Extended Core increases ski-snow contact and torsional stability for added precision and control. The Poplar Wood Core, PEFC-certified for sustainable forest management, balances weight, flex, and stability for a versatile blend of power and playfulness. Cap Sidewalls keep things light and chip-resistant.",
+    specs:{"Brand":"Rossignol","Model":"Soul Pro","Color":"Red","Waist Width":"92mm","Sidecut":"119 / 92 / 109 mm","Radius":"16-27m (by length)","Core":"PEFC Poplar Wood (Extended Core)","Sidewalls":"Cap Construction","Profile":"All Trail Profile","Tail Type":"Flat","Terrain":"All-Mountain","Skill Level":"Intermediate–Advanced","Gender":"Men's","Country":"France"},
     breakdown:[{label:"Skis (Rossignol Soul Pro)",amount:499.99},{label:"Total",amount:499.99}]
   },
   {
@@ -1343,6 +1343,17 @@ const BINDINGS = [
     longDesc:"The 4th-generation QST 94 replaces the long-standing QST 92 with more top-end performance and real power on hardpack, without sacrificing any of the playfulness that made the QST line a staple of the all-mountain freeride space. With a wide tip for softer snow and a 94mm waist, it bridges the gap between all-mountain and freeride, delivering excellent grip and stability on piste while providing extra float when you need it most. Full Poplar Woodcore maximizes liveliness and ski-to-snow contact; Cork Damplifier inserts at tip and tail quell vibration; Basalt & Fiberglass fiber reinforcement runs full-length for unparalleled flex and edge grip; and a Titanal insert underfoot adds maximal power and hard-snow edging. Full Sandwich Sidewalls guarantee stability and precision.",
     specs:{"Brand":"Salomon","Model":"QST 94","Waist Width":"94mm","Dimensions (180cm)":"134 / 94 / 120 mm","Core":"Full Poplar Woodcore","Reinforcement":"Basalt & Fiberglass + Ti Binding Reinforcement","Technology":"Cork Damplifier","Profile":"Freeride Rocker (20% Tip / 64% Camber / 16% Tail)","Turn Radius":"~13.5–14.5m","Terrain":"All-Mountain / Freeride","Skill Level":"Intermediate–Advanced"},
     breakdown:[{label:"Skis (Salomon QST 94)",amount:749.99},{label:"Binding Mount",amount:0,note:"Free"},{label:"Tune & Wax",amount:0,note:"Free"},{label:"Total",amount:749.99}]
+  },
+  {
+    name:"Salomon Addikt Pro 76", brand:"Salomon", price:999.99, customMsrp:999.99, customPrice:999.99, badge:"New", badgeType:"new", icon:"🎿",
+    cat:"skis", sub:"salomon", gender:"unisex", age:"adult", cond:"new", bindings:true, flatmount:false, popular:150,
+    desc:"Built for those who can't get enough carving. Playful vibe, Motion Tail tech, and a 76mm waist that handles short and long turns like a pro. Comes with bindings.",
+    action:"Add to Cart", link:null,
+    sizes:[{label:"163cm",qty:0,hlId:101997},{label:"170cm",qty:0,hlId:101998},{label:"177cm",qty:0,hlId:101999}],
+    images:["https://www.evo.com/cdn/shop/files/product-image-1188241.jpg?v=1767736752","https://www.evo.com/cdn/shop/files/product-image-1188242.jpg?v=1767736752","https://www.evo.com/cdn/shop/files/product-image-1188240.jpg?v=1767736752","https://www.evo.com/cdn/shop/files/product-image-1188235.jpg?v=1767736751"],
+    longDesc:"Built for those who can't get enough carving, the Salomon Addikt Pro 76 will have you hooked from the first run. With its playful vibe and cutting-edge Motion Tail technology — which increases tail flexibility by 5% for a more forgiving, responsive all-day ski — plus a 76mm waist that handles both short and long turns like a pro, you'll be charging confidently no matter what the snow's up to. A Full Poplar Woodcore is reinforced with Double Titanal laminates and enhanced by Salomon's Blade Technology (flexible polymer inserts fused into the Ti layer) for liveliness at high speed without sacrificing stiffness. Full Sandwich Sidewalls with 100% recycled materials deliver stability and precision, and the On-Piste Rocker profile (15% tip rocker, 85% camber) keeps the ski locked onto the edge.",
+    specs:{"Brand":"Salomon","Model":"Addikt Pro 76","Color":"White & Multi","Waist Width":"76mm","Dimensions":"125 / 76 / 109 mm","Turn Radius":"13-15m (by length)","Core":"Full Poplar Woodcore","Reinforcement":"Double Titanal + Blade Technology","Technology":"Motion Tail","Construction":"Full Sandwich Sidewalls (100% Recycled)","Profile":"On-Piste Rocker (15% Tip / 85% Camber)","Terrain":"Carving / All-Mountain","Skill Level":"Advanced–Expert","Country":"France"},
+    breakdown:[{label:"Skis (Salomon Addikt Pro 76)",amount:999.99},{label:"Binding Mount",amount:0,note:"Free"},{label:"Tune & Wax",amount:0,note:"Free"},{label:"Total",amount:999.99}]
   },
   {
     name:"Salomon QST Jr — Blue/Purple", brand:"Salomon", price:269.99, customMsrp:269.99, customPrice:269.99, badge:"Junior", badgeType:"new", icon:"🎿",
@@ -1697,8 +1708,9 @@ const BINDINGS = [
     desc:"88mm waist all-mountain charger. Slightly wider for better off-piste float while maintaining on-piste precision. Comes with bindings.",
     action:"Add to Cart", link:null,
     sizes:[{label:"170cm",qty:0,hlId:101547},{label:"178cm",qty:0,hlId:100998}],
-    images:["https://park2peak.com/cdn/shop/files/rossignol_arcade_88_2026_3.jpg?v=1755010223","https://park2peak.com/cdn/shop/files/rossignolarcade8820264.webp?v=1755010223"],
-    specs:{"Waist Width":"88mm","Core":"Poplar + Basalt","Profile":"Progressive Camber","Terrain":"All-Mountain","Skill Level":"Advanced","Country":"France"}
+    images:["https://www.evo.com/cdn/shop/files/product-image-1187922.jpg?v=1767736739","https://www.evo.com/cdn/shop/files/product-image-1187926.jpg?v=1767736738"],
+    longDesc:"A powerful carving machine that doesn't punish the user and actually enjoys off-piste adventures once in a while. The Rossignol Arcade 88 skis redefine the all-mountain category with a personality that can literally ski 100% anywhere — among the first of the Arcade series to launch, and immensely popular with intermediates and expert skiers alike. An Oversize Sidecut delivers powerful carving precision and edge grip, while Air Tip technology reduces swing weight at the ski's extremities for maneuverability and playfulness. Line Control Technology routes a central power rail through the Poplar Wood Core for added torsional stiffness, and a Full Titanium Layer adds power and stability at speed. Rectangular Sidewalls deliver optimized edge grip, precision, balance, and power, and the Sintered HD Base offers great glide in all conditions.",
+    specs:{"Brand":"Rossignol","Waist Width":"88mm","Color":"Teal","Sidecut":"135 / 88 / 124 mm","Radius":"12-16m (by length)","Core":"Poplar Wood + Full Titanium Layer","Construction":"Rectangular Sidewalls, Oversize Sidecut","Base":"Sintered HD","Technology":"Air Tip, LCT","Profile":"Rocker/Camber (Tip & Tail Rocker)","Terrain":"Carving / All-Mountain","Skill Level":"Intermediate–Advanced","Country":"France"}
   },
   {
     name:"Rossignol Arcade 84 W", brand:"Rossignol", price:849.99, customMsrp:599.99, customPrice:599.99, badge:"Women's", badgeType:"new", icon:"🎿",
