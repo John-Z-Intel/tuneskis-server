@@ -2,7 +2,7 @@
 // ── Build stamp — check what's actually deployed ──────────────
 // In the browser console on /store you'll see this line. If the number
 // doesn't match the ?v= in the Squarespace footer, you're on a stale file.
-window.TS_BUILD = "246 (5 new Icelantic skis: Tempest 88/94, Torrent 88/96, Nomad 94)";
+window.TS_BUILD = "247 (Salomon Stance 84/84W/80 + missing Pro sizes)";
 console.log("%c[TuneSkis] storefront build " + window.TS_BUILD, "background:#4db8ff;color:#000;padding:2px 6px;border-radius:3px;font-weight:bold");
 // Prints what the deal engine actually sees. Run tsDealDebug() in the console
 // any time to find out why a deal is or isn't showing.
@@ -1665,7 +1665,7 @@ const BINDINGS = [
     cat:"skis", sub:"salomon", gender:"unisex", age:"adult", cond:"new", bindings:false, flatmount:true, popular:188,
     desc:"90mm waist frontside charger with Ti reinforcement. Salomon's most powerful and direct on-piste all-mountain ski.",
     action:"Add to Cart", link:null,
-    sizes:[{label:"168cm",qty:0,hlId:101017},{label:"176cm",qty:0,hlId:101018}],
+    sizes:[{label:"168cm",qty:0,hlId:101017},{label:"176cm",qty:0,hlId:101018},{label:"182cm",qty:0,hlId:102009}],
     images:["https://www.eriksbikeshop.com/cdn/shop/files/salomon-stance-pro-90-skis_pr5a25493_bc3e.jpg?v=1760690076&width=1100"],
     longDesc:"The Salomon Stance Pro 90 is a crowd favorite that strikes a perfect balance between elegance and strength. A dynamic karuba/poplar wood construction supports a twin-metal frame, delivering the power and edge control needed to conquer the entire mountain with confidence. At 90mm underfoot it bridges all-mountain versatility with frontside precision — equally at home on groomed corduroy and variable off-piste terrain. Whether you\'re pushing hard at speed or cruising with finesse, the Stance Pro 90 rewards every style of skiing. A true do-everything all-mountain ski.",
     specs:{"Waist Width":"90mm","Core":"Mango Wood + TI","Profile":"Progressive Camber","Terrain":"Frontside / All-Mountain","Skill Level":"Expert","Country":"France"}
@@ -1675,10 +1675,40 @@ const BINDINGS = [
     cat:"skis", sub:"salomon", gender:"women", age:"adult", cond:"new", bindings:false, flatmount:true, popular:187,
     desc:"Women's frontside charger with 88mm waist. Ti reinforcement and a women's-specific flex delivers confident, powerful skiing.",
     action:"Add to Cart", link:null,
-    sizes:[{label:"161cm",qty:0,hlId:101024}],
+    sizes:[{label:"154cm",qty:0,hlId:102014},{label:"161cm",qty:0,hlId:101024}],
     images:["https://www.bluezonesports.com/prodimages/18402-FUSIONC-l.jpg","https://www.bluezonesports.com/prodimages/alt_images/large/L47825400%20(2).jpg"],
     longDesc:"The Salomon Stance Pro 88 W is Salomon\'s women\'s all-mountain benchmark — a ski that delivers the perfect balance of power, control, and versatility for skiers ready to explore the entire resort and beyond. Its karuba/poplar construction supports a twin-metal frame for confident edge grip and dynamic performance across varying snow conditions. Playful enough for creative skiing, powerful enough to handle demanding terrain, and designed specifically for women\'s skiing dynamics. A crowd favorite that earns its place in any quiver.",
     specs:{"Waist Width":"88mm","Core":"Mango Wood + TI","Profile":"Progressive Camber","Gender":"Women's","Terrain":"Frontside / All-Mountain","Skill Level":"Advanced–Expert","Country":"France"}
+  },
+  {
+    name:"Salomon Stance 84", brand:"Salomon", price:749.95, customMsrp:749.95, customPrice:749.95, badge:"All-Mountain", badgeType:"pop", icon:"🎿",
+    cat:"skis", sub:"salomon", gender:"men", age:"adult", cond:"new", bindings:false, flatmount:true, popular:199,
+    desc:"Energetic and stable 84mm all-mountain ski. A poplar wood core and Ti-C Frame construction deliver the finesse and agility to conquer every part of the mountain.",
+    action:"Add to Cart", link:null,
+    sizes:[{label:"161cm",qty:0,hlId:101019},{label:"169cm",qty:0,hlId:101020},{label:"177cm",qty:0,hlId:101021},{label:"185cm",qty:0,hlId:100676}],
+    images:["https://www.willisskiandboard.com/cdn/shop/files/Salomon_Stance_84_Skis_with_MI12_Bindins_2026_1ec63161-653e-49d0-a59a-4741dc84d412.jpg?v=1781204089&width=1500","https://www.willisskiandboard.com/cdn/shop/files/Salomon_Stance_84_Skis_with_MI12_Bindins_2026_MI12_GW_Binding-161.jpg?v=1781204088&width=1500"],
+    longDesc:"Alpine power, all-mountain fun. Energetic and stable, Salomon's Stance 84 is the ultimate ski for those looking to conquer every part of the mountain. Designed to be lively and responsive, the Stance 84 is equipped with a poplar wood core and Ti-C Frame — a single layer of titanal blended with carbon windows that creates homogeneous flex and maneuverability with power at the end of the turn. The All-Mountain rocker profile adds versatility, allowing you to tackle any terrain with ease, while Full Sandwich Sidewalls deliver the edge grip needed for icy groomers and variable terrain. From steep slopes to tree-lined glades, the Stance 84 is ready to take you on any adventure.",
+    specs:{"Brand":"Salomon","Model":"Stance 84","Sidecut":"104 / 84 / 121 mm @ 161cm","Turn Radius":"13m @ 161cm","Core":"Poplar Wood + Ti-C Frame","Construction":"Full Sandwich Sidewalls","Camber Profile":"All-Mountain (15% Tip Rocker / Camber / 12% Tail Rocker)","Gender":"Men's","Terrain":"All-Mountain"}
+  },
+  {
+    name:"Salomon Stance 84 W", brand:"Salomon", price:699.95, customMsrp:699.95, customPrice:699.95, badge:"Women's", badgeType:"pop", icon:"🎿",
+    cat:"skis", sub:"salomon", gender:"women", age:"adult", cond:"new", bindings:false, flatmount:true, popular:200,
+    desc:"Energetic yet stable 84mm all-mountain ski built for women. The Ti-C Frame construction gives you the perfect boost for cruising through crud or icy groomers.",
+    action:"Add to Cart", link:null,
+    sizes:[{label:"151cm",qty:0,hlId:101025},{label:"159cm",qty:0,hlId:101026}],
+    images:["https://www.willisskiandboard.com/cdn/shop/files/Salomon_Stance_84_W_Skis_with_M11_Bindings_2026.jpg?v=1781204089&width=1500","https://www.willisskiandboard.com/cdn/shop/files/Salomon_Stance_84_W_Skis_with_M11_Bindings_2026_M11_GW_Bindings-151_7f089a1f-202e-48bf-95ac-ea5303419808.jpg?v=1781204089&width=1500"],
+    longDesc:"Alpine power, all-mountain fun. Energetic yet stable, the Salomon Stance 84 is the women's setup that will take you anywhere on the mountain. The Ti-C Frame gives you the perfect boost for cruising through crud or icy groomers, while the progressive frontside sidecut and poplar wood core ensure lively, controllable turns, no matter how steep or deep. Confidence-inspiring Full Sandwich Sidewalls create the edge grip needed to make the most of icy groomers and changing terrain — a dynamic all-mountain construction that takes you from groomers to glades, from the steep to the deep, with ease.",
+    specs:{"Brand":"Salomon","Model":"Stance 84 W","Sidecut":"121 / 84 / 104 mm @ 159cm","Turn Radius":"13m @ 159cm","Core":"Poplar Wood + Ti-C Frame","Construction":"Full Sandwich Sidewalls","Camber Profile":"All-Mountain (15% Tip Rocker / Camber / 12% Tail Rocker)","Gender":"Women's","Terrain":"All-Mountain"}
+  },
+  {
+    name:"Salomon Stance 80", brand:"Salomon", price:599.99, customMsrp:599.99, customPrice:599.99, badge:"New", badgeType:"new", icon:"🎿",
+    cat:"skis", sub:"salomon", gender:"men", age:"adult", cond:"new", bindings:false, flatmount:true, popular:193,
+    desc:"The narrowest ski in the Stance lineup. A lively, maneuverable all-mountain ski built for agility and adaptability on and off the beaten path.",
+    action:"Add to Cart", link:null,
+    sizes:[{label:"161cm",qty:0,hlId:101022},{label:"169cm",qty:0,hlId:101023},{label:"177cm",qty:0,hlId:102010}],
+    images:["https://www.willisskiandboard.com/cdn/shop/files/Salomon_Stance_80_Skis_with_M11_Bindings_2026_5ac7d1b0-82f4-4bfb-afa9-ec06486ac128.jpg?v=1781204086&width=1500","https://www.willisskiandboard.com/cdn/shop/files/Salomon_Stance_80_Skis_with_M11_Bindings_2026_M11_GW_Bindings-169.jpg?v=1781204086&width=1500"],
+    longDesc:"Dominating the slopes with the Stance 80, this is the narrowest setup in the Stance lineup — built for the adventurous skier seeking agility and adaptability on and off the beaten path. A Poplar Woodcore offers stability, liveliness, and forgiveness while ensuring good ski-to-snow contact, paired with a Ti-C Frame — a single layer of titanal blended with carbon windows — for homogeneous flex and power at the end of the turn. Full Sandwich Sidewalls provide strong edge hold for packed slopes or off-piste terrain, so you can carve turns with confidence wherever the mountain takes you.",
+    specs:{"Brand":"Salomon","Model":"Stance 80","Sidecut":"124 / 80 / 106 mm @ 169cm","Turn Radius":"14m @ 169cm","Core":"Poplar Woodcore + Ti-C Frame","Construction":"Full Sandwich Sidewalls","Camber Profile":"All-Mountain (15% Tip Rocker / Camber / 12% Tail Rocker)","Gender":"Men's","Terrain":"All-Mountain"}
   },
   {
     name:"Salomon Stance 80 W", brand:"Salomon", price:499.99, customMsrp:499.99, customPrice:499.99, badge:"Women's", badgeType:"new", icon:"🎿",
