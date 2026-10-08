@@ -2,7 +2,7 @@
 // ── Build stamp — check what's actually deployed ──────────────
 // In the browser console on /store you'll see this line. If the number
 // doesn't match the ?v= in the Squarespace footer, you're on a stale file.
-window.TS_BUILD = "249 (ski bindings, QST Spark/94, fixed QST Jr colorway bug)";
+window.TS_BUILD = "250 (Icelantic Nomad 100 added, ski bindings removed)";
 console.log("%c[TuneSkis] storefront build " + window.TS_BUILD, "background:#4db8ff;color:#000;padding:2px 6px;border-radius:3px;font-weight:bold");
 // Prints what the deal engine actually sees. Run tsDealDebug() in the console
 // any time to find out why a deal is or isn't showing.
@@ -446,6 +446,16 @@ const PRODUCTS = [
     images:["https://www.bobssportschalet.com/prodimages/121758-MULTI-l.jpg"],
     longDesc:"The Award-Winning Nomad 94 is built for the intermediate to expert level skier who wants a poppy, playful, and nimble tool to jib and butter features all over the mountain. It delivers freestyle performance ideal for park skiers and all-mountain freeriders alike. If you enjoy popping side hits, stomping switch landings, and slashing bumps, all while making sure you have enough edge for the groomer, then this is the ski for you. Poplar Wood Core for lightweight responsiveness and a smooth, playful flex. Free Rocker Profile for surfy float, easy pivoting, and freeride fun. 8 Carbon Stringers add extra pop, energy, and rebound. Fly-Cap Construction reduces swing weight and enhances maneuverability. Original artwork by Travis Parr. Handmade in Golden, Colorado. Backed by Icelantic\'s 3-Year Bombproof Warranty.",
     specs:{"Brand":"Icelantic","Waist Width":"94mm","Dimensions (166cm)":"129 / 94 / 121 mm","Profile":"Free Rocker","Core":"Poplar Wood + Fly-Cap Construction","Turn Radius":"15-20m (by length)","Skill Level":"Beginner – Intermediate – Advanced – Expert","Terrain":"Freeride, Park/Jib, All-Mountain","Gender":"Men\'s","Country":"USA (Golden, CO)"}
+  },
+  {
+    name:"Icelantic Nomad 100", brand:"Icelantic", price:849.99, customMsrp:849.99, customPrice:849.99, badge:"New", badgeType:"new", icon:"🎿",
+    cat:"skis", sub:"icelantic", gender:"men", age:"adult", cond:"new", bindings:false, flatmount:true, popular:193,
+    desc:"A daily driver that performs anywhere the trail takes you. More carbon in the layup and a touch more camber make it livelier than ever — the most versatile Nomad of the bunch.",
+    action:"Add to Cart", link:null,
+    sizes:[{label:"176cm",qty:0,hlId:101963},{label:"182cm",qty:0,hlId:101964}],
+    images:["https://www.evo.com/cdn/shop/files/product-image-1215080.jpg?v=1767737736","https://www.evo.com/cdn/shop/files/product-image-1215078.jpg?v=1767737737"],
+    longDesc:"A daily driver you can count on to perform anywhere the trail takes you, the Icelantic Nomad 100 has more carbon in the layup and a tiny bit more camber than the rest of the Nomad lineup, making it livelier than ever and a pleasure to push from turn to turn. The 100mm waist sets you up for success no matter what the snow conditions, making this the most versatile Nomad of the bunch. Poplar Wood Core for toughness and resilience. Free Rocker Profile with Vertical Carbon Stringers (4 above and 4 below the core) add pop and energy. This year's graphics feature original artwork by Doug Good Feather, a Native American Lakota artist and founder of the Lakota Way Healing Center, who blends sacred geometry, nature, and Lakota traditions into the topsheet. Handmade in Colorado. Backed by Icelantic's 3-Year Bombproof Warranty.",
+    specs:{"Brand":"Icelantic","Waist Width":"100mm","Dimensions":"135 / 100 / 127 mm","Profile":"Free Rocker (Tip 36cm / Camber 4mm / Tail 31cm)","Core":"Poplar Wood + Vertical Carbon Stringers","Terrain":"All-Mountain, Big Mountain","Skill Level":"Intermediate–Advanced","Gender":"Men\'s","Country":"USA (Colorado)"}
   },
 
   // ── JONES SNOWBOARDS ────────────────────────────────────────
@@ -2539,52 +2549,6 @@ const BINDINGS = [
       "https://www.baffin.com/cdn/shop/files/CUSHSLIPPER_61270000_007_PAIR.png?v=1752853931&width=560"
     ],
     specs:{"Brand":"Baffin","Type":"Indoor/Outdoor Slipper","Colors":"Black, Navy Blue","Sizing":"S (3-4), M (5-6), L (7-8), XL (9-10), XXL (11-12), 3XL (13-14)"}
-  },
-
-  // ── SKI BINDINGS (new — first ski bindings in the catalog) ──
-  {
-    name:"Look SPX 12", brand:"Look", price:229.99, badge:"", badgeType:"default", icon:"🔩",
-    cat:"bindings", sub:"ski-binding", gender:"unisex", age:"adult", cond:"new", popular:95,
-    desc:"High-performance all-mountain binding for intermediate to advanced skiers. Full Action toe and SPX heel deliver 27mm of elastic travel for excellent retention and shock absorption.",
-    action:"Add to Cart", link:null,
-    sizes:[{label:"One Size",qty:0,hlId:100797}],
-    images:["https://content.backcountry.com/images/items/large/LKK/LKK001N/FOR30.jpg"],
-    longDesc:"",
-    specs:{"Brand":"Look","Model":"SPX 12","DIN Range":"3.5–12","Brake Width":"80 / 90 / 100 / 110 / 120mm","Boot Compatibility":"Alpine (ISO 5355) & GripWalk (ISO 23223)","Skill Level":"Intermediate–Advanced"},
-    breakdown:[{label:"Binding",amount:229.99},{label:"Professional Mount",amount:0,note:"Free"},{label:"Total",amount:229.99}]
-  },
-  {
-    name:"Look SPX 13", brand:"Look", price:279.99, badge:"", badgeType:"default", icon:"🔩",
-    cat:"bindings", sub:"ski-binding", gender:"unisex", age:"adult", cond:"new", popular:96,
-    desc:"Stepped-up version of the SPX 12 with a higher DIN ceiling for stronger or more aggressive skiers. Same 27mm of elastic travel and all-mountain reliability.",
-    action:"Add to Cart", link:null,
-    sizes:[{label:"One Size",qty:0,hlId:100798}],
-    images:["https://content.backcountry.com/images/items/large/LKK/LKK001N/FOR30.jpg"],
-    longDesc:"",
-    specs:{"Brand":"Look","Model":"SPX 13","DIN Range":"4–13","Brake Width":"80 / 90 / 100 / 110 / 120mm","Boot Compatibility":"Alpine (ISO 5355) & GripWalk (ISO 23223)","Skill Level":"Advanced"},
-    breakdown:[{label:"Binding",amount:279.99},{label:"Professional Mount",amount:0,note:"Free"},{label:"Total",amount:279.99}]
-  },
-  {
-    name:"Look Pivot 12", brand:"Look", price:329.99, badge:"New", badgeType:"new", icon:"🔩",
-    cat:"bindings", sub:"ski-binding", gender:"unisex", age:"adult", cond:"new", popular:98,
-    desc:"Look's signature Pivot heel pivots at the boot sole for exceptional release safety without sacrificing power transmission. A favorite for freeride and all-mountain charging.",
-    action:"Add to Cart", link:null,
-    sizes:[{label:"One Size",qty:0,hlId:100799}],
-    images:["https://www.icelanticskis.com/cdn/shop/files/0002_ATTACK11GWBRAKE85_A__solidblack_sideLeft_1390x1390_0004_13-BLUSTE.jpg?v=1764034122"],
-    longDesc:"",
-    specs:{"Brand":"Look","Model":"Pivot 12","DIN Range":"3.5–12","Brake Width":"95 / 105 / 120mm","Boot Compatibility":"Alpine (ISO 5355) & GripWalk (ISO 23223)","Skill Level":"Advanced–Expert"},
-    breakdown:[{label:"Binding",amount:329.99},{label:"Professional Mount",amount:0,note:"Free"},{label:"Total",amount:329.99}]
-  },
-  {
-    name:"Look Pivot 15", brand:"Look", price:429.99, badge:"New", badgeType:"new", icon:"🔩",
-    cat:"bindings", sub:"ski-binding", gender:"unisex", age:"adult", cond:"new", popular:99,
-    desc:"The top of Look's Pivot line, built for expert and freeride skiers who demand maximum retention at speed. Pivoting heel design protects the knee on backward falls.",
-    action:"Add to Cart", link:null,
-    sizes:[{label:"One Size",qty:0,hlId:100800}],
-    images:["https://www.icelanticskis.com/cdn/shop/files/0002_ATTACK11GWBRAKE85_A__solidblack_sideLeft_1390x1390_0001_15-BLU_23c606c5-3e19-4a77-a031-020017d45b0e.jpg?v=1764034339"],
-    longDesc:"",
-    specs:{"Brand":"Look","Model":"Pivot 15","DIN Range":"4–15","Brake Width":"95 / 105 / 120mm","Boot Compatibility":"Alpine (ISO 5355) & GripWalk (ISO 23223)","Skill Level":"Expert"},
-    breakdown:[{label:"Binding",amount:429.99},{label:"Professional Mount",amount:0,note:"Free"},{label:"Total",amount:429.99}]
   },
 
 ];
