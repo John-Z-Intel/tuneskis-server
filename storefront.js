@@ -2,7 +2,7 @@
 // ── Build stamp — check what's actually deployed ──────────────
 // In the browser console on /store you'll see this line. If the number
 // doesn't match the ?v= in the Squarespace footer, you're on a stale file.
-window.TS_BUILD = "245 (RX9 launch moved to Fri Oct 9, 12pm)";
+window.TS_BUILD = "246 (5 new Icelantic skis: Tempest 88/94, Torrent 88/96, Nomad 94)";
 console.log("%c[TuneSkis] storefront build " + window.TS_BUILD, "background:#4db8ff;color:#000;padding:2px 6px;border-radius:3px;font-weight:bold");
 // Prints what the deal engine actually sees. Run tsDealDebug() in the console
 // any time to find out why a deal is or isn't showing.
@@ -396,6 +396,56 @@ const PRODUCTS = [
     sizes:[{label:"169cm",qty:0,hlId:101073},{label:"176cm",qty:0,hlId:101074}],
     images:["https://ridgeandriver.com/cdn/shop/files/2425_Shaman99_wAwards_300x900_46ce9f41-cf9e-47d2-8b9c-e5bae5542b60_300x.webp?v=1758307597"],
     longDesc:"The Shaman 99 is a modern evolution of one of Icelantic\'s most iconic shapes. Its tight turning radius, wide shovel, and powerful edge hold make it a carver\'s dream — built for skiers who want to lay deep trenches and drive through every turn. Icelantic updated the original Shaman with new materials, a tapered shape, and 8mm of camber underfoot for lively rebound. The rockered tip and tail keep the shovel from diving in deep snow, giving you a frontside-focused ride with genuine off-piste capability. Whether you\'re snapping turns on hardpack or floating through soft snow, this ski stays powerful, responsive, and ridiculously fun. Handmade in Denver, CO. Backed by Icelantic\'s 3-Year Bombproof Warranty."
+  },
+  {
+    name:"Icelantic Tempest 88", brand:"Icelantic", price:799.99, customMsrp:799.99, customPrice:799.99, badge:"New", badgeType:"new", icon:"🎿",
+    cat:"skis", sub:"icelantic", gender:"women", age:"adult", cond:"new", bindings:false, flatmount:true, popular:197,
+    desc:"Built for intermediate to advanced women skiers seeking a precise, agile, and confidence-inspiring ride. Strong edge engagement and energetic rebound deliver quick edge-to-edge performance with a playful feel.",
+    action:"Add to Cart", link:null,
+    sizes:[{label:"150cm",qty:0,hlId:101978},{label:"155cm",qty:0,hlId:101979}],
+    images:["https://www.icelanticskis.com/cdn/shop/files/1_TEMPEST_88_Topsheet_900x900.webp?v=1788328539","https://www.icelanticskis.com/cdn/shop/files/2_TEMPEST_88_Base_900x900.webp?v=1788328539","https://www.icelanticskis.com/cdn/shop/files/3_TEMPEST_88_Side_Profile_900x900.webp?v=1788328539","https://www.icelanticskis.com/cdn/shop/files/4_TEMPEST_88_Detail_2_900x900.webp?v=1788328539","https://www.icelanticskis.com/cdn/shop/files/5_TEMPEST_88_Detail_3_900x900.webp?v=1788328539","https://www.icelanticskis.com/cdn/shop/files/Artboard1_f7ece66f-a4c1-4355-910e-8d999e31b009_900x900.jpg?v=1789012882","https://www.icelanticskis.com/cdn/shop/files/Artboard2_f44f4452-9cb3-4821-b5a2-094613c092cf_900x900.jpg?v=1789012882"],
+    longDesc:"The all-new Tempest 88 is built for intermediate to advanced women skiers seeking a precise, agile, and confidence-inspiring ride. Its narrow platform, strong edge engagement, and energetic rebound deliver quick edge-to-edge performance with a playful feel. Whether you\'re carving high-angle turns on corduroy, weaving through bumps, or exploring tight trees, the Tempest 88 provides the control, stability, and responsiveness to make every turn feel effortless. Poplar & Beech Wood Core for a smooth, balanced flex and dependable stability; Custom V12 Carbon Matrix and 8 Carbon Stringers boost strength, power, precision, and rebound. Directional Rocker Profile for effortless turn initiation. Original artwork by Travis Parr. Handmade in Golden, Colorado. Backed by Icelantic\'s 3-Year Bombproof Warranty.",
+    specs:{"Brand":"Icelantic","Waist Width":"88mm","Dimensions (162cm)":"132 / 88 / 116 mm","Profile":"Directional Rocker","Core":"Poplar & Beech Wood + V12 Carbon Matrix","Turn Radius":"11-14m (by length)","Skill Level":"Intermediate – Advanced – Expert","Terrain":"All-Mountain, Carve","Gender":"Women\'s","Country":"USA (Golden, CO)"}
+  },
+  {
+    name:"Icelantic Tempest 94", brand:"Icelantic", price:849.99, customMsrp:849.99, customPrice:849.99, badge:"New", badgeType:"new", icon:"🎿",
+    cat:"skis", sub:"icelantic", gender:"women", age:"adult", cond:"new", bindings:false, flatmount:true, popular:198,
+    desc:"Our most versatile, stable, and energetic women\'s all-mountain ski yet. A balanced 94mm platform delivers confident carving, smooth soft-snow performance, and versatility across the whole resort.",
+    action:"Add to Cart", link:null,
+    sizes:[{label:"155cm",qty:0,hlId:101977}],
+    images:["https://www.icelanticskis.com/cdn/shop/files/1_TEMPEST_94_Topsheet_900x900.webp?v=1788329095","https://www.icelanticskis.com/cdn/shop/files/2_TEMPEST_94_Base_900x900.webp?v=1788329094","https://www.icelanticskis.com/cdn/shop/files/3_TEMPEST_94_Side_Profile_900x900.webp?v=1788329095","https://www.icelanticskis.com/cdn/shop/files/4_TEMPEST_94_Detail_2_900x900.webp?v=1788329094","https://www.icelanticskis.com/cdn/shop/files/5_TEMPEST_94_Detail_3_900x900.webp?v=1788329094","https://www.icelanticskis.com/cdn/shop/files/Artboard5_5af33f39-72e0-4067-b946-541f3364380d_900x900.jpg?v=1789012928","https://www.icelanticskis.com/cdn/shop/files/Artboard7_27a70675-c27b-462c-8446-c3d55e74fca1_900x900.jpg?v=1789012928"],
+    longDesc:"The all-new, award-winning Tempest 94 is our most versatile, stable, and energetic women\'s all-mountain ski yet. With a V-12 Carbon-reinforced construction and balanced 94mm platform, it delivers confident carving, smooth soft-snow performance, and the versatility to handle everything from first-chair groomers to bumps and afternoon chop. Poplar & Beech Wood Core, Custom V12 Carbon Matrix, 8 Carbon Stringers, Directional Rocker Profile. Original artwork by Travis Parr. Handmade in Golden, Colorado. Backed by Icelantic\'s 3-Year Bombproof Warranty.",
+    specs:{"Brand":"Icelantic","Waist Width":"94mm","Dimensions (162cm)":"135 / 94 / 119 mm","Profile":"Directional Rocker","Core":"Poplar & Beech Wood + V12 Carbon Matrix","Turn Radius":"12-15.5m (by length)","Skill Level":"Intermediate – Advanced – Expert","Terrain":"All-Mountain, Carve","Gender":"Women\'s","Country":"USA (Golden, CO)"}
+  },
+  {
+    name:"Icelantic Torrent 88", brand:"Icelantic", price:799.99, customMsrp:799.99, customPrice:799.99, badge:"New", badgeType:"new", icon:"🎿",
+    cat:"skis", sub:"icelantic", gender:"men", age:"adult", cond:"new", bindings:false, flatmount:true, popular:195,
+    desc:"Built for intermediate to advanced skiers looking for a precise, snappy, and agile ride that rewards good technique without punishing mistakes. All-mountain performance in a narrower package with a tight turn radius.",
+    action:"Add to Cart", link:null,
+    sizes:[{label:"166cm",qty:0,hlId:101975},{label:"171cm",qty:0,hlId:101976}],
+    images:["https://www.icelanticskis.com/cdn/shop/files/26-27_TORRENT_88_Topsheet_900x900.webp?v=1788327371","https://www.icelanticskis.com/cdn/shop/files/26-27_TORRENT_88_Base_900x900.webp?v=1788327371","https://www.icelanticskis.com/cdn/shop/files/26-27_TORRENT_88_Side_Profile_900x900.webp?v=1788327371","https://www.icelanticskis.com/cdn/shop/files/26-27_TORRENT_88_Detail_1_900x900.jpg?v=1789008139","https://www.icelanticskis.com/cdn/shop/files/26-27_TORRENT_88_Detail_2_900x900.webp?v=1788327371","https://www.icelanticskis.com/cdn/shop/files/26-27_TORRENT_88_Detail_3_900x900.webp?v=1788327372","https://www.icelanticskis.com/cdn/shop/files/Artboard2_e9d192ea-ca61-489a-9789-be075000db92_900x900.jpg?v=1789008065","https://www.icelanticskis.com/cdn/shop/files/Artboard4_7a279fbf-5d3f-456a-b44c-264427065661_900x900.jpg?v=1789008065"],
+    longDesc:"The all-new Torrent 88 is built for intermediate to advanced skiers looking for a precise, snappy, and agile ride that rewards good technique without punishing mistakes. It blends strong edge engagement and excellent rebound to deliver all mountain performance in a narrower package with a tight turn radius. Whether you\'re carving high-angle turns on corduroy, weaving through bumps, or ducking into the tight trees, the Torrent 88 ensures each turn is packed with energy and precision. Poplar & Beech Wood Core, Custom V12 Carbon Matrix, 8 Carbon Stringers, Directional Rocker Profile. Original artwork by Travis Parr. Handmade in Golden, Colorado. Backed by Icelantic\'s 3-Year Bombproof Warranty.",
+    specs:{"Brand":"Icelantic","Waist Width":"88mm","Dimensions (171cm)":"132 / 88 / 116 mm","Profile":"Directional Rocker","Core":"Poplar & Beech Wood + V12 Carbon Matrix","Turn Radius":"14-18m (by length)","Skill Level":"Beginner – Intermediate – Advanced – Expert","Terrain":"All-Mountain, Carve","Gender":"Men\'s","Country":"USA (Golden, CO)"}
+  },
+  {
+    name:"Icelantic Torrent 96", brand:"Icelantic", price:849.99, customMsrp:849.99, customPrice:849.99, badge:"New", badgeType:"new", icon:"🎿",
+    cat:"skis", sub:"icelantic", gender:"men", age:"adult", cond:"new", bindings:false, flatmount:true, popular:196,
+    desc:"The most versatile, stable, and energetic all-mountain ski we\'ve ever built. A 96mm platform delivers confident carving, smooth soft-snow performance, and versatility from first-chair groomers to bumps to chop.",
+    action:"Add to Cart", link:null,
+    sizes:[{label:"166cm",qty:0,hlId:101973},{label:"171cm",qty:0,hlId:101974}],
+    images:["https://www.icelanticskis.com/cdn/shop/files/1_TORRENT_96_Topsheet_900x900.webp?v=1788327519","https://www.icelanticskis.com/cdn/shop/files/2_TORRENT_96_Base_900x900.webp?v=1788327519","https://www.icelanticskis.com/cdn/shop/files/3_TORRENT_96_Side_Profile_900x900.webp?v=1788327519","https://www.icelanticskis.com/cdn/shop/files/4_TORRENT_96_Detail_2_900x900.webp?v=1788327519","https://www.icelanticskis.com/cdn/shop/files/5_TORRENT_96_Detail_3_900x900.webp?v=1788327519","https://www.icelanticskis.com/cdn/shop/files/26-27_TORRENT_96_Detail_1_900x900.jpg?v=1789008187","https://www.icelanticskis.com/cdn/shop/files/Artboard4_4f664d72-d913-4265-b57b-f6008b781b28_900x900.jpg?v=1789008537","https://www.icelanticskis.com/cdn/shop/files/Artboard2_b9f3f474-e4ab-4294-9214-4b4e3231d72f_900x900.jpg?v=1789008537"],
+    longDesc:"The all-new, award-winning Torrent 96 is the most versatile, stable, and energetic all-mountain ski we have ever built. With a V-12 Carbon-reinforced construction and 96mm platform, it delivers confident carving, smooth soft-snow performance, and versatility from first-chair groomers to bumps to chop. Poplar & Beech Wood Core, Custom V12 Carbon Matrix, 8 Carbon Stringers, Directional Rocker Profile. Original artwork by Travis Parr. Handmade in Golden, Colorado. Backed by Icelantic\'s 3-Year Bombproof Warranty.",
+    specs:{"Brand":"Icelantic","Waist Width":"96mm","Dimensions (166cm)":"137 / 96 / 121 mm","Profile":"Directional Rocker","Core":"Poplar & Beech Wood + V12 Carbon Matrix","Turn Radius":"15-19m (by length)","Skill Level":"Intermediate – Advanced – Expert","Terrain":"All-Mountain, Carve","Gender":"Men\'s","Country":"USA (Golden, CO)"}
+  },
+  {
+    name:"Icelantic Nomad 94", brand:"Icelantic", price:799.99, customMsrp:799.99, customPrice:799.99, badge:"New", badgeType:"new", icon:"🎿",
+    cat:"skis", sub:"icelantic", gender:"men", age:"adult", cond:"new", bindings:false, flatmount:true, popular:194,
+    desc:"A poppy, playful, and nimble freeride ski built to jib and butter features all over the mountain. Delivers freestyle performance for park skiers and all-mountain freeriders alike.",
+    action:"Add to Cart", link:null,
+    sizes:[{label:"166cm",qty:0,hlId:101971},{label:"182cm",qty:0,hlId:101972}],
+    images:["https://www.bobssportschalet.com/prodimages/121758-MULTI-l.jpg"],
+    longDesc:"The Award-Winning Nomad 94 is built for the intermediate to expert level skier who wants a poppy, playful, and nimble tool to jib and butter features all over the mountain. It delivers freestyle performance ideal for park skiers and all-mountain freeriders alike. If you enjoy popping side hits, stomping switch landings, and slashing bumps, all while making sure you have enough edge for the groomer, then this is the ski for you. Poplar Wood Core for lightweight responsiveness and a smooth, playful flex. Free Rocker Profile for surfy float, easy pivoting, and freeride fun. 8 Carbon Stringers add extra pop, energy, and rebound. Fly-Cap Construction reduces swing weight and enhances maneuverability. Original artwork by Travis Parr. Handmade in Golden, Colorado. Backed by Icelantic\'s 3-Year Bombproof Warranty.",
+    specs:{"Brand":"Icelantic","Waist Width":"94mm","Dimensions (166cm)":"129 / 94 / 121 mm","Profile":"Free Rocker","Core":"Poplar Wood + Fly-Cap Construction","Turn Radius":"15-20m (by length)","Skill Level":"Beginner – Intermediate – Advanced – Expert","Terrain":"Freeride, Park/Jib, All-Mountain","Gender":"Men\'s","Country":"USA (Golden, CO)"}
   },
 
   // ── JONES SNOWBOARDS ────────────────────────────────────────
