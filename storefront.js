@@ -2,7 +2,7 @@
 // ── Build stamp — check what's actually deployed ──────────────
 // In the browser console on /store you'll see this line. If the number
 // doesn't match the ?v= in the Squarespace footer, you're on a stale file.
-window.TS_BUILD = "262 (Soul Pro images corrected to linked Scheels product)";
+window.TS_BUILD = "264 (Soul Pro real image)";
 console.log("%c[TuneSkis] storefront build " + window.TS_BUILD, "background:#4db8ff;color:#000;padding:2px 6px;border-radius:3px;font-weight:bold");
 // Prints what the deal engine actually sees. Run tsDealDebug() in the console
 // any time to find out why a deal is or isn't showing.
@@ -1266,7 +1266,7 @@ const BINDINGS = [
     desc:"Approachable and confidence-inspiring all-mountain ski. 92mm waist with versatile construction that ventures from on-piste to off and back again without hesitation.",
     action:"Add to Cart", link:null,
     sizes:[{label:"150cm",qty:0,hlId:102189},{label:"160cm",qty:0,hlId:102190},{label:"170cm",qty:0,hlId:102191}],
-    images:["https://cdn.media.amplience.net/i/scheelspoc/41500001341?w=800&h=800&fmt=auto","https://cdn.media.amplience.net/i/scheelspoc/41500001341_1?w=800&h=800&fmt=auto","https://cdn.media.amplience.net/i/scheelspoc/41500001341_2?w=800&h=800&fmt=auto"],
+    images:["https://park2peak.com/cdn/shop/files/rossignolsoulpro2027.png?v=1785246615&width=2048"],
     longDesc:"Approachable and confidence inspiring, the Rossignol Soul Pro is a complete ski for those looking to explore the entirety of the mountain. With versatility at their core, the Soul Pro skis venture from on-piste to off and back again without hesitation, and their lightweight construction makes them easy to maneuver no matter what snow conditions you encounter. The All Trail Profile is designed to ensure smooth and progressive absorption of uneven terrain in all types of snow, while the perfectly tailored profile and sidecut guarantee ideal tip behavior in any conditions. An Extended Core increases ski-snow contact and torsional stability for added precision and control. The Poplar Wood Core, PEFC-certified for sustainable forest management, balances weight, flex, and stability for a versatile blend of power and playfulness. Cap Sidewalls keep things light and chip-resistant.",
     specs:{"Brand":"Rossignol","Model":"Soul Pro","Color":"Red","Waist Width":"92mm","Sidecut":"119 / 92 / 109 mm","Radius":"16-27m (by length)","Core":"PEFC Poplar Wood (Extended Core)","Sidewalls":"Cap Construction","Profile":"All Trail Profile","Tail Type":"Flat","Terrain":"All-Mountain","Skill Level":"Intermediate–Advanced","Gender":"Men's","Country":"France"},
     breakdown:[{label:"Skis (Rossignol Soul Pro)",amount:499.99},{label:"Total",amount:499.99}]
@@ -1277,7 +1277,7 @@ const BINDINGS = [
     desc:"Women's all-terrain freeride ski built to slash, smear, and carve across the mountain. Lively wood core keeps it agile, with a double rocker profile for a playful, versatile ride.",
     action:"Add to Cart", link:null,
     sizes:[{label:"140cm",qty:0,hlId:102192},{label:"150cm",qty:0,hlId:102193},{label:"160cm",qty:0,hlId:102194}],
-    images:["https://i.ebayimg.com/images/g/4v0AAeSw9qppIdrE/s-l1600.webp"],
+    images:["https://www.evo.com/cdn/shop/files/product-image-1280377.jpg?v=1774050707&width=2560"],
     longDesc:"Full gas, always fast. The Rossignol Soul W Pro is an all-terrain weapon of one that opens the door to slash, smear, and carve across the mountain at will. The ski's lively Poplar PEFC wood core keeps it agile, while its double rocker profile makes for a playful ride with the freedom to blur the boundaries between frontside and freeride. Cap Sidewalls roll the topsheet material edge-to-edge for lightweight ease-of-use and increased resistance to chipping, while fiberglass reinforcement offers more elasticity than carbon for a customized, forgiving flex. Built for women skiers who want to explore the whole mountain without being pinned to one terrain type.",
     specs:{"Brand":"Rossignol","Model":"Soul W Pro","Color":"Purple & Teal","Core":"Poplar PEFC Wood","Reinforcement":"Fiberglass","Sidewalls":"Cap Construction","Profile":"Double (Tip & Tail) Rocker","Terrain":"All-Mountain / Freeride","Skill Level":"Intermediate–Advanced","Gender":"Women's","Country":"France"},
     breakdown:[{label:"Skis (Rossignol Soul W Pro)",amount:499.99},{label:"Total",amount:499.99}]
