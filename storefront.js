@@ -2,7 +2,7 @@
 // ── Build stamp — check what's actually deployed ──────────────
 // In the browser console on /store you'll see this line. If the number
 // doesn't match the ?v= in the Squarespace footer, you're on a stale file.
-window.TS_BUILD = "244 (deal cap recording fixed)";
+window.TS_BUILD = "245 (RX9 launch moved to Fri Oct 9, 12pm)";
 console.log("%c[TuneSkis] storefront build " + window.TS_BUILD, "background:#4db8ff;color:#000;padding:2px 6px;border-radius:3px;font-weight:bold");
 // Prints what the deal engine actually sees. Run tsDealDebug() in the console
 // any time to find out why a deal is or isn't showing.
@@ -23,7 +23,11 @@ window.tsDealDebug = function(){
     return info;
   } catch(e){ console.error("tsDealDebug failed:", e); }
 };
-setTimeout(function(){ try { window.tsDealDebug(); } catch(e){} }, 1200);
+// Only auto-print the debug table when you ask for it (?dealdebug=1).
+// You can also just type tsDealDebug() in the console at any time.
+if (/[?&]dealdebug=1/.test(location.search)) {
+  setTimeout(function(){ try { window.tsDealDebug(); } catch(e){} }, 1200);
+}
 // ═══════════════════════════════════════════════════════════════════
 //  🔥 DEAL OF THE DAY — EDIT THIS BLOCK AT THE START OF EACH WEEK
 // ═══════════════════════════════════════════════════════════════════
@@ -49,7 +53,7 @@ setTimeout(function(){ try { window.tsDealDebug(); } catch(e){} }, 1200);
 const DEAL_OF_DAY = {
   // First day deals ever ran. Nothing before this is treated as a past deal,
   // which stops an upcoming product from being revealed early.
-  startDate: "2026-10-07",
+  startDate: "2026-10-09",
   revealHour: 12,
   revealMinute: 0,
 
@@ -58,18 +62,17 @@ const DEAL_OF_DAY = {
   // Give them the same capKey and they share ONE limit across all the dates
   // listed — so "1 available" means one total, not one per day.
   byDate: {
-    "2026-10-07": "RX9_LAUNCH",
-    "2026-10-08": "RX9_LAUNCH",
+    "2026-10-09": "RX9_LAUNCH",   // Friday — postponed from Oct 7/8
   },
 
   deals: {
     mon: { active:false, name:"", teaser:"", price:0, msrp:0, limit:3, hlId:0, sizes:[], image:"", desc:"", specs:{} },
     tue: { active:false, name:"", teaser:"", price:0, msrp:0, limit:3, hlId:0, sizes:[], image:"", desc:"", specs:{} },
     wed: { active:false, name:"", teaser:"", price:0, msrp:0, limit:3, hlId:0, sizes:[], image:"", desc:"", specs:{} },
-    // 🔥 FIRST REAL DEAL — Kästle RX9, $399.99, drops tomorrow (Thursday) at 12pm ET.
-    // ⚠️ hlId is still 0 — put the new dedicated Heartland item's ID here once
-    // you've created it (see note above: one new item, qty 1, NOT one of the
-    // regular RX9 size SKUs). The deal will not go live until this is a real ID.
+    // 🔥 FIRST REAL DEAL — Kästle RX9, $299.99, drops Friday Oct 9 at 12pm ET.
+    // No Heartland item needed: hlId stays 0 and the server's own sales
+    // counter enforces limit:1. To move the launch, just change the date in
+    // byDate above. capKey keeps it to ONE sale total across every date listed.
     RX9_LAUNCH: { active:true, capKey:"rx9-launch-2026", name:"Kästle RX9", teaser:"A World Cup-inspired carver at a price you won't believe…",
            price:299.99, msrp:950.00, limit:1, hlId:0,
            sizes:["150cm","156cm","162cm","168cm","174cm"], bindings:true,
