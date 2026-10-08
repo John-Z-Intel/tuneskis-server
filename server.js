@@ -83,6 +83,42 @@ async function hlFetchQtyMap() {
   return map;
 }
 
+// ── Deal of the Day sales counter (no Heartland item needed) ──
+// Counts how many of each day's deal have actually been paid for, so a
+// "1 available" deal really stops at 1. Keyed by deal + calendar date, so
+// it resets on its own each day with nothing for you to do.
+const fs = require('fs');
+const DEAL_SALES_FILE = '/tmp/tuneskis-deal-sales.json';
+let dealSales = {};
+try { dealSales = JSON.parse(fs.readFileSync(DEAL_SALES_FILE, 'utf8')); } catch (e) { dealSales = {}; }
+function saveDealSales() {
+  try { fs.writeFileSync(DEAL_SALES_FILE, JSON.stringify(dealSales)); } catch (e) { /* best effort */ }
+}
+function dealDateKeyNY() {
+  return new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' }); // YYYY-MM-DD
+}
+function dealSlot(dealKey) { return `${dealKey}:${dealDateKeyNY()}`; }
+function dealSoldCount(dealKey) { return dealSales[dealSlot(dealKey)] || 0; }
+function dealRecordSale(dealKey, n) {
+  const slot = dealSlot(dealKey);
+  dealSales[slot] = (dealSales[slot] || 0) + (n || 1);
+  // prune anything older than a week so the file stays tiny
+  const cutoff = new Date(Date.now() - 7*24*60*60*1000).toLocaleDateString('en-CA', { timeZone:'America/New_York' });
+  Object.keys(dealSales).forEach(k => { if ((k.split(':')[1] || '') < cutoff) delete dealSales[k]; });
+  saveDealSales();
+}
+
+// ── GET /deal-status ──────────────────────────────────────────
+// The storefront polls this to show "X left" and to flip to SOLD OUT.
+app.get('/deal-status', (req, res) => {
+  const key = String(req.query.key || '');
+  const limit = Math.max(1, parseInt(req.query.limit, 10) || 1);
+  const sold = dealSoldCount(key);
+  const held = reservedQty('DEAL:' + key);
+  const left = Math.max(0, limit - sold - held);
+  res.json({ success: true, key, limit, sold, left, soldOut: left <= 0 });
+});
+
 // ── Short-lived reservations ──────────────────────────────────
 // Heartland isn't decremented until AFTER the card is charged (that happens
 // in /send-order-email). That leaves a window where two shoppers could both
@@ -164,8 +200,29 @@ app.post('/create-payment-intent', async (req, res) => {
   // charging anyone. This is what makes a 1-of-1 deal truly 1-of-1 — even
   // if two people hit Buy in the same second, the second is refused here
   // and no card is charged.
+  // Deal items are capped by our own counter (no Heartland item required)
+  const dealItems = (items || []).filter(i => i && i.dealKey);
+  for (const d of dealItems) {
+    const limit = Math.max(1, parseInt(d.dealLimit, 10) || 1);
+    const want = Math.max(1, d.qty || 1);
+    const taken = dealSoldCount(d.dealKey) + reservedQty('DEAL:' + d.dealKey);
+    if (taken + want > limit) {
+      console.log(`[deal cap] REFUSED ${d.dealKey} want:${want} sold:${dealSoldCount(d.dealKey)} held:${reservedQty('DEAL:'+d.dealKey)} limit:${limit}`);
+      return res.status(409).json({
+        error: `Sorry — "${d.name || "today's deal"}" just sold out. Your card has not been charged.`,
+        soldOut: true, dealKey: d.dealKey
+      });
+    }
+  }
+
   const tracked = (items || []).filter(i => i && i.hlId);
   const claimed = [];
+  // Hold the deal slots for this checkout
+  dealItems.forEach(d => {
+    const want = Math.max(1, d.qty || 1);
+    reserve('DEAL:' + d.dealKey, want);
+    claimed.push({ hlId: 'DEAL:' + d.dealKey, qty: want });
+  });
   if (tracked.length) {
     let qtyMap;
     try {
@@ -278,6 +335,14 @@ app.post('/send-order-email', async (req, res) => {
       html,
     });
     console.log(`[email] Sent — ${customer.name} $${order.total}`);
+    // Payment went through — count any Deal of the Day items against the cap
+    (order.items || []).forEach(i => {
+      if (i && i.dealKey) {
+        dealRecordSale(i.dealKey, i.qty || 1);
+        releaseOne('DEAL:' + i.dealKey, i.qty || 1); // hold becomes a confirmed sale
+        console.log(`[deal cap] SOLD ${i.dealKey} -> ${dealSoldCount(i.dealKey)} total today`);
+      }
+    });
     // Decrement inventory in Heartland
     if (order.items && order.items.length) {
       hlDecrementInventory(order.items).catch(err => console.error('[inventory decrement]', err));
