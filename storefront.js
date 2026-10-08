@@ -2,7 +2,7 @@
 // ── Build stamp — check what's actually deployed ──────────────
 // In the browser console on /store you'll see this line. If the number
 // doesn't match the ?v= in the Squarespace footer, you're on a stale file.
-window.TS_BUILD = "256 (Nova 2 + Arcade 78 restocked; Forza 20 + Arcade 82 added)";
+window.TS_BUILD = "257 (Colorways added; Arcade W 80, Soul Pro, Soul W Pro added)";
 console.log("%c[TuneSkis] storefront build " + window.TS_BUILD, "background:#4db8ff;color:#000;padding:2px 6px;border-radius:3px;font-weight:bold");
 // Prints what the deal engine actually sees. Run tsDealDebug() in the console
 // any time to find out why a deal is or isn't showing.
@@ -1224,7 +1224,7 @@ const BINDINGS = [
     sizes:[{label:"156cm",qty:0,hlId:101545},{label:"164cm",qty:0,hlId:102176},{label:"172cm",qty:0,hlId:102177},{label:"180cm",qty:0,hlId:102178}],
     images:["https://i.ebayimg.com/images/g/4v0AAeSw9qppIdrE/s-l1600.webp"],
     longDesc:"The Rossignol Arcade 78 is built to handle whatever snow the resort throws at you with effortless carving and all-conditions adaptability. Air Tip technology reduces weight for increased maneuverability, and V-A-S construction absorbs shock for a smooth, connected feel through variable terrain. The Arcade 78 balances the playful feel of rocker with reliable edge control, making it a confident companion from first chair to final lap — perfect for intermediate skiers looking for a dependable, fun all-mountain ride. Comes with bindings included.",
-    specs:{"Brand":"Rossignol","Waist Width":"78mm","Profile":"Progressive Camber","Core":"Poplar / Paulownia Wood","Fiberglass":"Full Fiberglass","Base":"ABS Electra","Turn Radius":"~14m (156cm)","Terrain":"Groomed Piste / All-Mountain","Skill Level":"Intermediate","Country":"France"},
+    specs:{"Brand":"Rossignol","Waist Width":"78mm","Color":"Grey & Yellow","Profile":"Progressive Camber","Core":"Poplar / Paulownia Wood","Fiberglass":"Full Fiberglass","Base":"ABS Electra","Turn Radius":"~14m (156cm)","Terrain":"Groomed Piste / All-Mountain","Skill Level":"Intermediate","Country":"France"},
     breakdown:[{label:"Skis (Rossignol Arcade 78)",amount:549.99},{label:"Binding Mount",amount:0,note:"Free"},{label:"Tune & Wax",amount:0,note:"Free"},{label:"Total",amount:549.99}]
   },
   {
@@ -1235,7 +1235,7 @@ const BINDINGS = [
     sizes:[{label:"156cm",qty:0,hlId:102182},{label:"164cm",qty:0,hlId:102183},{label:"171cm",qty:0,hlId:102184}],
     images:["https://www.evo.com/cdn/shop/files/product-image-1020506.jpg?v=1767730069"],
     longDesc:"Ready to set a new PR? The Rossignol Forza 20 is your introduction to fast, aggressive groomer ripping, with a powerful layup that provides all the edge you need for arcing turns — a frontside carver perfect for intermediate skiers who love carving up the piste. Piste Rocker (95% Camber / 5% Tip Rocker) and a Supersized Sidecut deliver instant engagement, power, and acceleration through every carve. The PEFC-certified poplar wood core keeps it lightweight and stable, and a High Density Sintered Base provides reliable glide and durability in all conditions. Line Control Technology harnesses pure power and energy for optimum stability through the turn. Comes with Xpress bindings included.",
-    specs:{"Brand":"Rossignol","Waist Width":"74mm","Dimensions (171cm)":"125 / 74 / 111 mm","Turn Radius":"14m","Profile":"Piste Rocker (95% Camber / 5% Tip Rocker)","Core":"PEFC Poplar Wood","Base":"High Density Sintered","Terrain":"Carving / Groomers","Skill Level":"Beginner–Intermediate","Country":"France"},
+    specs:{"Brand":"Rossignol","Waist Width":"74mm","Color":"Teal & White","Dimensions (171cm)":"125 / 74 / 111 mm","Turn Radius":"14m","Profile":"Piste Rocker (95% Camber / 5% Tip Rocker)","Core":"PEFC Poplar Wood","Base":"High Density Sintered","Terrain":"Carving / Groomers","Skill Level":"Beginner–Intermediate","Country":"France"},
     breakdown:[{label:"Skis (Rossignol Forza 20)",amount:449.99},{label:"Binding Mount",amount:0,note:"Free"},{label:"Tune & Wax",amount:0,note:"Free"},{label:"Total",amount:449.99}]
   },
   {
@@ -1248,6 +1248,39 @@ const BINDINGS = [
     longDesc:"The Rossignol Arcade 82 redefines all-mountain versatility with the ability to carve through every on-piste condition, from freshly groomed morning runs to slushy afternoon snow. It balances the playful feel of rocker with the edge control of full sidewall construction for confidence through varied snow. The Poplar PEFC wood core keeps it exceptionally light while maintaining durability, and an integrated Titanium/Carbon Beam reinforces stability and torsional rigidity. Air Tip technology lightens the tips for easier maneuvering and smoother transitions, while VAS construction absorbs vibration for a stable, connected feel at speed. Intermediate and advanced skiers will appreciate the blend of race tech and freeride construction — built for first chair to final lap, every turn guaranteed. Comes with Xpress bindings included.",
     specs:{"Brand":"Rossignol","Waist Width":"82mm","Dimensions":"132 / 82 / 120 mm","Turn Radius":"11-15m (by length)","Profile":"Tip & Tail Rocker + Classic Camber","Core":"Poplar PEFC Wood + Carbon/Titanium Beam","Construction":"Rectangular Full Sidewall","Terrain":"All-Mountain","Skill Level":"Intermediate–Advanced","Gender":"Unisex","Country":"France"},
     breakdown:[{label:"Skis (Rossignol Arcade 82)",amount:749.99},{label:"Binding Mount",amount:0,note:"Free"},{label:"Tune & Wax",amount:0,note:"Free"},{label:"Total",amount:749.99}]
+  },
+  {
+    name:"Rossignol Arcade W 80", brand:"Rossignol", price:649.99, customMsrp:649.99, customPrice:649.99, badge:"New", badgeType:"new", icon:"🎿",
+    cat:"skis", sub:"rossignol", gender:"women", age:"adult", cond:"new", bindings:true, flatmount:false, popular:146,
+    desc:"Women's friendly frontside ski. Poplar wood core and tip-tail rocker smooth out bumpy runs and make turn initiation forgiving. Comes with bindings.",
+    action:"Add to Cart", link:null,
+    sizes:[{label:"142cm",qty:0,hlId:102179},{label:"150cm",qty:0,hlId:102180},{label:"158cm",qty:0,hlId:102181}],
+    images:["https://www.evo.com/cdn/shop/files/product-image-1284710.jpg?v=1774627910"],
+    longDesc:"The Rossignol Arcade W 80 is a friendly frontside ski with a Poplar Wood Core and Tip & Tail Rocker that smooths out bumpy runs and makes turn initiation forgiving — built for progressing riders ready to build confidence on groomed terrain and beyond. An Oversize Sidecut delivers powerful carving precision and edge grip, while Air Tip technology reduces swing weight at the ski's extremities for playful maneuverability. Line Control Technology routes a central power rail through the wood core for added torsional stiffness, and VAS (Vibration Absorbing System) keeps the ride smooth and connected. Cap Construction keeps things light with increased resistance to chipping, and a Sintered Base delivers reliable glide. Comes with Xpress bindings included.",
+    specs:{"Brand":"Rossignol","Waist Width":"80mm","Color":"Pink & Black","Profile":"Tip & Tail Rocker","Core":"Poplar Wood","Construction":"Cap, Oversize Sidecut","Base":"Sintered","Technology":"Air Tip, LCT, VAS","Terrain":"All-Mountain","Skill Level":"Beginner–Intermediate","Gender":"Women's","Country":"France"},
+    breakdown:[{label:"Skis (Rossignol Arcade W 80)",amount:649.99},{label:"Binding Mount",amount:0,note:"Free"},{label:"Tune & Wax",amount:0,note:"Free"},{label:"Total",amount:649.99}]
+  },
+  {
+    name:"Rossignol Soul Pro", brand:"Rossignol", price:499.99, customMsrp:499.99, customPrice:499.99, badge:"New", badgeType:"new", icon:"🎿",
+    cat:"skis", sub:"rossignol", gender:"men", age:"adult", cond:"new", bindings:false, flatmount:true, popular:148,
+    desc:"All-terrain freeride ski built to slash, smear, and carve across the mountain. Lively wood core keeps it agile, with a double rocker profile for a playful, versatile ride.",
+    action:"Add to Cart", link:null,
+    sizes:[{label:"150cm",qty:0,hlId:102189},{label:"160cm",qty:0,hlId:102190},{label:"170cm",qty:0,hlId:102191}],
+    images:["https://i.ebayimg.com/images/g/4v0AAeSw9qppIdrE/s-l1600.webp"],
+    longDesc:"Full gas, always fast. The Rossignol Soul Pro is an all-terrain weapon of one that opens the door to slash, smear, and carve across the mountain at will. The ski's lively Poplar PEFC wood core keeps it agile, while its double rocker profile makes for a playful ride with the freedom to blur the boundaries between frontside and freeride. Cap Sidewalls roll the topsheet material edge-to-edge for lightweight ease-of-use and increased resistance to chipping, while fiberglass reinforcement offers more elasticity than carbon for a customized, forgiving flex. Built for skiers who want to explore the whole mountain without being pinned to one terrain type.",
+    specs:{"Brand":"Rossignol","Model":"Soul Pro","Color":"Red & Black","Core":"Poplar PEFC Wood","Reinforcement":"Fiberglass","Sidewalls":"Cap Construction","Profile":"Double (Tip & Tail) Rocker","Terrain":"All-Mountain / Freeride","Skill Level":"Intermediate–Advanced","Gender":"Men's","Country":"France"},
+    breakdown:[{label:"Skis (Rossignol Soul Pro)",amount:499.99},{label:"Total",amount:499.99}]
+  },
+  {
+    name:"Rossignol Soul W Pro", brand:"Rossignol", price:499.99, customMsrp:499.99, customPrice:499.99, badge:"New", badgeType:"new", icon:"🎿",
+    cat:"skis", sub:"rossignol", gender:"women", age:"adult", cond:"new", bindings:false, flatmount:true, popular:149,
+    desc:"Women's all-terrain freeride ski built to slash, smear, and carve across the mountain. Lively wood core keeps it agile, with a double rocker profile for a playful, versatile ride.",
+    action:"Add to Cart", link:null,
+    sizes:[{label:"140cm",qty:0,hlId:102192},{label:"150cm",qty:0,hlId:102193},{label:"160cm",qty:0,hlId:102194}],
+    images:["https://i.ebayimg.com/images/g/4v0AAeSw9qppIdrE/s-l1600.webp"],
+    longDesc:"Full gas, always fast. The Rossignol Soul W Pro is an all-terrain weapon of one that opens the door to slash, smear, and carve across the mountain at will. The ski's lively Poplar PEFC wood core keeps it agile, while its double rocker profile makes for a playful ride with the freedom to blur the boundaries between frontside and freeride. Cap Sidewalls roll the topsheet material edge-to-edge for lightweight ease-of-use and increased resistance to chipping, while fiberglass reinforcement offers more elasticity than carbon for a customized, forgiving flex. Built for women skiers who want to explore the whole mountain without being pinned to one terrain type.",
+    specs:{"Brand":"Rossignol","Model":"Soul W Pro","Color":"Purple & Teal","Core":"Poplar PEFC Wood","Reinforcement":"Fiberglass","Sidewalls":"Cap Construction","Profile":"Double (Tip & Tail) Rocker","Terrain":"All-Mountain / Freeride","Skill Level":"Intermediate–Advanced","Gender":"Women's","Country":"France"},
+    breakdown:[{label:"Skis (Rossignol Soul W Pro)",amount:499.99},{label:"Total",amount:499.99}]
   },
   {name:"Rossignol Sender Free 100", hlName:"Sender Free 100", brand:"Rossignol", price:699.99, badge:"Freeride", badgeType:"pop", icon:"🎿",
     cat:"skis", sub:"rossignol", gender:"unisex", age:"adult", cond:"new", bindings:false, flatmount:true, popular:145,
@@ -1716,7 +1749,7 @@ const BINDINGS = [
     sizes:[{label:"138cm",qty:0,hlId:102185},{label:"146cm",qty:0,hlId:102186},{label:"154cm",qty:0,hlId:102187},{label:"162cm",qty:0,hlId:102188}],
     images:["https://shop.petersonsskiandcycle.com/cdn/shop/files/Nova2Express_1024x1024.jpg?v=1759163121"],
     longDesc:"The Rossignol Nova 2 is an all-mountain ski tuned for intermediate women looking to build confidence and progress their skiing across the resort. A forgiving flex and intuitive shape make it easy to learn and improve, while the poplar wood core delivers a smooth, balanced ride in changing snow conditions. A versatile, encouraging companion for skiers who are ready to explore more of the mountain. Comes with bindings included.",
-    specs:{"Waist Width":"Nova 2","Core":"Air Tip Paulownia","Profile":"Progressive Camber","Gender":"Women's","Terrain":"Groomed","Skill Level":"Beginner","Country":"France"}
+    specs:{"Waist Width":"Nova 2","Color":"Pink & White","Core":"Air Tip Paulownia","Profile":"Progressive Camber","Gender":"Women's","Terrain":"Groomed","Skill Level":"Beginner","Country":"France"}
   },
   {
     name:"Rossignol Forza 70", brand:"Rossignol", price:1049.99, customMsrp:649.99, customPrice:649.99, badge:"Race", badgeType:"pop", icon:"🎿",
