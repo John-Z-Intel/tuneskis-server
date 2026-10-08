@@ -3624,9 +3624,15 @@ function dealNextReveal(nowNY) {
   }
   return null;
 }
-function dealLiveQty(deal) {
+function dealLiveQty(deal, dealKey) {
+  // No Heartland item wired up? Use the server's own sales counter instead.
+  if (!deal || !deal.hlId) {
+    var st = window._tsDealStatus;
+    if (st && st.key === dealKey) return st.left;
+    return null;                                    // unknown until first poll
+  }
   var map = window._tsHlMap;
-  if (!map || !deal || map[deal.hlId] === undefined) return null;   // unknown until sync
+  if (!map || map[deal.hlId] === undefined) return null;   // unknown until sync
   return map[deal.hlId].qty;
 }
 // Next occurrence of revealHour:revealMinute, regardless of whether any day
@@ -3683,7 +3689,7 @@ function dealState() {
     return { state:"pending", deal:todays, countdownTo:revealToday, key:DEAL_DAYS[now.getDay()] };
   }
   if (todays && now >= revealToday) {
-    var q = dealLiveQty(todays);
+    var q = dealLiveQty(todays, DEAL_DAYS[now.getDay()]);
     if (q === null || q > 0) return { state:"live", deal:todays, qty:q, key:DEAL_DAYS[now.getDay()] };
     var nxt = dealNextReveal(now);
     return { state:"soldout", deal:todays, countdownTo: nxt ? nxt.at : null, key:DEAL_DAYS[now.getDay()] };
@@ -3857,6 +3863,14 @@ window.dealRender = dealRender;
 function dealPollStock() {
   var st = dealState();
   if (st.state !== "live" && st.state !== "soldout") return;
+  // Deal has no Heartland item — ask the server how many have sold today
+  if (st.deal && !st.deal.hlId && st.key) {
+    fetch("https://tuneskis-server.onrender.com/deal-status?key=" + encodeURIComponent(st.key) + "&limit=" + (st.deal.limit || 1))
+      .then(function(r){ return r.ok ? r.json() : null; })
+      .then(function(d){ if (d && d.success) { window._tsDealStatus = d; dealRender(); } })
+      .catch(function(){});
+    return;
+  }
   fetch("https://tuneskis-server.onrender.com/inventory")
     .then(function(r){ return r.ok ? r.json() : null; })
     .then(function(data){
@@ -3877,7 +3891,7 @@ function dealBuy() {
   if (hasSizes && !chosenSize) { alert("Please select a size first."); return; }
   var key = "DEAL:" + st.key;
   if (cart.find(function(i){ return i.key === key; })) { alert("Deal of the Day is limited to 1 per customer — it's already in your cart."); tsOpenCart(); return; }
-  cart.push({ key:key, name:"🔥 " + st.deal.name, size:chosenSize, price:st.deal.price, msrp:st.deal.msrp||null, icon:"🔥", qty:1, hlId:st.deal.hlId, deal:true });
+  cart.push({ key:key, name:"🔥 " + st.deal.name, size:chosenSize, price:st.deal.price, msrp:st.deal.msrp||null, icon:"🔥", qty:1, hlId:st.deal.hlId, deal:true, dealKey:st.key, dealLimit:st.deal.limit||1 });
   tsSave(); tsUpdateUI(); tsOpenCart();
 }
 window.dealBuy = dealBuy;
@@ -3892,6 +3906,7 @@ function tshShowDeal(btn) {
     document.querySelectorAll(".ts-catbtn").forEach(function(b){ b.classList.remove("on"); });
     if (btn && btn.classList) btn.classList.add("on");
     dealRender();
+    dealPollStock();   // get the true remaining count immediately on open
   }, 150);
 }
 window.tshShowDeal = tshShowDeal;
@@ -4339,7 +4354,7 @@ function tsCoSubmit() {
       currency: 'usd',
       // Sent so the server can re-verify stock before charging the card —
       // this is what prevents two people buying the same last item.
-      items: cart.map(function(i){ return { hlId: i.hlId || null, qty: i.qty || 1, name: i.name, size: i.size }; })
+      items: cart.map(function(i){ return { hlId: i.hlId || null, qty: i.qty || 1, name: i.name, size: i.size, dealKey: i.dealKey || null, dealLimit: i.dealLimit || null }; })
     })
   })
   .then(function(r) { return r.json(); })
