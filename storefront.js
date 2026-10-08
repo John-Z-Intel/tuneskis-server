@@ -2,8 +2,28 @@
 // ── Build stamp — check what's actually deployed ──────────────
 // In the browser console on /store you'll see this line. If the number
 // doesn't match the ?v= in the Squarespace footer, you're on a stale file.
-window.TS_BUILD = "243 (deal works without Heartland item)";
+window.TS_BUILD = "244 (deal cap recording fixed)";
 console.log("%c[TuneSkis] storefront build " + window.TS_BUILD, "background:#4db8ff;color:#000;padding:2px 6px;border-radius:3px;font-weight:bold");
+// Prints what the deal engine actually sees. Run tsDealDebug() in the console
+// any time to find out why a deal is or isn't showing.
+window.tsDealDebug = function(){
+  try {
+    var now = dealNowNY();
+    var info = {
+      nyDate: dealDateStr(now),
+      nyTime: now.toTimeString().slice(0,8),
+      weekday: DEAL_DAYS[now.getDay()],
+      resolvedKey: dealKeyFor(now),
+      dealFound: !!dealFor(now),
+      dealName: dealFor(now) ? dealFor(now).name : "(none)",
+      revealAt: DEAL_OF_DAY.revealHour + ":" + ("0"+DEAL_OF_DAY.revealMinute).slice(-2),
+      state: dealState().state
+    };
+    console.table(info);
+    return info;
+  } catch(e){ console.error("tsDealDebug failed:", e); }
+};
+setTimeout(function(){ try { window.tsDealDebug(); } catch(e){} }, 1200);
 // ═══════════════════════════════════════════════════════════════════
 //  🔥 DEAL OF THE DAY — EDIT THIS BLOCK AT THE START OF EACH WEEK
 // ═══════════════════════════════════════════════════════════════════
@@ -29,9 +49,19 @@ console.log("%c[TuneSkis] storefront build " + window.TS_BUILD, "background:#4db
 const DEAL_OF_DAY = {
   // First day deals ever ran. Nothing before this is treated as a past deal,
   // which stops an upcoming product from being revealed early.
-  startDate: "2026-10-08",
+  startDate: "2026-10-07",
   revealHour: 12,
   revealMinute: 0,
+
+  // Deals pinned to an exact calendar date. These win over the weekday list
+  // below, so a launch can't be missed because of a day-of-week mixup.
+  // Give them the same capKey and they share ONE limit across all the dates
+  // listed — so "1 available" means one total, not one per day.
+  byDate: {
+    "2026-10-07": "RX9_LAUNCH",
+    "2026-10-08": "RX9_LAUNCH",
+  },
+
   deals: {
     mon: { active:false, name:"", teaser:"", price:0, msrp:0, limit:3, hlId:0, sizes:[], image:"", desc:"", specs:{} },
     tue: { active:false, name:"", teaser:"", price:0, msrp:0, limit:3, hlId:0, sizes:[], image:"", desc:"", specs:{} },
@@ -40,7 +70,7 @@ const DEAL_OF_DAY = {
     // ⚠️ hlId is still 0 — put the new dedicated Heartland item's ID here once
     // you've created it (see note above: one new item, qty 1, NOT one of the
     // regular RX9 size SKUs). The deal will not go live until this is a real ID.
-    thu: { active:true, name:"Kästle RX9", teaser:"A World Cup-inspired carver at a price you won't believe…",
+    RX9_LAUNCH: { active:true, capKey:"rx9-launch-2026", name:"Kästle RX9", teaser:"A World Cup-inspired carver at a price you won't believe…",
            price:299.99, msrp:950.00, limit:1, hlId:0,
            sizes:["150cm","156cm","162cm","168cm","174cm"], bindings:true,
            image:"https://kaestle.com/cdn/shop/files/rx9_01.jpg?v=1752671657",
@@ -3619,8 +3649,17 @@ function dealNowNY() {
 function dealRevealOn(dateNY) {
   var t = new Date(dateNY); t.setHours(DEAL_OF_DAY.revealHour, DEAL_OF_DAY.revealMinute, 0, 0); return t;
 }
+function dealDateStr(dateNY) {
+  return dateNY.getFullYear() + "-" +
+         ("0" + (dateNY.getMonth()+1)).slice(-2) + "-" +
+         ("0" + dateNY.getDate()).slice(-2);
+}
+function dealKeyFor(dateNY) {
+  var byDate = DEAL_OF_DAY.byDate || {};
+  return byDate[dealDateStr(dateNY)] || DEAL_DAYS[dateNY.getDay()];
+}
 function dealFor(dateNY) {
-  var d = DEAL_OF_DAY.deals[DEAL_DAYS[dateNY.getDay()]];
+  var d = DEAL_OF_DAY.deals[dealKeyFor(dateNY)];
   // A Heartland item is optional: with one, stock comes from Heartland;
   // without one, the server's own sales counter enforces the limit.
   // A day just needs to be switched on and filled in.
@@ -3631,7 +3670,7 @@ function dealNextReveal(nowNY) {
   for (var i = 0; i < 8; i++) {
     var day = new Date(nowNY); day.setDate(day.getDate() + i);
     var reveal = dealRevealOn(day);
-    if (reveal > nowNY && dealFor(day)) return { at: reveal, deal: dealFor(day), key: DEAL_DAYS[day.getDay()] };
+    if (reveal > nowNY && dealFor(day)) return { at: reveal, deal: dealFor(day), key: dealKeyFor(day) };
   }
   return null;
 }
@@ -3639,7 +3678,7 @@ function dealLiveQty(deal, dealKey) {
   // No Heartland item wired up? Use the server's own sales counter instead.
   if (!deal || !deal.hlId) {
     var st = window._tsDealStatus;
-    if (st && st.key === dealKey) return st.left;
+    if (st && (st.key === dealKey || st.key === deal.capKey)) return st.left;
     return null;                                    // unknown until first poll
   }
   var map = window._tsHlMap;
@@ -3666,7 +3705,7 @@ function dealPreviousDeal(nowNY) {
   for (var i = 1; i <= 7; i++) {
     var day = new Date(nowNY); day.setDate(day.getDate() - i);
     if (start && day < start) break;
-    var d = DEAL_OF_DAY.deals[DEAL_DAYS[day.getDay()]];
+    var d = DEAL_OF_DAY.deals[dealKeyFor(day)];
     if (d && d.active && d.name) return d;
   }
   return null;
@@ -3700,13 +3739,13 @@ function dealState() {
   var todays = dealFor(now);
   var revealToday = dealRevealOn(now);
   if (todays && now < revealToday) {
-    return { state:"pending", deal:todays, countdownTo:revealToday, key:DEAL_DAYS[now.getDay()] };
+    return { state:"pending", deal:todays, countdownTo:revealToday, key:dealKeyFor(now) };
   }
   if (todays && now >= revealToday) {
-    var q = dealLiveQty(todays, DEAL_DAYS[now.getDay()]);
-    if (q === null || q > 0) return { state:"live", deal:todays, qty:q, key:DEAL_DAYS[now.getDay()] };
+    var q = dealLiveQty(todays, dealKeyFor(now));
+    if (q === null || q > 0) return { state:"live", deal:todays, qty:q, key:dealKeyFor(now) };
     var nxt = dealNextReveal(now);
-    return { state:"soldout", deal:todays, countdownTo: nxt ? nxt.at : null, key:DEAL_DAYS[now.getDay()] };
+    return { state:"soldout", deal:todays, countdownTo: nxt ? nxt.at : null, key:dealKeyFor(now) };
   }
   var next = dealNextReveal(now);
   return {
@@ -3879,7 +3918,7 @@ function dealPollStock() {
   if (st.state !== "live" && st.state !== "soldout") return;
   // Deal has no Heartland item — ask the server how many have sold today
   if (st.deal && !st.deal.hlId && st.key) {
-    fetch("https://tuneskis-server.onrender.com/deal-status?key=" + encodeURIComponent(st.key) + "&limit=" + (st.deal.limit || 1))
+    fetch("https://tuneskis-server.onrender.com/deal-status?key=" + encodeURIComponent(st.deal.capKey || st.key) + "&absolute=" + (st.deal.capKey ? 1 : 0) + "&limit=" + (st.deal.limit || 1))
       .then(function(r){ return r.ok ? r.json() : null; })
       .then(function(d){ if (d && d.success) { window._tsDealStatus = d; dealRender(); } })
       .catch(function(){});
@@ -3905,7 +3944,7 @@ function dealBuy() {
   if (hasSizes && !chosenSize) { alert("Please select a size first."); return; }
   var key = "DEAL:" + st.key;
   if (cart.find(function(i){ return i.key === key; })) { alert("Deal of the Day is limited to 1 per customer — it's already in your cart."); tsOpenCart(); return; }
-  cart.push({ key:key, name:"🔥 " + st.deal.name, size:chosenSize, price:st.deal.price, msrp:st.deal.msrp||null, icon:"🔥", qty:1, hlId:st.deal.hlId, deal:true, dealKey:st.key, dealLimit:st.deal.limit||1 });
+  cart.push({ key:key, name:"🔥 " + st.deal.name, size:chosenSize, price:st.deal.price, msrp:st.deal.msrp||null, icon:"🔥", qty:1, hlId:st.deal.hlId, deal:true, dealKey:st.key, dealCapKey:st.deal.capKey||null, dealLimit:st.deal.limit||1 });
   tsSave(); tsUpdateUI(); tsOpenCart();
 }
 window.dealBuy = dealBuy;
@@ -4368,7 +4407,7 @@ function tsCoSubmit() {
       currency: 'usd',
       // Sent so the server can re-verify stock before charging the card —
       // this is what prevents two people buying the same last item.
-      items: cart.map(function(i){ return { hlId: i.hlId || null, qty: i.qty || 1, name: i.name, size: i.size, dealKey: i.dealKey || null, dealLimit: i.dealLimit || null }; })
+      items: cart.map(function(i){ return { hlId: i.hlId || null, qty: i.qty || 1, name: i.name, size: i.size, dealKey: i.dealKey || null, dealCapKey: i.dealCapKey || null, dealLimit: i.dealLimit || null }; })
     })
   })
   .then(function(r) { return r.json(); })
@@ -4408,7 +4447,11 @@ function tsCoSubmit() {
 function tsCoProcessPayment(paymentIntentId) {
   var s = window._tsCoShipping;
   var items = tsCoCartItems.map(function(i) {
-    return { name: i.name, size: i.size||'', qty: i.qty||1, price: i.price, hlId: i.hlId||null };
+    // dealKey/dealCapKey MUST be included — the server uses them to record the
+    // sale against the Deal of the Day limit. Without them the cap never
+    // increments and a second buyer could get the same one-of-one item.
+    return { name: i.name, size: i.size||'', qty: i.qty||1, price: i.price, hlId: i.hlId||null,
+             dealKey: i.dealKey||null, dealCapKey: i.dealCapKey||null };
   });
 
   fetch('https://tuneskis-server.onrender.com/send-order-email', {
