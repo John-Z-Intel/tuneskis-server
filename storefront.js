@@ -2,7 +2,7 @@
 // ── Build stamp — check what's actually deployed ──────────────
 // In the browser console on /store you'll see this line. If the number
 // doesn't match the ?v= in the Squarespace footer, you're on a stale file.
-window.TS_BUILD = "264 (Soul Pro real image)";
+window.TS_BUILD = "269 (dealtest sandboxed — test checkouts no longer burn the live deal counter)";
 console.log("%c[TuneSkis] storefront build " + window.TS_BUILD, "background:#4db8ff;color:#000;padding:2px 6px;border-radius:3px;font-weight:bold");
 // Prints what the deal engine actually sees. Run tsDealDebug() in the console
 // any time to find out why a deal is or isn't showing.
@@ -55,7 +55,7 @@ const DEAL_OF_DAY = {
   // which stops an upcoming product from being revealed early.
   startDate: "2026-10-09",
   revealHour: 12,
-  revealMinute: 0,
+  revealMinute: 20,
 
   // Deals pinned to an exact calendar date. These win over the weekday list
   // below, so a launch can't be missed because of a day-of-week mixup.
@@ -63,6 +63,7 @@ const DEAL_OF_DAY = {
   // listed — so "1 available" means one total, not one per day.
   byDate: {
     "2026-10-09": "RX9_LAUNCH",   // Friday — postponed from Oct 7/8
+    "2026-10-10": "RX9_LAUNCH",   // Saturday — re-drop at 12:20pm ET (didn't sell Friday)
   },
 
   deals: {
@@ -602,7 +603,7 @@ const BINDINGS = [
 
   // ── SKI BOOTS ────────────────────────────────────────
   {
-    name:"Roxa R/Fit 80", brand:"Roxa", price:349.99, badge:"", badgeType:"default", icon:"👟",
+    name:"Roxa R/Fit 80", brand:"Roxa", price:349.99, noDiscount:true, badge:"", badgeType:"default", icon:"👟",
     cat:"ski-boots", sub:"alpineboots", gender:"men", age:"adult", cond:"new", popular:111,
     desc:"Men's versatile all-mountain boot. Balanced flex and comfortable fit for intermediate skiers.",
     action:"Add to Cart", link:null,
@@ -613,7 +614,7 @@ const BINDINGS = [
     breakdown:[{label:"Boots",amount:349.99},{label:"Total",amount:349.99}]
   },
   {
-    name:"Roxa R/Fit Hike 85W", brand:"Roxa", price:449.99, badge:"", badgeType:"default", icon:"👟",
+    name:"Roxa R/Fit Hike 85W", brand:"Roxa", price:449.99, noDiscount:true, badge:"", badgeType:"default", icon:"👟",
     cat:"ski-boots", sub:"alpineboots", gender:"women", age:"adult", cond:"new", popular:112,
     desc:"Women's hiking-inspired alpine boot with walk mode. Great for skiers who want comfort on and off the hill.",
     action:"Add to Cart", link:null,
@@ -624,7 +625,7 @@ const BINDINGS = [
     breakdown:[{label:"Boots",amount:449.99},{label:"Total",amount:449.99}]
   },
   {
-    name:"Roxa R/Fit Hike 90", brand:"Roxa", price:449.99, badge:"", badgeType:"default", icon:"👟",
+    name:"Roxa R/Fit Hike 90", brand:"Roxa", price:449.99, noDiscount:true, badge:"", badgeType:"default", icon:"👟",
     cat:"ski-boots", sub:"alpineboots", gender:"men", age:"adult", cond:"new", popular:113,
     desc:"Men's performance hiking boot with walk mode. Versatile for resort and backcountry approach.",
     action:"Add to Cart", link:null,
@@ -646,7 +647,7 @@ const BINDINGS = [
     breakdown:[{label:"Boots",amount:399.99},{label:"Total",amount:399.99}]
   },
   {
-    name:"Roxa R/Fit 100", brand:"Roxa", price:449.99, badge:"", badgeType:"new", icon:"👟",
+    name:"Roxa R/Fit 100", brand:"Roxa", price:449.99, noDiscount:true, badge:"", badgeType:"new", icon:"👟",
     cat:"ski-boots", sub:"alpineboots", gender:"men", age:"adult", cond:"new", popular:148,
     desc:"High-performance all-mountain boot with a comfort-focused fit. 100 flex for advanced and expert skiers.",
     action:"Add to Cart", link:null,
@@ -657,7 +658,7 @@ const BINDINGS = [
     breakdown:[{label:"Boots",amount:449.99},{label:"Total",amount:449.99}]
   },
   {
-    name:"Roxa R/Fit MV 110", brand:"Roxa", price:649.99, badge:"New", badgeType:"new", icon:"👟",
+    name:"Roxa R/Fit MV 110", brand:"Roxa", price:649.99, noDiscount:true, badge:"New", badgeType:"new", icon:"👟",
     cat:"ski-boots", sub:"alpineboots", gender:"men", age:"adult", cond:"new", popular:152,
     desc:"High-performance men's boot with a medium volume fit. 110 flex delivers maximum power transmission for advanced and expert skiers.",
     action:"Add to Cart", link:null,
@@ -696,7 +697,7 @@ const BINDINGS = [
     breakdown:[{label:"Boots",amount:299.99},{label:"Total",amount:299.99}]
   },
   {
-    name:"Roxa R/Fit HV 75", brand:"Roxa", price:349.99, badge:"New", badgeType:"new", icon:"👟",
+    name:"Roxa R/Fit HV 75", brand:"Roxa", price:349.99, noDiscount:true, badge:"New", badgeType:"new", icon:"👟",
     cat:"ski-boots", sub:"alpineboots", gender:"women", age:"adult", cond:"new", popular:154,
     desc:"Women's high-volume boot with a soft, approachable 75 flex. Comfortable fit built for intermediate skiers with wider feet.",
     action:"Add to Cart", link:null,
@@ -716,7 +717,7 @@ const BINDINGS = [
     breakdown:[{label:"Boots",amount:349.99},{label:"Total",amount:349.99}]
   },
   {
-    name:"Roxa R/Fit HV 80", brand:"Roxa", price:349.99, badge:"New", badgeType:"new", icon:"👟",
+    name:"Roxa R/Fit HV 80", brand:"Roxa", price:349.99, noDiscount:true, badge:"New", badgeType:"new", icon:"👟",
     cat:"ski-boots", sub:"alpineboots", gender:"men", age:"adult", cond:"new", popular:155,
     desc:"Men's high-volume boot with easy-entry design and a balanced 80 flex. Comfortable all-mountain fit for intermediate skiers with wider feet.",
     action:"Add to Cart", link:null,
@@ -737,7 +738,7 @@ const BINDINGS = [
     breakdown:[{label:"Boots",amount:349.99},{label:"Total",amount:349.99}]
   },
   {
-    name:"Roxa Element 120", brand:"Roxa", price:724.99, badge:"New", badgeType:"new", icon:"👟",
+    name:"Roxa Element 120", brand:"Roxa", price:724.99, noDiscount:true, badge:"New", badgeType:"new", icon:"👟",
     cat:"ski-boots", sub:"alpineboots", gender:"men", age:"adult", cond:"new", popular:156,
     desc:"High-performance race-inspired men's boot. 120 flex delivers maximum precision and power for expert skiers.",
     action:"Add to Cart", link:null,
@@ -755,7 +756,7 @@ const BINDINGS = [
     breakdown:[{label:"Boots",amount:724.99},{label:"Total",amount:724.99}]
   },
   {
-    name:"Roxa R/Fit Pro 110", brand:"Roxa", price:649.99, badge:"New", badgeType:"new", icon:"👟",
+    name:"Roxa R/Fit Pro 110", brand:"Roxa", price:649.99, noDiscount:true, badge:"New", badgeType:"new", icon:"👟",
     cat:"ski-boots", sub:"alpineboots", gender:"men", age:"adult", cond:"new", popular:157,
     desc:"High-performance men's boot with a 110 flex. Precise, race-inspired fit for advanced and expert skiers who want maximum power.",
     action:"Add to Cart", link:null,
@@ -773,7 +774,7 @@ const BINDINGS = [
     breakdown:[{label:"Boots",amount:649.99},{label:"Total",amount:649.99}]
   },
   {
-    name:"Roxa R/Fit Pro 120", brand:"Roxa", price:699.99, badge:"New", badgeType:"new", icon:"👟",
+    name:"Roxa R/Fit Pro 120", brand:"Roxa", price:699.99, noDiscount:true, badge:"New", badgeType:"new", icon:"👟",
     cat:"ski-boots", sub:"alpineboots", gender:"men", age:"adult", cond:"new", popular:158,
     desc:"Race-level men's boot with a 120 flex. Built for expert skiers who demand maximum precision and power transmission.",
     action:"Add to Cart", link:null,
@@ -791,7 +792,7 @@ const BINDINGS = [
     breakdown:[{label:"Boots",amount:699.99},{label:"Total",amount:699.99}]
   },
   {
-    name:"Roxa R/Fit Pro 85 W", brand:"Roxa", price:449.99, badge:"New", badgeType:"new", icon:"👟",
+    name:"Roxa R/Fit Pro 85 W", brand:"Roxa", price:449.99, noDiscount:true, badge:"New", badgeType:"new", icon:"👟",
     cat:"ski-boots", sub:"alpineboots", gender:"women", age:"adult", cond:"new", popular:159,
     desc:"Women's performance boot with an 85 flex. Precise, race-inspired fit for intermediate to advanced skiers.",
     action:"Add to Cart", link:null,
@@ -1824,11 +1825,11 @@ const BINDINGS = [
     specs:{"Waist Width":"88mm","Core":"Mango Wood + TI","Profile":"Progressive Camber","Gender":"Women's","Terrain":"Frontside / All-Mountain","Skill Level":"Advanced–Expert","Country":"France"}
   },
   {
-    name:"Salomon Stance 84", brand:"Salomon", price:749.95, customMsrp:749.95, customPrice:749.95, badge:"All-Mountain", badgeType:"pop", icon:"🎿",
+    name:"Salomon Stance 84", brand:"Salomon", price:799.99, badge:"All-Mountain", badgeType:"pop", icon:"🎿",
     cat:"skis", sub:"salomon", gender:"men", age:"adult", cond:"new", bindings:false, flatmount:true, popular:199,
     desc:"Energetic and stable 84mm all-mountain ski. A poplar wood core and Ti-C Frame construction deliver the finesse and agility to conquer every part of the mountain.",
     action:"Add to Cart", link:null,
-    sizes:[{label:"161cm",qty:0,hlId:101019},{label:"169cm",qty:0,hlId:101020},{label:"177cm",qty:0,hlId:101021},{label:"185cm",qty:0,hlId:100676}],
+    sizes:[{label:"161cm",qty:0,hlId:102011},{label:"169cm",qty:0,hlId:102012},{label:"177cm",qty:0,hlId:102013},{label:"185cm",qty:0,hlId:100676}],
     images:["https://www.willisskiandboard.com/cdn/shop/files/Salomon_Stance_84_Skis_with_MI12_Bindins_2026_1ec63161-653e-49d0-a59a-4741dc84d412.jpg?v=1781204089&width=1500","https://www.willisskiandboard.com/cdn/shop/files/Salomon_Stance_84_Skis_with_MI12_Bindins_2026_MI12_GW_Binding-161.jpg?v=1781204088&width=1500"],
     longDesc:"Alpine power, all-mountain fun. Energetic and stable, Salomon's Stance 84 is the ultimate ski for those looking to conquer every part of the mountain. Designed to be lively and responsive, the Stance 84 is equipped with a poplar wood core and Ti-C Frame — a single layer of titanal blended with carbon windows that creates homogeneous flex and maneuverability with power at the end of the turn. The All-Mountain rocker profile adds versatility, allowing you to tackle any terrain with ease, while Full Sandwich Sidewalls deliver the edge grip needed for icy groomers and variable terrain. From steep slopes to tree-lined glades, the Stance 84 is ready to take you on any adventure.",
     specs:{"Brand":"Salomon","Model":"Stance 84","Sidecut":"104 / 84 / 121 mm @ 161cm","Turn Radius":"13m @ 161cm","Core":"Poplar Wood + Ti-C Frame","Construction":"Full Sandwich Sidewalls","Camber Profile":"All-Mountain (15% Tip Rocker / Camber / 12% Tail Rocker)","Gender":"Men's","Terrain":"All-Mountain"}
@@ -2021,6 +2022,28 @@ const BINDINGS = [
     images:["https://images.evo.com/imgp/700/268697/1262117/clone.jpg"],
     longDesc:"One of the best freestyle boards to learn and progress on, the Rossignol Ampage Vol. 1 delivers easy, budget-friendly fun for entry-level and developing riders. A forgiving soft flex and all-mountain shape make it easy to control and maneuver, while enough stability and pop keeps it entertaining as your skills improve. An ideal board for beginner to intermediate riders who want to explore the whole mountain without breaking the bank. Wood cores from sustainably harvested forests.",
     specs:{"Profile":"Flat-to-Rocker","Core":"Aspen / Poplar","Shape":"Directional Twin","Terrain":"All-Mountain Freestyle","Skill Level":"Beginner–Intermediate","Country":"USA Design"}
+  },
+  {
+    name:"Rossignol Ampage Vol. 2 — Space", brand:"Rossignol", price:399.99, customMsrp:399.99, customPrice:399.99, badge:"New", badgeType:"new", icon:"🏂",
+    cat:"snowboards", sub:"rossignol", gender:"unisex", age:"adult", cond:"new", flatmount:true, popular:152,
+    desc:"This year's model in the cosmic Space graphic. Soft twin flex and catch-free AmpTek rocker make learning tricks and lapping the park forgiving and fun from day one.",
+    action:"Add to Cart", link:null,
+    sizes:[{label:"159cm",qty:0,hlId:102352}],
+    images:["https://www.evo.com/cdn/shop/files/product-image-1281365.jpg?v=1774050836&width=1080","https://www.evo.com/cdn/shop/files/product-image-1281368.jpg?v=1774050833&width=1080","https://www.evo.com/cdn/shop/files/product-image-1281369.jpg?v=1774050834&width=1080","https://www.evo.com/cdn/shop/files/product-image-1281371.jpg?v=1774050835&width=1080"],
+    longDesc:"The Rossignol Ampage Vol. 2 delivers the same playful, progression-friendly freestyle ride riders love from the Vol. 1, now wrapped in a cosmic space-themed graphic. Its soft twin flex, catch-free AmpTek rocker profile, and easy maneuverability make learning tricks, lapping the park, and cruising the resort feel smooth, forgiving, and seriously fun from day one. AmpTek Auto-Turn runs a 70/30 rocker/camber blend for effortless turn initiation, keeping contact length short at low speed for easy steering while the camber pocket between the inserts gives enough rebound to ollie off a roller. The Twin Freestyle shape is stiffer underfoot for pop and balance, softer through the waist for easy manipulation. A Wood 5620 FSC core sits between fiberglass laminates with an Extruded 4400 base, wrapped in a Rossitop 3 (TPU/ABS) topsheet. 100% of Rossignol's wood snowboard cores come from sustainably harvested forests.",
+    specs:{"Brand":"Rossignol","Model":"Ampage Vol. 2","Color":"Space","Profile":"AmpTek Auto-Turn (70/30 Rocker/Camber)","Shape":"True Twin Freestyle","Flex Rating":"3 — Soft","Core":"Wood 5620 (FSC)","Base":"Extruded 4400","Topsheet":"Rossitop 3 (TPU/ABS)","Sidecut":"Deep Progressive","Mount Pattern":"2x4 Inserts","Terrain":"Freestyle / Park","Skill Level":"Beginner–Intermediate","Warranty":"2 Years"},
+    breakdown:[{label:"Snowboard",amount:399.99},{label:"Total",amount:399.99}]
+  },
+  {
+    name:"Rossignol Ampage Vol. 1 — Black & Mountain", brand:"Rossignol", price:399.99, customMsrp:399.99, customPrice:399.99, badge:"New", badgeType:"new", icon:"🏂",
+    cat:"snowboards", sub:"rossignol", gender:"unisex", age:"adult", cond:"new", flatmount:true, popular:151,
+    desc:"This year's model. True twin freestyle board with soft flex and blunted tips — makes learning new tricks feel less like work and more like a really good day on the mountain.",
+    action:"Add to Cart", link:null,
+    sizes:[{label:"151cm",qty:0,hlId:102353}],
+    images:["https://cdn.shopify.com/s/files/1/0670/5135/6456/files/2027-rossignol-ampage-vol-1-snowboard-repx101-1-repx101.jpg?v=1778769547"],
+    longDesc:"The Rossignol Ampage Vol. 1 is the kind of freestyle board that makes learning new tricks feel less like work and more like accidentally having a really good day on the mountain. Its soft twin flex, centered stance, and generous AmpTek rocker profile create a playful, catch-free ride that's equally comfortable lapping the park, pressing boxes, or figuring out spins without punishing every mistake. AmpTek Auto-Turn runs a 70/30 rocker/camber blend, so contact length stays short at low speed and edge angles for easy steering, while the camber pocket between the inserts gives just enough rebound to ollie off a roller. Blunted tips reduce swing weight and buy a little extra forgiveness when a press goes sideways. Centered inserts make switch riding feel identical to regular. A Wood 5620 FSC core sits between fiberglass laminates with an Extruded 4400 base and a Rossitop 3 (TPU/ABS) topsheet. Built for beginner to progressing riders who want maximum fun without draining the wallet.",
+    specs:{"Brand":"Rossignol","Model":"Ampage Vol. 1","Color":"Black & Mountain","Profile":"AmpTek Auto-Turn (70/30 Rocker/Camber)","Shape":"True Twin Freestyle (Blunted Tips)","Flex Rating":"3 — Soft","Core":"Wood 5620 (FSC)","Base":"Extruded 4400","Topsheet":"Rossitop 3 (TPU/ABS)","Mount Pattern":"2x4 Centered Inserts","Terrain":"Freestyle / Park","Skill Level":"Beginner–Intermediate","Warranty":"2 Years"},
+    breakdown:[{label:"Snowboard",amount:399.99},{label:"Total",amount:399.99}]
   },
 
   {
@@ -2893,6 +2916,10 @@ PRODUCTS.push(...BINDINGS);
       "all-mountain directional advanced amptek camber poplar basalt france french power versatile",
     "Rossignol Ampage Vol. 1":
       "all-mountain freestyle beginner intermediate flat rocker aspen poplar directional twin france french progression groomer park",
+    "Rossignol Ampage Vol. 1 — Black & Mountain":
+      "freestyle park beginner intermediate true twin amptek auto-turn rocker camber blunted tips wood 5620 extruded france french 2027 this years model black mountain progression switch",
+    "Rossignol Ampage Vol. 2 — Space":
+      "freestyle park beginner intermediate true twin amptek auto-turn rocker camber wood 5620 extruded france french 2027 this years model space cosmic galaxy graphic progression switch",
     "Rossignol Alias":
       "kids junior beginner snowboard boys girls banana rocker poplar france french first board easy fun 125 130 135 140 145cm",
     "Rossignol Scan":
@@ -3738,6 +3765,10 @@ async function hlSyncInventory() {
             // Use custom pricing — don't overwrite with Heartland
             prod.msrp  = prod.customMsrp;
             prod.price = prod.customPrice || tsDiscountedPrice(prod.customMsrp);
+          } else if (prod.noDiscount) {
+            // Sells at the live Heartland price — no storewide discount applied.
+            prod.msrp  = entry.price;
+            prod.price = entry.price;
           } else {
             prod.msrp  = entry.price;
             prod.price = tsDiscountedPrice(entry.price);
@@ -3886,7 +3917,8 @@ function dealLiveQty(deal, dealKey) {
   // No Heartland item wired up? Use the server's own sales counter instead.
   if (!deal || !deal.hlId) {
     var st = window._tsDealStatus;
-    if (st && (st.key === dealKey || st.key === deal.capKey)) return st.left;
+    var strip = function(k){ return String(k || "").replace(/^TEST-/, ""); };
+    if (st && (strip(st.key) === strip(dealKey) || strip(st.key) === strip(deal.capKey))) return st.left;
     return null;                                    // unknown until first poll
   }
   var map = window._tsHlMap;
@@ -4126,7 +4158,7 @@ function dealPollStock() {
   if (st.state !== "live" && st.state !== "soldout") return;
   // Deal has no Heartland item — ask the server how many have sold today
   if (st.deal && !st.deal.hlId && st.key) {
-    fetch("https://tuneskis-server.onrender.com/deal-status?key=" + encodeURIComponent(st.deal.capKey || st.key) + "&absolute=" + (st.deal.capKey ? 1 : 0) + "&limit=" + (st.deal.limit || 1))
+    fetch("https://tuneskis-server.onrender.com/deal-status?key=" + encodeURIComponent((st.isTest ? "TEST-" : "") + (st.deal.capKey || st.key)) + "&absolute=" + (st.deal.capKey ? 1 : 0) + "&limit=" + (st.deal.limit || 1))
       .then(function(r){ return r.ok ? r.json() : null; })
       .then(function(d){ if (d && d.success) { window._tsDealStatus = d; dealRender(); } })
       .catch(function(){});
@@ -4152,7 +4184,16 @@ function dealBuy() {
   if (hasSizes && !chosenSize) { alert("Please select a size first."); return; }
   var key = "DEAL:" + st.key;
   if (cart.find(function(i){ return i.key === key; })) { alert("Deal of the Day is limited to 1 per customer — it's already in your cart."); tsOpenCart(); return; }
-  cart.push({ key:key, name:"🔥 " + st.deal.name, size:chosenSize, price:st.deal.price, msrp:st.deal.msrp||null, icon:"🔥", qty:1, hlId:st.deal.hlId, deal:true, dealKey:st.key, dealCapKey:st.deal.capKey||null, dealLimit:st.deal.limit||1 });
+  // ?dealtest=… is a preview. A test checkout must NEVER touch the real
+  // counter — otherwise testing the buy flow burns the live deal and the
+  // real drop shows SOLD OUT with nobody having bought it.
+  var capKey = st.deal.capKey || null;
+  var dealKey = st.key;
+  if (st.isTest) {
+    capKey = "TEST-" + (capKey || dealKey);
+    dealKey = "TEST-" + dealKey;
+  }
+  cart.push({ key:key, name:(st.isTest ? "🧪 TEST — " : "🔥 ") + st.deal.name, size:chosenSize, price:st.deal.price, msrp:st.deal.msrp||null, icon:"🔥", qty:1, hlId:st.isTest ? 0 : st.deal.hlId, deal:true, dealKey:dealKey, dealCapKey:capKey, dealLimit:st.deal.limit||1, isTest:!!st.isTest });
   tsSave(); tsUpdateUI(); tsOpenCart();
 }
 window.dealBuy = dealBuy;
@@ -4803,6 +4844,8 @@ function tsCoCloseBtn() {
   // Board
   wrap.appendChild(mkLabel("Choose Snowboard"));
   var boardGrid = mkGrid();
+  boardGrid.appendChild(mkCard("board","Rossignol Ampage Vol. 2 — Space",399.99,"https://www.evo.com/cdn/shop/files/product-image-1281365.jpg?v=1774050836&width=1080"));
+  boardGrid.appendChild(mkCard("board","Rossignol Ampage Vol. 1 — Black & Mountain",399.99,"https://cdn.shopify.com/s/files/1/0670/5135/6456/files/2027-rossignol-ampage-vol-1-snowboard-repx101-1-repx101.jpg?v=1778769547"));
   boardGrid.appendChild(mkCard("board","Rossignol Ampage Vol. 2 Wide",349.99,"https://www.evo.com/cdn/shop/files/product-image-1262117.jpg?v=1767739622&width=1200"));
   boardGrid.appendChild(mkCard("board","Rossignol Ampage Vol. 1",379.99,"https://images.evo.com/imgp/700/268697/1262117/clone.jpg"));
   boardGrid.appendChild(mkCard("board","Rome Mechanic",399.99,"https://gotyourgear.com/cdn/shop/products/XiRRlqZjulHp70JHemJLlGhxj5vrXtXG-25.jpg?v=1663706289"));
