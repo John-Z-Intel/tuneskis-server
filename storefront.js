@@ -2,7 +2,7 @@
 // ── Build stamp — check what's actually deployed ──────────────
 // In the browser console on /store you'll see this line. If the number
 // doesn't match the ?v= in the Squarespace footer, you're on a stale file.
-window.TS_BUILD = "269 (dealtest sandboxed — test checkouts no longer burn the live deal counter)";
+window.TS_BUILD = "270 (deal start/end windows; RX9 test 12:33-12:36, real Sun noon->Mon noon)";
 console.log("%c[TuneSkis] storefront build " + window.TS_BUILD, "background:#4db8ff;color:#000;padding:2px 6px;border-radius:3px;font-weight:bold");
 // Prints what the deal engine actually sees. Run tsDealDebug() in the console
 // any time to find out why a deal is or isn't showing.
@@ -62,8 +62,8 @@ const DEAL_OF_DAY = {
   // Give them the same capKey and they share ONE limit across all the dates
   // listed — so "1 available" means one total, not one per day.
   byDate: {
-    "2026-10-09": "RX9_LAUNCH",   // Friday — postponed from Oct 7/8
-    "2026-10-10": "RX9_LAUNCH",   // Saturday — re-drop at 12:20pm ET (didn't sell Friday)
+    // RX9_LAUNCH now runs on its own startAt/endAt window (see below), so it
+    // is no longer pinned by date here.
   },
 
   deals: {
@@ -74,7 +74,27 @@ const DEAL_OF_DAY = {
     // No Heartland item needed: hlId stays 0 and the server's own sales
     // counter enforces limit:1. To move the launch, just change the date in
     // byDate above. capKey keeps it to ONE sale total across every date listed.
-    RX9_LAUNCH: { active:true, capKey:"rx9-launch-2026", name:"Kästle RX9", teaser:"A World Cup-inspired carver at a price you won't believe…",
+    RX9_LAUNCH: { active:true, capKey:"rx9-launch-2026",
+           startAt:"2026-10-11T12:00", endAt:"2026-10-12T12:00",   // 24h: noon Sun → noon Mon
+           name:"Kästle RX9", teaser:"A World Cup-inspired carver at a price you won't believe…",
+           price:299.99, msrp:950.00, limit:1, hlId:0,
+           sizes:["150cm","156cm","162cm","168cm","174cm"], bindings:true,
+           image:"https://kaestle.com/cdn/shop/files/rx9_01.jpg?v=1752671657",
+           images:["https://kaestle.com/cdn/shop/files/rx9_01.jpg?v=1752671657",
+                    "https://skicatalogue.com/cdn/shop/files/SR923P_KASTLE_RX9_2.jpg?v=1747795545&width=1000",
+                    "https://skicatalogue.com/cdn/shop/files/SR923P_KASTLE_RX9_3.jpg?v=1747795545&width=1000",
+                    "https://skicatalogue.com/cdn/shop/files/SR923P_KASTLE_RX9_4.jpg?v=1747795545&width=1000",
+                    "https://skicatalogue.com/cdn/shop/files/SR923P_KASTLE_RX9_5.jpg?v=1747795514&width=1000",
+                    "https://skicatalogue.com/cdn/shop/files/SR923P_KASTLE_RX9_6.jpg?v=1747795514&width=1000",
+                    "https://skicatalogue.com/cdn/shop/files/SR923P_KASTLE_RX9_7.jpg?v=1747795514&width=1000"],
+           desc:"World Cup-inspired all-mountain carver. Symbio Core with Titanal keeps it light, damp, and precise. Choose your length below.",
+           specs:{"Waist Width":"76mm","Dimensions":"118 / 76 / 106 mm","Profile":"Camber","Core":"Symbio Core — Titanal + Poplar Wood","Technology":"Hollowtech Race","Available Lengths":"150 · 156 · 162 · 168 · 174 cm","Bindings":"Included","Skill Level":"Intermediate – Advanced","Terrain":"On-Piste / Frontside","Country":"Austria"} },
+    // 🧪 LIVE-FIRE TEST — Sat Oct 10, 12:33–12:36pm ET. Same ski, but its own
+    // capKey, so buying it here does NOT consume tomorrow's real drop. Set
+    // active:false (or just let the window pass) once the test is done.
+    RX9_TEST: { active:true, capKey:"rx9-test-oct10",
+           startAt:"2026-10-10T12:33", endAt:"2026-10-10T12:36",
+           name:"Kästle RX9", teaser:"A World Cup-inspired carver at a price you won't believe…",
            price:299.99, msrp:950.00, limit:1, hlId:0,
            sizes:["150cm","156cm","162cm","168cm","174cm"], bindings:true,
            image:"https://kaestle.com/cdn/shop/files/rx9_01.jpg?v=1752671657",
@@ -3902,16 +3922,62 @@ function dealFor(dateNY) {
   // A Heartland item is optional: with one, stock comes from Heartland;
   // without one, the server's own sales counter enforces the limit.
   // A day just needs to be switched on and filled in.
+  // A deal with its own start/end window is handled by the window path only,
+  // so it never also gets claimed by the day it happens to start on.
+  if (d && d.startAt && d.endAt) return null;
   return (d && d.active && d.name && d.price > 0) ? d : null;
 }
-// Next reveal moment that actually has a deal configured (within the next week)
+// ── Explicit windows ──────────────────────────────────────────────────────
+// A deal may declare startAt / endAt (NY local, "YYYY-MM-DDTHH:MM"). A window
+// beats byDate + revealHour entirely, and — unlike the day-based path — it can
+// run across midnight, so a drop can last 24h or 3 minutes just the same.
+function dealWindow(deal) {
+  if (!deal || !deal.startAt || !deal.endAt) return null;
+  var s = new Date(deal.startAt), e = new Date(deal.endAt);
+  if (isNaN(s) || isNaN(e) || e <= s) return null;
+  return { start: s, end: e };
+}
+// Every windowed deal that is switched on and filled in, soonest first.
+function dealWindowed() {
+  var out = [];
+  Object.keys(DEAL_OF_DAY.deals || {}).forEach(function(k) {
+    var d = DEAL_OF_DAY.deals[k];
+    if (!(d && d.active && d.name && d.price > 0)) return;
+    var w = dealWindow(d);
+    if (w) out.push({ key: k, deal: d, start: w.start, end: w.end });
+  });
+  out.sort(function(a, b){ return a.start - b.start; });
+  return out;
+}
+function dealWindowNow(nowNY) {
+  var list = dealWindowed();
+  for (var i = 0; i < list.length; i++) {
+    if (nowNY >= list[i].start && nowNY < list[i].end) return list[i];
+  }
+  return null;
+}
+function dealWindowNext(nowNY) {
+  var list = dealWindowed();
+  for (var i = 0; i < list.length; i++) {
+    if (list[i].start > nowNY) return list[i];
+  }
+  return null;
+}
+// Next reveal moment that actually has a deal configured (within the next week).
+// Windowed deals are considered alongside the day-based ones; soonest wins.
 function dealNextReveal(nowNY) {
+  var best = null;
+  var w = dealWindowNext(nowNY);
+  if (w) best = { at: w.start, deal: w.deal, key: w.key };
   for (var i = 0; i < 8; i++) {
     var day = new Date(nowNY); day.setDate(day.getDate() + i);
     var reveal = dealRevealOn(day);
-    if (reveal > nowNY && dealFor(day)) return { at: reveal, deal: dealFor(day), key: dealKeyFor(day) };
+    var d = dealFor(day);
+    if (reveal > nowNY && d && (!best || reveal < best.at)) {
+      best = { at: reveal, deal: d, key: dealKeyFor(day) };
+    }
   }
-  return null;
+  return best;
 }
 function dealLiveQty(deal, dealKey) {
   // No Heartland item wired up? Use the server's own sales counter instead.
@@ -3975,6 +4041,18 @@ function dealState() {
       }
     }
   } catch(e) {}
+
+  // A deal with an explicit start/end window wins over the day-based path,
+  // and can run across midnight (e.g. noon Sat → noon Sun).
+  var win = dealWindowNow(now);
+  if (win) {
+    var wq = dealLiveQty(win.deal, win.key);
+    if (wq === null || wq > 0) {
+      return { state:"live", deal:win.deal, qty:wq, key:win.key, endsAt:win.end };
+    }
+    var wNext = dealNextReveal(now);
+    return { state:"soldout", deal:win.deal, countdownTo: wNext ? wNext.at : null, key:win.key };
+  }
 
   var todays = dealFor(now);
   var revealToday = dealRevealOn(now);
