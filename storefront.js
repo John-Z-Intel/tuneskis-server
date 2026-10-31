@@ -2,7 +2,7 @@
 // ── Build stamp — check what's actually deployed ──────────────
 // In the browser console on /store you'll see this line. If the number
 // doesn't match the ?v= in the Squarespace footer, you're on a stale file.
-window.TS_BUILD = "273 (Obsidian single new photo; Mind Expander Twin renamed Womens + photo)";
+window.TS_BUILD = "274 (Nomad 94 + Gamma APX + UltraViolet SNB photos; Nova 2 full price)";
 console.log("%c[TuneSkis] storefront build " + window.TS_BUILD, "background:#4db8ff;color:#000;padding:2px 6px;border-radius:3px;font-weight:bold");
 // Prints what the deal engine actually sees. Run tsDealDebug() in the console
 // any time to find out why a deal is or isn't showing.
@@ -464,7 +464,7 @@ const PRODUCTS = [
     desc:"A poppy, playful, and nimble freeride ski built to jib and butter features all over the mountain. Delivers freestyle performance for park skiers and all-mountain freeriders alike.",
     action:"Add to Cart", link:null,
     sizes:[{label:"166cm",qty:0,hlId:101971},{label:"182cm",qty:0,hlId:101972}],
-    images:["https://www.bobssportschalet.com/prodimages/121758-MULTI-l.jpg"],
+    images:["https://www.icelanticskis.com/cdn/shop/files/1_NOMAD_94_Topsheet_1200x1200.jpg?v=1788260285","https://www.icelanticskis.com/cdn/shop/files/5_NOMAD_94_Detail_3_900x900.jpg?v=1788260285","https://www.icelanticskis.com/cdn/shop/files/Artboard2_46f6f1a8-f4a5-4f29-ba60-ef6791fd0a81_900x900.jpg?v=1789015239"],
     longDesc:"The Award-Winning Nomad 94 is built for the intermediate to expert level skier who wants a poppy, playful, and nimble tool to jib and butter features all over the mountain. It delivers freestyle performance ideal for park skiers and all-mountain freeriders alike. If you enjoy popping side hits, stomping switch landings, and slashing bumps, all while making sure you have enough edge for the groomer, then this is the ski for you. Poplar Wood Core for lightweight responsiveness and a smooth, playful flex. Free Rocker Profile for surfy float, easy pivoting, and freeride fun. 8 Carbon Stringers add extra pop, energy, and rebound. Fly-Cap Construction reduces swing weight and enhances maneuverability. Original artwork by Travis Parr. Handmade in Golden, Colorado. Backed by Icelantic\'s 3-Year Bombproof Warranty.",
     specs:{"Brand":"Icelantic","Waist Width":"94mm","Dimensions (166cm)":"129 / 94 / 121 mm","Profile":"Free Rocker","Core":"Poplar Wood + Fly-Cap Construction","Turn Radius":"15-20m (by length)","Skill Level":"Beginner – Intermediate – Advanced – Expert","Terrain":"Freeride, Park/Jib, All-Mountain","Gender":"Men\'s","Country":"USA (Golden, CO)"}
   },
@@ -1775,7 +1775,7 @@ const BINDINGS = [
   },
 
   {
-    name:"Rossignol Nova 2", brand:"Rossignol", price:449.99, badge:"Women's", badgeType:"new", icon:"🎿",
+    name:"Rossignol Nova 2", brand:"Rossignol", price:449.99, noDiscount:true, badge:"Women's", badgeType:"new", icon:"🎿",
     cat:"skis", sub:"rossignol", gender:"women", age:"adult", cond:"new", bindings:true, flatmount:false, popular:131,
     desc:"Discover effortless carving and confident turns. Consistent carving performance for entry-level skiers, with a relaxed feel and easy turn initiation.",
     action:"Add to Cart", link:null,
@@ -1998,7 +1998,7 @@ const BINDINGS = [
     desc:"Nidecker's flagship all-mountain freestyle board. APX technology delivers unmatched response and power for expert riders.",
     action:"Add to Cart", link:null,
     sizes:[{label:"153cm",qty:0,hlId:101154},{label:"157cm",qty:0,hlId:101155},{label:"159W",qty:0,hlId:101156}],
-    images:["https://spokex.com/cdn/shop/files/N.26.SNU.GAX.XX_ac671d3e-7811-4b48-91be-18217b781f27.jpg?v=1772489414&width=1800"],
+    images:["https://www.nidecker.com/cdn/shop/files/N.26.SNU.GAX-Gamma_APX-1_13evxb.webp?v=1786458438&width=1946"],
     longDesc:"The Nidecker Gamma APX is one of the most unique boards ever created — a freestyle twin that takes concepts borrowed from nature and mutates them into a shape built to inspire creativity all over the mountain. It\'s a true twin nose to tail, but asymmetrical from edge to edge: since turns take more force to initiate on your heel edge, Nidecker gave this side a tighter sidecut than the toe edge — so while the board may look uneven, it actually balances your ride equally toe-to-heel. 3D spooning at the tips enhances butter and a surfy feel when switching edges, while a faster base, upgraded sidewalls, and extra carbon give the APX extra creative punch. Surf Rail construction makes it feel more agile and hold a turn like it\'s on rails. Swiss-designed, snowboard-obsessed since 1984. Backed by a 2-year warranty extendable to 3.",
     specs:{"Profile":"Camber / Rocker Hybrid","Core":"Paulownia + Poplar","Shape":"Directional Twin","Terrain":"All-Mountain","Skill Level":"Advanced–Expert","Country":"Switzerland"}
   },
@@ -2116,7 +2116,7 @@ const BINDINGS = [
     desc:"All-mountain freestyle snowboard with a poplar core and forgiving directional twin shape. A great step-up board for intermediate riders exploring the whole mountain.",
     action:"Add to Cart", link:null,
     sizes:[{label:"139cm",qty:0,hlId:100842}],
-    images:["https://images.evo.com/imgp/700/268711/1207319/clone.jpg"],
+    images:["https://www.evo.com/cdn/shop/files/product-image-1315494.jpg?v=1782763047&width=1080"],
     longDesc:"One of the best freestyle boards to learn and progress on, the Rossignol UltraViolet delivers easy, budget-friendly fun for entry-level riders. A soft, forgiving flex and all-mountain twin shape make it easy to control, catch-free, and endlessly entertaining for new riders finding their footing on the mountain. A go-anywhere board that makes every run fun. Wood cores from sustainably harvested forests.",
     specs:{"Brand":"Rossignol","Profile":"Flat-to-Rocker","Core":"Poplar","Shape":"Directional Twin","Terrain":"All-Mountain","Skill Level":"Intermediate","Country":"France"}
   },
