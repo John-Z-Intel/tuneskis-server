@@ -2,7 +2,7 @@
 // ── Build stamp — check what's actually deployed ──────────────
 // In the browser console on /store you'll see this line. If the number
 // doesn't match the ?v= in the Squarespace footer, you're on a stale file.
-window.TS_BUILD = "274 (Nomad 94 + Gamma APX + UltraViolet SNB photos; Nova 2 full price)";
+window.TS_BUILD = "275 (UltraViolet snowboard correct photo)";
 console.log("%c[TuneSkis] storefront build " + window.TS_BUILD, "background:#4db8ff;color:#000;padding:2px 6px;border-radius:3px;font-weight:bold");
 // Prints what the deal engine actually sees. Run tsDealDebug() in the console
 // any time to find out why a deal is or isn't showing.
@@ -2116,7 +2116,7 @@ const BINDINGS = [
     desc:"All-mountain freestyle snowboard with a poplar core and forgiving directional twin shape. A great step-up board for intermediate riders exploring the whole mountain.",
     action:"Add to Cart", link:null,
     sizes:[{label:"139cm",qty:0,hlId:100842}],
-    images:["https://www.evo.com/cdn/shop/files/product-image-1315494.jpg?v=1782763047&width=1080"],
+    images:["https://www.evo.com/cdn/shop/files/product-image-1145949.jpg?v=1767735024&width=1080"],
     longDesc:"One of the best freestyle boards to learn and progress on, the Rossignol UltraViolet delivers easy, budget-friendly fun for entry-level riders. A soft, forgiving flex and all-mountain twin shape make it easy to control, catch-free, and endlessly entertaining for new riders finding their footing on the mountain. A go-anywhere board that makes every run fun. Wood cores from sustainably harvested forests.",
     specs:{"Brand":"Rossignol","Profile":"Flat-to-Rocker","Core":"Poplar","Shape":"Directional Twin","Terrain":"All-Mountain","Skill Level":"Intermediate","Country":"France"}
   },
