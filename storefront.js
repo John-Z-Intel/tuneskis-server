@@ -2,7 +2,7 @@
 // ── Build stamp — check what's actually deployed ──────────────
 // In the browser console on /store you'll see this line. If the number
 // doesn't match the ?v= in the Squarespace footer, you're on a stale file.
-window.TS_BUILD = "270 (deal start/end windows; RX9 test 12:33-12:36, real Sun noon->Mon noon)";
+window.TS_BUILD = "273 (Obsidian single new photo; Mind Expander Twin renamed Womens + photo)";
 console.log("%c[TuneSkis] storefront build " + window.TS_BUILD, "background:#4db8ff;color:#000;padding:2px 6px;border-radius:3px;font-weight:bold");
 // Prints what the deal engine actually sees. Run tsDealDebug() in the console
 // any time to find out why a deal is or isn't showing.
@@ -553,10 +553,10 @@ const PRODUCTS = [
     desc:"Kästle's accessible all-mountain ski. Wood and titanal core offers the Kästle feel at a more accessible price point.",
     action:"Add to Cart", link:null,
     sizes:[{label:"148cm",qty:0,hlId:101540},{label:"155cm",qty:0,hlId:101541},{label:"162cm",qty:0,hlId:101542}],
-    images:["https://d2j6dbq0eux0bg.cloudfront.net/images/115412582/products/741327117/4896357476.webp","https://d2j6dbq0eux0bg.cloudfront.net/images/115412582/products/741327117/4896355227.webp","https://kaestle.com/cdn/shop/files/obsidian92_2_08aa5258-43f0-4b67-9a37-16252d1a9f1e.jpg?v=1753783661"],
+    images:["https://cdn.shoplightspeed.com/shops/634685/files/72303974/image.jpg"],
     longDesc:"The Kästle Obsidian 92 is designed for women who want to venture beyond the groomed runs without giving up the reliability and performance of a premium ski. Its robust semi-cap sandwich construction, Poplar Beech woodcore, Hollowtech 2.0, and Double Rocker profile deliver effortless float in powder and confident grip on firmer snow. A versatile all-mountain freeride ski that encourages exploration without demanding sacrifice. Engineered and handcrafted in Austria.",
     specs:{"Profile":"Double Rocker / Camber","Core":"Poplar Beech + Titanal","Technology":"Hollowtech 2.0","Terrain":"All-Mountain / Freeride","Skill Level":"Intermediate – Expert","Country":"Austria"},
-    breakdown:[{label:"Skis (Kästle Obsidian)",amount:629.99},,{label:"Total",amount:629.99}]
+    breakdown:[{label:"Skis (Kästle Obsidian)",amount:629.99},{label:"Binding Mount",amount:0,note:"Free"},{label:"Total",amount:629.99}]
   },
   {
     name:"Kästle Paragon 93", hlName:"Paragon 93", brand:"Kästle", price:849.99, customMsrp:849.99, customPrice:849.99, badge:"Expert", badgeType:"pop", icon:"🎿",
@@ -570,7 +570,7 @@ const PRODUCTS = [
     breakdown:[{label:"Skis (Kästle Paragon 93)",amount:1099},,{label:"Total",amount:1099}]
   },
   {
-    name:"Kästle MX 88", hlName:"MX 88", brand:"Kästle", price:1299.99, customMsrp:1299.99, customPrice:1299.99, badge:"Legendary", badgeType:"pop", icon:"🎿",
+    name:"Kästle MX 88", hlName:"MX 88", brand:"Kästle", price:1349.00, customMsrp:1349.00, customPrice:1349.00, badge:"Legendary", badgeType:"pop", icon:"🎿",
     cat:"skis", sub:"kastle", gender:"unisex", age:"adult", cond:"new", bindings:true, flatmount:false, popular:192,
     desc:"The most iconic Kästle. Double Titanal, long camber, Early Rise tip — the definitive all-mountain carver.",
     action:"Add to Cart", link:null,
@@ -578,7 +578,7 @@ const PRODUCTS = [
     images:["https://kaestle.com/cdn/shop/files/mx88_01.jpg?v=1752664698","https://kaestle.com/cdn/shop/files/mx88_02.jpg?v=1752664698","https://kaestle.com/cdn/shop/files/mx88_06.jpg?v=1752664698","https://kaestle.com/cdn/shop/files/mx88_07.jpg?v=1752664698","https://kaestle.com/cdn/shop/files/mx88_08.jpg?v=1752664698"],
     longDesc:"The MX88 is Kästle\'s most legendary all-mountain ski — a true do-everything weapon for skiers who refuse to choose between piste and powder. Featuring an innovative sidecut, the redesigned Hollowtech EVO, Early Rise Technology, and a classic race-inspired sandwich construction, the MX88 delivers performance and stability across every type of terrain. From firm-snow groomers to choppy backcountry conditions, this ski is a commanding all-rounder built for skiers who demand the best. Engineered and handcrafted in Austria.",
     specs:{"Waist Width":"88mm","Profile":"Early Rise Tip / Camber","Core":"Infini Core AMTN — Poplar Beech + Double Titanal","Technology":"Hollowtech 3.0 Carbon","Available Lengths":"167 · 174 cm (in stock)","Skill Level":"Advanced – Expert","Terrain":"All-Mountain","Country":"Austria"},
-    breakdown:[{label:"Skis (Kästle MX 88)",amount:1099},,{label:"Total",amount:1099}]
+    breakdown:[{label:"Skis (Kästle MX 88)",amount:1349.00},{label:"Binding Mount",amount:0,note:"Free"},{label:"Tune & Wax",amount:0,note:"Free"},{label:"Total",amount:1349.00}]
   },
 
 
@@ -698,7 +698,7 @@ const BINDINGS = [
     breakdown:[{label:"Boots",amount:649.99},{label:"Total",amount:649.99}]
   },
   {
-    name:"Roxa Trinity 95", brand:"Roxa", price:299.99, customMsrp:299.99, customPrice:299.99, badge:"New", badgeType:"new", icon:"👟",
+    name:"Roxa Trinity 95", brand:"Roxa", price:299.00, customMsrp:725.00, customPrice:299.00, badge:"New", badgeType:"new", icon:"👟",
     cat:"ski-boots", sub:"alpineboots", gender:"women", age:"adult", cond:"new", popular:153,
     desc:"Women's high-energy all-mountain boot built on Roxa's 3-piece Next Gen Cabrio architecture. Lightweight, versatile, and built for aggressive all-mountain skiing.",
     action:"Add to Cart", link:null,
@@ -758,7 +758,7 @@ const BINDINGS = [
     breakdown:[{label:"Boots",amount:349.99},{label:"Total",amount:349.99}]
   },
   {
-    name:"Roxa Element 120", brand:"Roxa", price:724.99, noDiscount:true, badge:"New", badgeType:"new", icon:"👟",
+    name:"Roxa Element 120", brand:"Roxa", price:362.50, customMsrp:724.99, customPrice:362.50, badge:"New", badgeType:"new", icon:"👟",
     cat:"ski-boots", sub:"alpineboots", gender:"men", age:"adult", cond:"new", popular:156,
     desc:"High-performance race-inspired men's boot. 120 flex delivers maximum precision and power for expert skiers.",
     action:"Add to Cart", link:null,
@@ -1035,7 +1035,7 @@ const BINDINGS = [
     specs:{"Brand":"Rossignol","Flex":"Medium-Stiff","Color":"Black and Grey"}
   },
   {
-    name:"Rossignol Ultraviolet Binding", brand:"Rossignol", price:179.99, customMsrp:179.99, customPrice:179.99, badge:"", badgeType:"default", icon:"🔩",
+    name:"Rossignol Ultraviolet Binding", brand:"Rossignol", price:179.99, badge:"", badgeType:"default", icon:"🔩",
     cat:"bindings", sub:"snowboard-binding", gender:"unisex", age:"adult", cond:"new", popular:161,
     desc:"Rossignol Ultraviolet all-mountain snowboard binding. Medium flex, lightweight, easy all-day ride.",
     action:"Add to Cart", link:null,
@@ -1044,7 +1044,7 @@ const BINDINGS = [
     specs:{"Brand":"Rossignol","Flex":"Medium","Color":"Black"}
   },
   {
-    name:"Rossignol Myth Binding", brand:"Rossignol", price:179.99, customMsrp:179.99, customPrice:179.99, badge:"", badgeType:"default", icon:"🔩",
+    name:"Rossignol Myth Binding", brand:"Rossignol", price:179.99, badge:"", badgeType:"default", icon:"🔩",
     cat:"bindings", sub:"snowboard-binding", gender:"unisex", age:"adult", cond:"new", popular:160,
     desc:"Rossignol Myth all-mountain snowboard binding. Soft-medium flex, beginner-friendly.",
     action:"Add to Cart", link:null,
@@ -1084,7 +1084,7 @@ const BINDINGS = [
     specs:{"Brand":"Rome","Flex":"Stiff","Terrain":"All-Mountain / Freeride","Skill Level":"Intermediate–Expert"}
   },
   {
-    name:"Rome Katana AW Pro Binding", brand:"Rome", price:469.99, badge:"Pro", badgeType:"pop", icon:"🏂",
+    name:"Rome Katana AW Pro Binding", brand:"Rome", price:469.99, noDiscount:true, badge:"Pro", badgeType:"pop", icon:"🏂",
     cat:"bindings", sub:"snowboard-binding", gender:"unisex", age:"adult", cond:"new", popular:83,
     desc:"Rome's top-of-the-line all-weather binding. Carbon chassis, aluminum highback, and maximum power transfer for expert riders who demand the best.",
     action:"Add to Cart", link:null,
@@ -1127,7 +1127,7 @@ const BINDINGS = [
 
   // ── NIDECKER SNOWBOARD BINDINGS (additional) ─────────────
   {
-    name:"Jones Mercury Binding", brand:"Jones", price:359.99, badge:"", badgeType:"default", icon:"🏂",
+    name:"Jones Mercury Binding 2026", brand:"Jones", price:359.99, badge:"", badgeType:"default", icon:"🏂",
     cat:"bindings", sub:"snowboard-binding", gender:"unisex", age:"adult", cond:"new", popular:80,
     desc:"Nidecker Mercury all-mountain binding. Stiff and responsive with a streamlined chassis — built for riders who want direct power transfer and precise edge control.",
     action:"Add to Cart", link:null,
@@ -1137,7 +1137,7 @@ const BINDINGS = [
     specs:{"Brand":"Nidecker","Flex":"Stiff","Terrain":"All-Mountain","Skill Level":"Intermediate–Expert"}
   },
   {
-    name:"Jones Mercury FASE Binding", brand:"Jones", price:359.99, badge:"FASE", badgeType:"new", icon:"🏂",
+    name:"Jones Mercury FASE Binding", brand:"Jones", price:359.99, noDiscount:true, badge:"FASE", badgeType:"new", icon:"🏂",
     cat:"bindings", sub:"snowboard-binding", gender:"unisex", age:"adult", cond:"new", popular:79,
     desc:"Nidecker Mercury with FASE forward-angled strap entry. All the performance of the Mercury with faster, more intuitive entry.",
     action:"Add to Cart", link:null,
@@ -1462,7 +1462,7 @@ const BINDINGS = [
     action:"Add to Cart", link:null,
     colorways:[
       {label:"Black / Amber", hlId:100550, image:"https://cdn11.bigcommerce.com/s-nb5it5hcrj/images/stencil/264w/products/57736/325838/m38f46_004_d2unisexsnowgoggles20230920113608_1__78343.1758550509.jpg"},
-      {label:"White / Amber", hlId:100551, image:"https://cdn11.bigcommerce.com/s-nb5it5hcrj/images/stencil/264w/products/57736/325811/m38f46_001_d2unisexsnowgoggles20240702025112_1__73607.1758550509.jpg"},
+      {label:"White / Amber", hlId:100551, image:"https://contents.mediadecathlon.com/m38428584/k$814faa09b6619de906fbe0fe69c428a1/picture.jpg"},
     ],
     sizes:[
       {label:"Black / Amber", qty:0, hlId:100550},
@@ -1470,7 +1470,7 @@ const BINDINGS = [
     ],
     images:[
       "https://cdn11.bigcommerce.com/s-nb5it5hcrj/images/stencil/264w/products/57736/325838/m38f46_004_d2unisexsnowgoggles20230920113608_1__78343.1758550509.jpg",
-      "https://cdn11.bigcommerce.com/s-nb5it5hcrj/images/stencil/264w/products/57736/325811/m38f46_001_d2unisexsnowgoggles20240702025112_1__73607.1758550509.jpg"
+      "https://contents.mediadecathlon.com/m38428584/k$814faa09b6619de906fbe0fe69c428a1/picture.jpg"
     ],
     specs:{"Brand":"Dragon","Lens":"Cylindrical","Anti-Fog":"Dual-Layer","UV":"100%"}
   },
@@ -1845,14 +1845,14 @@ const BINDINGS = [
     specs:{"Waist Width":"88mm","Core":"Mango Wood + TI","Profile":"Progressive Camber","Gender":"Women's","Terrain":"Frontside / All-Mountain","Skill Level":"Advanced–Expert","Country":"France"}
   },
   {
-    name:"Salomon Stance 84", brand:"Salomon", price:799.99, badge:"All-Mountain", badgeType:"pop", icon:"🎿",
+    name:"Salomon Stance 84R", brand:"Salomon", price:799.99, badge:"All-Mountain", badgeType:"pop", icon:"🎿",
     cat:"skis", sub:"salomon", gender:"men", age:"adult", cond:"new", bindings:false, flatmount:true, popular:199,
     desc:"Energetic and stable 84mm all-mountain ski. A poplar wood core and Ti-C Frame construction deliver the finesse and agility to conquer every part of the mountain.",
     action:"Add to Cart", link:null,
-    sizes:[{label:"161cm",qty:0,hlId:102011},{label:"169cm",qty:0,hlId:102012},{label:"177cm",qty:0,hlId:102013},{label:"185cm",qty:0,hlId:100676}],
-    images:["https://www.willisskiandboard.com/cdn/shop/files/Salomon_Stance_84_Skis_with_MI12_Bindins_2026_1ec63161-653e-49d0-a59a-4741dc84d412.jpg?v=1781204089&width=1500","https://www.willisskiandboard.com/cdn/shop/files/Salomon_Stance_84_Skis_with_MI12_Bindins_2026_MI12_GW_Binding-161.jpg?v=1781204088&width=1500"],
-    longDesc:"Alpine power, all-mountain fun. Energetic and stable, Salomon's Stance 84 is the ultimate ski for those looking to conquer every part of the mountain. Designed to be lively and responsive, the Stance 84 is equipped with a poplar wood core and Ti-C Frame — a single layer of titanal blended with carbon windows that creates homogeneous flex and maneuverability with power at the end of the turn. The All-Mountain rocker profile adds versatility, allowing you to tackle any terrain with ease, while Full Sandwich Sidewalls deliver the edge grip needed for icy groomers and variable terrain. From steep slopes to tree-lined glades, the Stance 84 is ready to take you on any adventure.",
-    specs:{"Brand":"Salomon","Model":"Stance 84","Sidecut":"104 / 84 / 121 mm @ 161cm","Turn Radius":"13m @ 161cm","Core":"Poplar Wood + Ti-C Frame","Construction":"Full Sandwich Sidewalls","Camber Profile":"All-Mountain (15% Tip Rocker / Camber / 12% Tail Rocker)","Gender":"Men's","Terrain":"All-Mountain"}
+    sizes:[{label:"161cm",qty:0,hlId:102011},{label:"169cm",qty:0,hlId:102012},{label:"177cm",qty:0,hlId:102013}],
+    images:["https://cdn.dam.salomon.com/d46f845f-a04e-4b4c-8419-b45100de593b/L45457300%2B/PNG-2000px-max-72dpi.png?width=640&fit=cover&optimize=medium&bg-color=f5f5f5&format=pjpg&auto=avif","https://cdn.dam.salomon.com/1cd8f084-e624-483d-8925-b45100de59ab/L45457300%2B/PNG-2000px-max-72dpi.png?width=640&fit=cover&optimize=medium&bg-color=f5f5f5&format=pjpg&auto=avif&crop=37.5p%2C100p%2Csafe&canvas=116p%2C144p","https://cdn.dam.salomon.com/45111a28-80c1-4610-b618-b45100de5a3c/L45457300%2B/PNG-2000px-max-72dpi.png?width=640&fit=cover&optimize=medium&bg-color=f5f5f5&format=pjpg&auto=avif"],
+    longDesc:"Alpine power, all-mountain fun. Energetic and stable, Salomon's Stance 84R is the ultimate ski for those looking to conquer every part of the mountain. Designed to be lively and responsive, the Stance 84R is equipped with a poplar wood core and Ti-C Frame — a single layer of titanal blended with carbon windows that creates homogeneous flex and maneuverability with power at the end of the turn. The All-Mountain rocker profile adds versatility, allowing you to tackle any terrain with ease, while Full Sandwich Sidewalls deliver the edge grip needed for icy groomers and variable terrain. From steep slopes to tree-lined glades, the Stance 84R is ready to take you on any adventure.",
+    specs:{"Brand":"Salomon","Model":"Stance 84R","Sidecut":"104 / 84 / 121 mm @ 161cm","Turn Radius":"13m @ 161cm","Core":"Poplar Wood + Ti-C Frame","Construction":"Full Sandwich Sidewalls","Camber Profile":"All-Mountain (15% Tip Rocker / Camber / 12% Tail Rocker)","Gender":"Men's","Terrain":"All-Mountain"}
   },
   {
     name:"Salomon Stance 84 W", brand:"Salomon", price:699.95, customMsrp:699.95, customPrice:699.95, badge:"Women's", badgeType:"pop", icon:"🎿",
@@ -1860,7 +1860,7 @@ const BINDINGS = [
     desc:"Energetic yet stable 84mm all-mountain ski built for women. The Ti-C Frame construction gives you the perfect boost for cruising through crud or icy groomers.",
     action:"Add to Cart", link:null,
     sizes:[{label:"151cm",qty:0,hlId:101025},{label:"159cm",qty:0,hlId:101026}],
-    images:["https://www.willisskiandboard.com/cdn/shop/files/Salomon_Stance_84_W_Skis_with_M11_Bindings_2026.jpg?v=1781204089&width=1500","https://www.willisskiandboard.com/cdn/shop/files/Salomon_Stance_84_W_Skis_with_M11_Bindings_2026_M11_GW_Bindings-151_7f089a1f-202e-48bf-95ac-ea5303419808.jpg?v=1781204089&width=1500"],
+    images:["https://skis.com/files/store/items/f/w/fw26-l47952600_1_vir_e-stance-w-84-m11-gw.png.high-res.jpg"],
     longDesc:"Alpine power, all-mountain fun. Energetic yet stable, the Salomon Stance 84 is the women's setup that will take you anywhere on the mountain. The Ti-C Frame gives you the perfect boost for cruising through crud or icy groomers, while the progressive frontside sidecut and poplar wood core ensure lively, controllable turns, no matter how steep or deep. Confidence-inspiring Full Sandwich Sidewalls create the edge grip needed to make the most of icy groomers and changing terrain — a dynamic all-mountain construction that takes you from groomers to glades, from the steep to the deep, with ease.",
     specs:{"Brand":"Salomon","Model":"Stance 84 W","Sidecut":"121 / 84 / 104 mm @ 159cm","Turn Radius":"13m @ 159cm","Core":"Poplar Wood + Ti-C Frame","Construction":"Full Sandwich Sidewalls","Camber Profile":"All-Mountain (15% Tip Rocker / Camber / 12% Tail Rocker)","Gender":"Women's","Terrain":"All-Mountain"}
   },
@@ -1960,12 +1960,12 @@ const BINDINGS = [
     specs:{"Profile":"Flat Camber + Rocker Tips","Core":"Dual-Density Poplar / Paulownia","Shape":"True Twin","Terrain":"Freestyle / All-Mountain","Skill Level":"Intermediate–Expert","Made In":"USA Design"}
   },
   {
-    name:"Jones Mind Expander Twin", brand:"Jones", price:479.99, customMsrp:599.99, customPrice:479.99, msrp:599.99, badge:"Women's", badgeType:"pop", icon:"🏂",
-    cat:"snowboards", sub:"jones", gender:"men", age:"adult", cond:"new", flatmount:true, popular:166,
+    name:"Jones Womens Mind Expander", brand:"Jones", price:479.99, customMsrp:599.99, customPrice:479.99, msrp:599.99, badge:"Women's", badgeType:"pop", icon:"🏂",
+    cat:"snowboards", sub:"jones", gender:"women", age:"adult", cond:"new", flatmount:true, popular:166,
     desc:"Women's surf-inspired all-mountain twin. Christenson Surf Camber and a women's-specific flex deliver effortless float and snappy turns.",
     action:"Add to Cart", link:null,
     sizes:[{label:"142cm",qty:0,hlId:101507},{label:"146cm",qty:0,hlId:101508},{label:"150cm",qty:0,hlId:101509}],
-    images:["https://cdn.shopify.com/s/files/1/0641/4722/6759/files/J.25.SNU.MET-gallery-1.webp?v=1768406988"],
+    images:["https://www.christysports.com/dw/image/v2/BGBB_PRD/on/demandware.static/-/Sites-master-winter/default/dw7e6cde93/8100854_000_1.jpg?sw=800&sh=800"],
     longDesc:"The Jones Mind Expander W is the women\'s version of the surf-inspired Mind Expander — a playful, all-conditions board designed by surf shaper Chris Christenson that thrives in powder and on any terrain feature the mountain throws at you. A friendly flex and Christenson Surf Camber profile offer a surfy, intuitive feel with great float and snappy turn response. The 3D Contour Base enhances glide and flow, while Flax/Basalt stringers keep the ride damp and composed on firmer snow. For women who want a creative, versatile board that makes every run feel like an adventure. Built with 100% solar power.",
     specs:{"Profile":"Christenson Surf Camber","Core":"Poplar / Paulownia","Shape":"Directional Twin","Gender":"Women's","Terrain":"All-Mountain","Skill Level":"Intermediate–Expert","Made In":"USA Design"}
   },
@@ -2067,7 +2067,7 @@ const BINDINGS = [
   },
 
   {
-    name:"Rome Ravine", brand:"Rome", price:599.99, badge:"All-Mountain", badgeType:"new", icon:"🏂",
+    name:"Rome Ravine", brand:"Rome", price:599.99, noDiscount:true, badge:"All-Mountain", badgeType:"new", icon:"🏂",
     cat:"snowboards", sub:"rome", gender:"unisex", age:"adult", cond:"new", flatmount:true, popular:148,
     desc:"Directional all-mountain charger. Poplar core and tip/tail rocker handle everything from groomed runs to side-country pow.",
     action:"Add to Cart", link:null,
