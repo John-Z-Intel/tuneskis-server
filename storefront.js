@@ -2,7 +2,7 @@
 // ── Build stamp — check what's actually deployed ──────────────
 // In the browser console on /store you'll see this line. If the number
 // doesn't match the ?v= in the Squarespace footer, you're on a stale file.
-window.TS_BUILD = "279 (one-off $5 deal override for Nov 7 only)";
+window.TS_BUILD = "281 (noon-to-noon drops restored + live ends-in countdown; Nov 7 = $5)";
 console.log("%c[TuneSkis] storefront build " + window.TS_BUILD, "background:#4db8ff;color:#000;padding:2px 6px;border-radius:3px;font-weight:bold");
 // Prints what the deal engine actually sees. Run tsDealDebug() in the console
 // any time to find out why a deal is or isn't showing.
@@ -3931,7 +3931,7 @@ function dealFor(dateNY) {
 //  DEAL PLAN — the scheduled season lineup
 // ════════════════════════════════════════════════════════════════════════
 //  Each day pulls ONE product out of the live catalog and sells it at
-//  DEAL_PLAN.discountPct off whatever that product costs at that moment
+//  the exact price written next to it in the DEAL_PLAN lineup below
 //  (after Heartland sync and any existing discount). Nothing is duplicated
 //  here: the name, photos, specs, sizes and per-size Heartland IDs all come
 //  from the catalog entry, so the deal can never drift out of sync with it.
@@ -3948,23 +3948,33 @@ function dealFor(dateNY) {
 // ════════════════════════════════════════════════════════════════════════
 const DEAL_PLAN = {
   active: true,
-  discountPct: 15,
   startDate: "2026-10-11",   // day 0 of the lineup
-  revealHour: 12,            // each deal runs noon → noon the next day
+
+  // Each deal DROPS AT NOON Eastern and runs 24h, until the next one drops.
+  // The date in the schedule is the day a deal STARTS: the Nov 7 entry goes
+  // live at 12:00pm Nov 7 and stays live until 12:00pm Nov 8.
+  // So before noon you are still inside YESTERDAY's deal — that is correct,
+  // not a bug. There is always something live, and at noon it changes over,
+  // which is the daily reason to come back to the site.
+  revealHour: 12,
   revealMinute: 0,
 
-  // Order of the season rotation. Names must match PRODUCTS exactly.
+  // Order of the season rotation, with the price each one drops at.
+  // Prices are PRE-DECIDED here, not calculated at page load, so what the
+  // customer pays is exactly what is written below — it can't drift if a
+  // Heartland price moves. These were set at 15% off the shop price at the
+  // time of writing; edit any number freely.
   lineup: [
-    "Dragon DX3 OTG Goggle",       // day 0 — cheapest item, so the first live run is a low-risk test
-    "Kästle RX9",
-    "Roxa Trinity 95",
-    "Rossignol Rallybird 94",
-    "Pret Moxie X Helmet",
-    "Rossignol Savage",
-    "Roxa R/Fit Pro 120",
-    "Jones Womens Mind Expander",
-    "Roxa Element 120",
-    "Rossignol BC X10",
+    { product: "Dragon DX3 OTG Goggle",      price:  44.62 },
+    { product: "Kästle RX9",                 price: 424.99 },
+    { product: "Roxa Trinity 95",            price: 254.15 },
+    { product: "Rossignol Rallybird 94",     price: 416.49 },
+    { product: "Pret Moxie X Helmet",        price:  68.42 },
+    { product: "Rossignol Savage",           price: 424.99 },
+    { product: "Roxa R/Fit Pro 120",         price: 594.99 },
+    { product: "Jones Womens Mind Expander", price: 407.99 },
+    { product: "Roxa Element 120",           price: 308.12 },
+    { product: "Rossignol BC X10",           price: 212.49 },
   ],
 
   // Pin a product to an exact date; overrides the rotation for that day.
@@ -3972,12 +3982,10 @@ const DEAL_PLAN = {
     // "2026-12-24": "Dragon DX3 OTG Goggle",
   },
 
-  // ⚠️ ONE-OFF PRICE OVERRIDES — a flat price for ONE specific date only.
-  // Deliberately keyed by date so it cannot leak into another day: once that
-  // date passes, the normal discountPct math takes over again by itself.
-  // Nothing to remember to switch off.
+  // One-off price for ONE date only. Keyed by date, so it expires by itself
+  // at midnight and cannot leak into another day.
   priceOverride: {
-    "2026-11-07": 5.00,   // live-fire checkout test, Nov 7 ONLY — expires by itself at midnight
+    "2026-11-07": 5.00,   // TEST — Nov 7 only
   },
 };
 
@@ -3988,13 +3996,24 @@ function dealPlanDayIndex(dateNY) {
   return Math.floor((d - s) / 86400000);
 }
 // Which product name runs on a given day (null before startDate).
-function dealPlanNameFor(dateNY) {
+// The scheduled entry for a day: { product, price }. A byDate pin overrides
+// the rotation and falls back to that product's own listed price.
+function dealPlanEntryFor(dateNY) {
   if (!DEAL_PLAN.active || !DEAL_PLAN.lineup.length) return null;
   var pinned = (DEAL_PLAN.byDate || {})[dealDateStr(dateNY)];
-  if (pinned) return pinned;
+  if (pinned) {
+    for (var j = 0; j < DEAL_PLAN.lineup.length; j++) {
+      if (DEAL_PLAN.lineup[j].product === pinned) return DEAL_PLAN.lineup[j];
+    }
+    return { product: pinned, price: 0 };   // price 0 => fall back to shop price
+  }
   var i = dealPlanDayIndex(dateNY);
   if (i < 0) return null;
   return DEAL_PLAN.lineup[i % DEAL_PLAN.lineup.length];
+}
+function dealPlanNameFor(dateNY) {
+  var e = dealPlanEntryFor(dateNY);
+  return e ? e.product : null;
 }
 function dealPlanFindProduct(name) {
   for (var i = 0; i < PRODUCTS.length; i++) {
@@ -4010,12 +4029,15 @@ function dealPlanKey(name) {
 // Build a deal object from a live catalog product.
 function dealPlanBuild(prod, dateNY) {
   if (!prod) return null;
-  var base = Number(prod.price) || 0;              // price as it stands right now
-  if (base <= 0) return null;
-  var dealPrice = Math.round(base * (1 - DEAL_PLAN.discountPct / 100) * 100) / 100;
-  // A one-off override for this exact date wins over the percentage.
+  var base = Number(prod.price) || 0;              // normal shop price today
+  // The price is pre-decided in the lineup, not calculated here, so what the
+  // customer pays is exactly what the schedule says.
+  var entry = dealPlanEntryFor(dateNY);
+  var dealPrice = (entry && Number(entry.price) > 0) ? Number(entry.price) : 0;
+  // A one-off override for this exact date beats the scheduled price.
   var ov = (DEAL_PLAN.priceOverride || {})[dealDateStr(dateNY)];
   if (typeof ov === "number" && ov > 0) dealPrice = ov;
+  if (dealPrice <= 0) return null;
 
   // Only offer sizes Heartland still has. Before the first sync qty is 0 for
   // everything, so fall back to all sizes rather than showing an empty picker.
@@ -4042,7 +4064,7 @@ function dealPlanBuild(prod, dateNY) {
     images: prod.images || [],
     specs: prod.specs || {},
     bindings: !!prod.bindings,
-    teaser: "Today's deal is " + DEAL_PLAN.discountPct + "% off — one unit only.",
+    teaser: "One unit only, at a price we set in advance. First come, first served.",
     dealKey: dealPlanKey(prod.name),
     product: prod,
   };
@@ -4349,7 +4371,14 @@ function dealRender() {
     var left = (st.qty === null) ? st.deal.limit : Math.min(st.qty, st.deal.limit);
     show(banner, true);
     setText(bTopline, "🔥 LIVE NOW — " + dealMoney(st.deal.price) + (st.deal.msrp > st.deal.price ? " (reg. " + dealMoney(st.deal.msrp) + ")" : "") + " · " + left + " left");
-    setText(bCount, "");
+    // Count down to the moment this deal is replaced by the next one. That
+    // changeover at noon is the reason to come back tomorrow, so say it.
+    if (st.endsAt) {
+      setText(bCount, "Ends in " + dealFmtCountdown(st.endsAt) + " — next deal drops at " + revealTxt);
+      show(bCount, true);
+    } else {
+      setText(bCount, "");
+    }
     show(pMystery, false); show(pImg, !!st.deal.image); if (pImg && st.deal.image) pImg.src = st.deal.image;
     setText(pTag, "🔥 Deal of the Day — Live Now");
     setText(pName, st.deal.name);
@@ -4357,7 +4386,14 @@ function dealRender() {
     show(pPrice, true); setText(pPrice, dealMoney(st.deal.price));
     show(pMsrp, st.deal.msrp > st.deal.price); setText(pMsrp, st.deal.msrp > st.deal.price ? dealMoney(st.deal.msrp) : "");
     show(pLeft, true); setText(pLeft, left + " left — first come, first served");
-    show(pCount, false);
+    // Show how long is left on this deal. The noon changeover is the reason
+    // to come back tomorrow, so make it visible rather than hiding it.
+    if (st.endsAt) {
+      show(pCount, true);
+      setText(pCount, "Ends in " + dealFmtCountdown(st.endsAt) + " — next deal drops at " + revealTxt);
+    } else {
+      show(pCount, false);
+    }
     var hasSizes = st.deal.sizes && st.deal.sizes.length > 0;
     show(pSizeWrap, hasSizes);
     if (hasSizes && pSizeSel) {
