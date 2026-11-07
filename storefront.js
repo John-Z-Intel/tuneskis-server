@@ -2,7 +2,7 @@
 // ── Build stamp — check what's actually deployed ──────────────
 // In the browser console on /store you'll see this line. If the number
 // doesn't match the ?v= in the Squarespace footer, you're on a stale file.
-window.TS_BUILD = "281 (noon-to-noon drops restored + live ends-in countdown; Nov 7 = $5)";
+window.TS_BUILD = "282 (fix: stale deal price in saved cart now self-corrects; limit wording = 1/day total)";
 console.log("%c[TuneSkis] storefront build " + window.TS_BUILD, "background:#4db8ff;color:#000;padding:2px 6px;border-radius:3px;font-weight:bold");
 // Prints what the deal engine actually sees. Run tsDealDebug() in the console
 // any time to find out why a deal is or isn't showing.
@@ -4463,6 +4463,40 @@ function dealPollStock() {
     }).catch(function(){});
 }
 
+// Keep any Deal of the Day item already sitting in the cart honest.
+// A cart persists in localStorage, so without this a customer can hold an
+// item priced by YESTERDAY's deal (or by an older build) and check out at
+// that stale price — the cart renders whatever price was stored at add time.
+// Re-price it to today's deal, and drop it entirely if it is no longer the
+// deal that is running.
+function dealReconcileCart() {
+  if (typeof cart === "undefined" || !cart.length) return;
+  var st;
+  try { st = dealState(); } catch (e) { return; }
+  var liveKey = (st && st.state === "live" && st.key)
+    ? ((st.isTest ? "TEST-" : "") + st.key)
+    : null;
+  var changed = false;
+  for (var i = cart.length - 1; i >= 0; i--) {
+    var it = cart[i];
+    if (!it || !it.deal) continue;
+    if (liveKey && it.dealKey === liveKey) {
+      if (Number(it.price) !== Number(st.deal.price)) {
+        it.price = st.deal.price;
+        it.msrp = st.deal.msrp || null;
+        changed = true;
+      }
+    } else {
+      cart.splice(i, 1);          // not today's deal any more
+      changed = true;
+    }
+  }
+  if (changed) {
+    try { tsSave(); tsUpdateUI(); tsRenderDrawer(); } catch (e) {}
+  }
+}
+window.dealReconcileCart = dealReconcileCart;
+
 function dealBuy() {
   var st = dealState();
   if (st.state !== "live") { alert("This deal isn't available right now."); dealRender(); return; }
@@ -4471,7 +4505,7 @@ function dealBuy() {
   var chosenSize = hasSizes ? (sizeSel && sizeSel.value) : "Deal of the Day";
   if (hasSizes && !chosenSize) { alert("Please select a size first."); return; }
   var key = "DEAL:" + st.key;
-  if (cart.find(function(i){ return i.key === key; })) { alert("Deal of the Day is limited to 1 per customer — it's already in your cart."); tsOpenCart(); return; }
+  if (cart.find(function(i){ return i.key === key; })) { alert("There is only ONE of today's deal, and it's already in your cart."); tsOpenCart(); return; }
   // ?dealtest=… is a preview. A test checkout must NEVER touch the real
   // counter — otherwise testing the buy flow burns the live deal and the
   // real drop shows SOLD OUT with nobody having bought it.
@@ -5440,6 +5474,11 @@ function tsCoCloseBtn() {
   if (typeof dealPollStock === "function") {
     try { dealPollStock(); } catch(e) {}
     setInterval(function(){ try { dealPollStock(); } catch(e) {} }, 60000);
+  }
+  // A stale deal item in a saved cart would otherwise keep its old price.
+  if (typeof dealReconcileCart === "function") {
+    try { dealReconcileCart(); } catch(e) {}
+    setInterval(function(){ try { dealReconcileCart(); } catch(e) {} }, 60000);
   }
 })();
 
