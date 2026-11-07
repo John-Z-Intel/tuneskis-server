@@ -2,7 +2,7 @@
 // ── Build stamp — check what's actually deployed ──────────────
 // In the browser console on /store you'll see this line. If the number
 // doesn't match the ?v= in the Squarespace footer, you're on a stale file.
-window.TS_BUILD = "275 (UltraViolet snowboard correct photo)";
+window.TS_BUILD = "278 (DEAL_PLAN lineup: DX3 goggle moved to day 0 for low-cost live test)";
 console.log("%c[TuneSkis] storefront build " + window.TS_BUILD, "background:#4db8ff;color:#000;padding:2px 6px;border-radius:3px;font-weight:bold");
 // Prints what the deal engine actually sees. Run tsDealDebug() in the console
 // any time to find out why a deal is or isn't showing.
@@ -55,7 +55,7 @@ const DEAL_OF_DAY = {
   // which stops an upcoming product from being revealed early.
   startDate: "2026-10-09",
   revealHour: 12,
-  revealMinute: 20,
+  revealMinute: 0,
 
   // Deals pinned to an exact calendar date. These win over the weekday list
   // below, so a launch can't be missed because of a day-of-week mixup.
@@ -74,8 +74,8 @@ const DEAL_OF_DAY = {
     // No Heartland item needed: hlId stays 0 and the server's own sales
     // counter enforces limit:1. To move the launch, just change the date in
     // byDate above. capKey keeps it to ONE sale total across every date listed.
-    RX9_LAUNCH: { active:true, capKey:"rx9-launch-2026",
-           startAt:"2026-10-11T12:00", endAt:"2026-10-12T12:00",   // 24h: noon Sun → noon Mon
+    RX9_LAUNCH: { active:false, capKey:"rx9-launch-2026",   // retired — the scheduled DEAL_PLAN lineup now runs the RX9
+           startAt:"2026-10-11T12:00", endAt:"2026-10-12T12:00",
            name:"Kästle RX9", teaser:"A World Cup-inspired carver at a price you won't believe…",
            price:299.99, msrp:950.00, limit:1, hlId:0,
            sizes:["150cm","156cm","162cm","168cm","174cm"], bindings:true,
@@ -92,7 +92,7 @@ const DEAL_OF_DAY = {
     // 🧪 LIVE-FIRE TEST — Sat Oct 10, 12:33–12:36pm ET. Same ski, but its own
     // capKey, so buying it here does NOT consume tomorrow's real drop. Set
     // active:false (or just let the window pass) once the test is done.
-    RX9_TEST: { active:true, capKey:"rx9-test-oct10",
+    RX9_TEST: { active:false, capKey:"rx9-test-oct10",   // Oct 10 live-fire test, done
            startAt:"2026-10-10T12:33", endAt:"2026-10-10T12:36",
            name:"Kästle RX9", teaser:"A World Cup-inspired carver at a price you won't believe…",
            price:299.99, msrp:950.00, limit:1, hlId:0,
@@ -1724,7 +1724,7 @@ const BINDINGS = [
     specs:{"Waist Width":"Soul Pro","Profile":"Twin / Flat","Core":"Poplar","Terrain":"Park & Pipe","Skill Level":"Beginner–Advanced","Country":"France"}
   },
 {
-    name:"Rossignol Arcade 88", brand:"Rossignol", price:949.99, badge:"Carve", badgeType:"new", icon:"🎿",
+    name:"Rossignol Arcade 88", brand:"Rossignol", price:949.99, noDiscount:true, badge:"Carve", badgeType:"new", icon:"🎿",
     cat:"skis", sub:"rossignol", gender:"unisex", age:"adult", cond:"new", bindings:true, flatmount:false, popular:146,
     desc:"88mm waist all-mountain charger. Slightly wider for better off-piste float while maintaining on-piste precision. Comes with bindings.",
     action:"Add to Cart", link:null,
@@ -1845,7 +1845,7 @@ const BINDINGS = [
     specs:{"Waist Width":"88mm","Core":"Mango Wood + TI","Profile":"Progressive Camber","Gender":"Women's","Terrain":"Frontside / All-Mountain","Skill Level":"Advanced–Expert","Country":"France"}
   },
   {
-    name:"Salomon Stance 84R", brand:"Salomon", price:799.99, badge:"All-Mountain", badgeType:"pop", icon:"🎿",
+    name:"Salomon Stance 84R", brand:"Salomon", price:799.99, noDiscount:true, badge:"All-Mountain", badgeType:"pop", icon:"🎿",
     cat:"skis", sub:"salomon", gender:"men", age:"adult", cond:"new", bindings:false, flatmount:true, popular:199,
     desc:"Energetic and stable 84mm all-mountain ski. A poplar wood core and Ti-C Frame construction deliver the finesse and agility to conquer every part of the mountain.",
     action:"Add to Cart", link:null,
@@ -3927,6 +3927,144 @@ function dealFor(dateNY) {
   if (d && d.startAt && d.endAt) return null;
   return (d && d.active && d.name && d.price > 0) ? d : null;
 }
+// ════════════════════════════════════════════════════════════════════════
+//  DEAL PLAN — the scheduled season lineup
+// ════════════════════════════════════════════════════════════════════════
+//  Each day pulls ONE product out of the live catalog and sells it at
+//  DEAL_PLAN.discountPct off whatever that product costs at that moment
+//  (after Heartland sync and any existing discount). Nothing is duplicated
+//  here: the name, photos, specs, sizes and per-size Heartland IDs all come
+//  from the catalog entry, so the deal can never drift out of sync with it.
+//
+//  THE SCHEDULE IS FIXED, NOT RANDOM. `lineup` runs in order starting on
+//  `startDate`, one per day, then repeats from the top for the whole season.
+//  To pin a specific product to a specific date, add it to `byDate` — that
+//  always wins over the rotation.
+//
+//  Selling ONE unit ends the day: the chosen size decrements in Heartland
+//  like any normal sale, and the day's counter hits its limit of 1, so the
+//  panel flips to SOLD OUT until the next day's deal opens. The counter is
+//  keyed by date, so it clears itself every day with no cleanup.
+// ════════════════════════════════════════════════════════════════════════
+const DEAL_PLAN = {
+  active: true,
+  discountPct: 15,
+  startDate: "2026-10-11",   // day 0 of the lineup
+  revealHour: 12,            // each deal runs noon → noon the next day
+  revealMinute: 0,
+
+  // Order of the season rotation. Names must match PRODUCTS exactly.
+  lineup: [
+    "Dragon DX3 OTG Goggle",       // day 0 — cheapest item, so the first live run is a low-risk test
+    "Kästle RX9",
+    "Roxa Trinity 95",
+    "Rossignol Rallybird 94",
+    "Pret Moxie X Helmet",
+    "Rossignol Savage",
+    "Roxa R/Fit Pro 120",
+    "Jones Womens Mind Expander",
+    "Roxa Element 120",
+    "Rossignol BC X10",
+  ],
+
+  // Pin a product to an exact date; overrides the rotation for that day.
+  byDate: {
+    // "2026-12-24": "Dragon DX3 OTG Goggle",
+  },
+};
+
+function dealPlanDayIndex(dateNY) {
+  var start = new Date(DEAL_PLAN.startDate + "T00:00:00");
+  var d = new Date(dateNY.getFullYear(), dateNY.getMonth(), dateNY.getDate());
+  var s = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+  return Math.floor((d - s) / 86400000);
+}
+// Which product name runs on a given day (null before startDate).
+function dealPlanNameFor(dateNY) {
+  if (!DEAL_PLAN.active || !DEAL_PLAN.lineup.length) return null;
+  var pinned = (DEAL_PLAN.byDate || {})[dealDateStr(dateNY)];
+  if (pinned) return pinned;
+  var i = dealPlanDayIndex(dateNY);
+  if (i < 0) return null;
+  return DEAL_PLAN.lineup[i % DEAL_PLAN.lineup.length];
+}
+function dealPlanFindProduct(name) {
+  for (var i = 0; i < PRODUCTS.length; i++) {
+    if (PRODUCTS[i] && PRODUCTS[i].name === name) return PRODUCTS[i];
+  }
+  return null;
+}
+// A stable per-product key. NOT absolute — the server date-stamps it, so the
+// limit of 1 applies per day and resets on its own.
+function dealPlanKey(name) {
+  return "PLAN-" + String(name).replace(/[^A-Za-z0-9]+/g, "-").replace(/^-|-$/g, "");
+}
+// Build a deal object from a live catalog product.
+function dealPlanBuild(prod, dateNY) {
+  if (!prod) return null;
+  var base = Number(prod.price) || 0;              // price as it stands right now
+  if (base <= 0) return null;
+  var dealPrice = Math.round(base * (1 - DEAL_PLAN.discountPct / 100) * 100) / 100;
+
+  // Only offer sizes Heartland still has. Before the first sync qty is 0 for
+  // everything, so fall back to all sizes rather than showing an empty picker.
+  var all = (prod.sizes || []).filter(function(s){ return s && s.hlId; });
+  var inStock = all.filter(function(s){ return (s.qty || 0) > 0; });
+  var synced = !!window._tsHlMap;
+  var usable = (synced && inStock.length) ? inStock : (synced ? [] : all);
+
+  var sizeMap = {};
+  usable.forEach(function(s){ sizeMap[s.label] = s.hlId; });
+
+  return {
+    planned: true,
+    name: prod.name,
+    desc: prod.desc || "",
+    price: dealPrice,
+    msrp: Number(prod.msrp) || base,              // struck-through = pre-deal price
+    wasPrice: base,
+    limit: 1,
+    hlId: 0,                                      // resolved per chosen size at buy time
+    sizes: usable.map(function(s){ return s.label; }),
+    sizeMap: sizeMap,
+    image: (prod.images && prod.images[0]) || "",
+    images: prod.images || [],
+    specs: prod.specs || {},
+    bindings: !!prod.bindings,
+    teaser: "Today's deal is " + DEAL_PLAN.discountPct + "% off — one unit only.",
+    dealKey: dealPlanKey(prod.name),
+    product: prod,
+  };
+}
+// The planned deal whose window contains `now`, if any.
+function dealPlanNow(nowNY) {
+  if (!DEAL_PLAN.active) return null;
+  var reveal = new Date(nowNY);
+  reveal.setHours(DEAL_PLAN.revealHour, DEAL_PLAN.revealMinute, 0, 0);
+  // Before today's reveal we are still inside YESTERDAY's 24h window.
+  var day = new Date(nowNY);
+  if (nowNY < reveal) day.setDate(day.getDate() - 1);
+  var name = dealPlanNameFor(day);
+  if (!name) return null;
+  var prod = dealPlanFindProduct(name);
+  if (!prod) { try { console.warn("[TuneSkis] deal lineup names a product not in the catalog:", name); } catch(e){} return null; }
+  var deal = dealPlanBuild(prod, day);
+  if (!deal) return null;
+  var start = new Date(day); start.setHours(DEAL_PLAN.revealHour, DEAL_PLAN.revealMinute, 0, 0);
+  var end = new Date(start); end.setDate(end.getDate() + 1);
+  return { key: deal.dealKey, deal: deal, start: start, end: end };
+}
+// When the next planned deal opens.
+function dealPlanNextReveal(nowNY) {
+  if (!DEAL_PLAN.active) return null;
+  for (var i = 0; i < 2; i++) {
+    var day = new Date(nowNY); day.setDate(day.getDate() + i);
+    var at = new Date(day); at.setHours(DEAL_PLAN.revealHour, DEAL_PLAN.revealMinute, 0, 0);
+    if (at > nowNY && dealPlanNameFor(day)) return { at: at, key: "PLAN", deal: null };
+  }
+  return null;
+}
+
 // ── Explicit windows ──────────────────────────────────────────────────────
 // A deal may declare startAt / endAt (NY local, "YYYY-MM-DDTHH:MM"). A window
 // beats byDate + revealHour entirely, and — unlike the day-based path — it can
@@ -4041,6 +4179,29 @@ function dealState() {
       }
     }
   } catch(e) {}
+
+  // The scheduled season lineup comes first — it is the normal path.
+  var plan = dealPlanNow(now);
+  if (plan) {
+    var pq = dealLiveQty(plan.deal, plan.key);
+    var noSizes = !plan.deal.sizes.length;        // synced and nothing left in Heartland
+    if (!noSizes && (pq === null || pq > 0)) {
+      return { state:"live", deal:plan.deal, qty:pq, key:plan.key, endsAt:plan.end };
+    }
+    var pNext = dealPlanNextReveal(now);
+    return { state:"soldout", deal:plan.deal, countdownTo: pNext ? pNext.at : null, key:plan.key };
+  }
+  // Plan is on but we're ahead of the first scheduled day — tease the next one
+  // rather than falling through to the retired day-based config.
+  if (DEAL_PLAN.active) {
+    var upcoming = dealPlanNextReveal(now);
+    if (upcoming) {
+      var upName = dealPlanNameFor(upcoming.at);
+      var upProd = upName ? dealPlanFindProduct(upName) : null;
+      var upDeal = upProd ? dealPlanBuild(upProd, upcoming.at) : null;
+      if (upDeal) return { state:"pending", deal:upDeal, countdownTo: upcoming.at, key:upDeal.dealKey };
+    }
+  }
 
   // A deal with an explicit start/end window wins over the day-based path,
   // and can run across midnight (e.g. noon Sat → noon Sun).
@@ -4234,13 +4395,15 @@ window.dealRender = dealRender;
 function dealPollStock() {
   var st = dealState();
   if (st.state !== "live" && st.state !== "soldout") return;
-  // Deal has no Heartland item — ask the server how many have sold today
+  // Deal has no single Heartland item — ask the server how many have sold today.
   if (st.deal && !st.deal.hlId && st.key) {
     fetch("https://tuneskis-server.onrender.com/deal-status?key=" + encodeURIComponent((st.isTest ? "TEST-" : "") + (st.deal.capKey || st.key)) + "&absolute=" + (st.deal.capKey ? 1 : 0) + "&limit=" + (st.deal.limit || 1))
       .then(function(r){ return r.ok ? r.json() : null; })
       .then(function(d){ if (d && d.success) { window._tsDealStatus = d; dealRender(); } })
       .catch(function(){});
-    return;
+    // A scheduled deal also needs live Heartland stock, because its sizes and
+    // its sold-out state are driven by the real items — so fall through.
+    if (!st.deal.planned) return;
   }
   fetch("https://tuneskis-server.onrender.com/inventory")
     .then(function(r){ return r.ok ? r.json() : null; })
@@ -4271,7 +4434,11 @@ function dealBuy() {
     capKey = "TEST-" + (capKey || dealKey);
     dealKey = "TEST-" + dealKey;
   }
-  cart.push({ key:key, name:(st.isTest ? "🧪 TEST — " : "🔥 ") + st.deal.name, size:chosenSize, price:st.deal.price, msrp:st.deal.msrp||null, icon:"🔥", qty:1, hlId:st.isTest ? 0 : st.deal.hlId, deal:true, dealKey:dealKey, dealCapKey:capKey, dealLimit:st.deal.limit||1, isTest:!!st.isTest });
+  // Scheduled deals carry a real Heartland item PER SIZE, so the unit the
+  // customer actually picked is the one that decrements.
+  var hlId = st.deal.hlId;
+  if (st.deal.sizeMap && chosenSize && st.deal.sizeMap[chosenSize]) hlId = st.deal.sizeMap[chosenSize];
+  cart.push({ key:key, name:(st.isTest ? "🧪 TEST — " : "🔥 ") + st.deal.name, size:chosenSize, price:st.deal.price, msrp:st.deal.msrp||null, icon:"🔥", qty:1, hlId:st.isTest ? 0 : hlId, deal:true, dealKey:dealKey, dealCapKey:capKey, dealLimit:st.deal.limit||1, isTest:!!st.isTest });
   tsSave(); tsUpdateUI(); tsOpenCart();
 }
 window.dealBuy = dealBuy;
@@ -5220,6 +5387,13 @@ function tsCoCloseBtn() {
   document.head.appendChild(style);
 
   dealRender();
+  // A scheduled deal is capped at one sale per day, and that count lives on
+  // the server — so ask for it up front and keep it fresh, otherwise a deal
+  // that already sold today would still look available.
+  if (typeof dealPollStock === "function") {
+    try { dealPollStock(); } catch(e) {}
+    setInterval(function(){ try { dealPollStock(); } catch(e) {} }, 60000);
+  }
 })();
 
 })();
