@@ -2,7 +2,7 @@
 // ── Build stamp — check what's actually deployed ──────────────
 // In the browser console on /store you'll see this line. If the number
 // doesn't match the ?v= in the Squarespace footer, you're on a stale file.
-window.TS_BUILD = "278 (DEAL_PLAN lineup: DX3 goggle moved to day 0 for low-cost live test)";
+window.TS_BUILD = "279 (one-off $5 deal override for Nov 7 only)";
 console.log("%c[TuneSkis] storefront build " + window.TS_BUILD, "background:#4db8ff;color:#000;padding:2px 6px;border-radius:3px;font-weight:bold");
 // Prints what the deal engine actually sees. Run tsDealDebug() in the console
 // any time to find out why a deal is or isn't showing.
@@ -3971,6 +3971,14 @@ const DEAL_PLAN = {
   byDate: {
     // "2026-12-24": "Dragon DX3 OTG Goggle",
   },
+
+  // ⚠️ ONE-OFF PRICE OVERRIDES — a flat price for ONE specific date only.
+  // Deliberately keyed by date so it cannot leak into another day: once that
+  // date passes, the normal discountPct math takes over again by itself.
+  // Nothing to remember to switch off.
+  priceOverride: {
+    "2026-11-07": 5.00,   // live-fire checkout test, Nov 7 ONLY — expires by itself at midnight
+  },
 };
 
 function dealPlanDayIndex(dateNY) {
@@ -4005,6 +4013,9 @@ function dealPlanBuild(prod, dateNY) {
   var base = Number(prod.price) || 0;              // price as it stands right now
   if (base <= 0) return null;
   var dealPrice = Math.round(base * (1 - DEAL_PLAN.discountPct / 100) * 100) / 100;
+  // A one-off override for this exact date wins over the percentage.
+  var ov = (DEAL_PLAN.priceOverride || {})[dealDateStr(dateNY)];
+  if (typeof ov === "number" && ov > 0) dealPrice = ov;
 
   // Only offer sizes Heartland still has. Before the first sync qty is 0 for
   // everything, so fall back to all sizes rather than showing an empty picker.
